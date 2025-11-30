@@ -1,0 +1,126 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Existing app translations -->
+    <string name="training">Training</string>
+    <string name="profile">Profil</string>
+    <string name="settings">Einstellungen</string>
+    <string name="device">Gerät</string>
+    <string name="all">Alle</string>
+    <string name="upper_body">Oberkörper</string>
+    <string name="legs">Beine</string>
+    <string name="other">Sonstiges</string>
+    <string name="add_training">Training hinzufügen</string>
+    <string name="group">Gruppe</string>
+    <string name="weight_kg">Gewicht (kg)</string>
+    <string name="note">Notiz</string>
+    <string name="save">Speichern</string>
+    <string name="delete_training">Training löschen</string>
+    <string name="delete_training_confirm">Willst du das Training „%1$s“ wirklich löschen?</string>
+    <string name="cancel">Abbrechen</string>
+    <string name="name">Name</string>
+    <string name="new_training">Neues Training</string>
+    <string name="ok">OK</string>
+    <string name="select_color">Farbe wählen</string>
+    <string name="color">Farbe</string>
+    <string name="decrease_weight_by">Gewicht um %s kg verringern</string>
+    <string name="increase_weight_by">Gewicht um %s kg erhöhen</string>
+    <string name="edit_note_title">Notiz bearbeiten</string>
+
+    <!-- Settings -->
+    <string name="settings_title">Einstellungen</string>
+    <string name="settings_section_appearance">Darstellung</string>
+    <string name="settings_section_about">Über die App</string>
+    <string name="settings_app_version">App-Version</string>
+    <string name="settings_privacy_policy">Datenschutzrichtlinie</string>
+    <string name="settings_terms_of_service">Nutzungsbedingungen</string>
+    <string name="settings_open_source_licenses">Open-Source-Lizenzen</string>
+    <string name="settings_copyright_notice">© %1$s %2$s</string>
+    <string name="settings_all_rights_reserved">Alle Rechte vorbehalten. Ein FOSS Projekt</string>
+    <string name="settings_developed_by">Entwickelt von %s</string>
+    <string name="settings_github">GitHub Repository</string>
+
+    <string name="dynamic_colors">Dynamische Material You Farben</string>
+    <string name="dynamic_colors_enabled">Systemfarben werden genutzt</string>
+    <string name="dynamic_colors_disabled">Statische App-Farben werden verwendet</string>
+
+    <string name="use_emojis_for_groups">Emojis für Gruppen verwenden</string>
+    <string name="use_emojis_for_groups_desc">Zeige Emojis neben Gruppennamen für eine anschaulichere Darstellung.</string>
+
+    <string name="weight_steps_section">Gewichtsschritte</string>
+    <string name="edit">Bearbeiten</string>
+    <string name="edit_weight_steps">Gewichtsschritte bearbeiten</string>
+    <string name="new_step">Neuer Schritt</string>
+    <string name="add">Hinzufügen</string>
+    <string name="done">Fertig</string>
+    <string name="delete">Löschen</string>
+
+    <!-- Profile Page -->
+    <string name="welcome_user">Willkommen, %1$s</string>
+    <string name="strawberry_id">Strawberry-ID: %1$s</string>
+    <string name="email_label">E-Mail: %1$s</string>
+    <string name="sign_out">Abmelden</string>
+    <string name="sign_in_with_strawberry_id">Melde dich mit deiner Strawberry ID an</string>
+    <string name="sign_in_button">Mit Strawberry ID anmelden</string>
+    <string name="waiting_for_login">Warten auf Anmeldung…</string>
+    <string name="cancel_login">Anmeldung abbrechen</string>
+    <string name="login_code_error">Fehler beim Anfordern des Login-Codes: %1$s</string>
+    <string name="login_code_invalid">Login-Code ist ungültig oder abgelaufen</string>
+    <string name="connection_error">Verbindungsfehler: Prüfe deine Internetverbindung</string>
+    <string name="login_timeout">Login-Timeout: Bitte versuche es erneut</string>
+    <string name="profile_picture">Profilbild</string>
+    <string name="strawberry_id_logo">Strawberry ID</string>
+    <string name="account_information">Kontoinformationen</string>
+    <string name="preferences">Einstellungen</string>
+    <string name="app_preferences_subtitle">App-Einstellungen anpassen</string>
+    <string name="privacy">Datenschutz</string>
+    <string name="privacy_settings_subtitle">Datenschutzeinstellungen verwalten</string>
+
+    <string name="strawberry_cloud">Strawberry Cloud</string>
+    <string name="strawberry_cloud_subtitle">Daten geräteübergreifend synchronisieren</string>
+
+    <!-- Backup & Sync -->
+    <string name="backup_sync_section">Backup &amp; Sync</string>
+    <string name="backup_export">Backup exportieren</string>
+    <string name="backup_export_desc">Daten in eine Datei sichern</string>
+    <string name="backup_import">Backup importieren</string>
+    <string name="backup_import_desc">Daten aus einer Backup-Datei wiederherstellen</string>
+    <string name="backup_export_success">Export erfolgreich!</string>
+    <string name="backup_export_failed">Export fehlgeschlagen!</string>
+    <string name="backup_import_success">Import erfolgreich!</string>
+    <string name="backup_import_failed">Import fehlgeschlagen!</string>
+    <string name="backup_error">Fehler: %1$s</string>
+
+    <!-- Backup with Training Data -->
+    <string name="backup_export_desc_with_trainings">Einstellungen, Benutzerdaten und alle Trainings in eine Datei sichern</string>
+    <string name="backup_import_desc_with_trainings">Einstellungen, Benutzerdaten und Trainings aus einer Backup-Datei wiederherstellen</string>
+    <string name="backup_import_options">Import-Optionen</string>
+    <string name="backup_import_options_desc">Wie möchtest du die Trainings-Daten importieren?</string>
+    <string name="backup_import_replace_warning">⚠️ Ersetzen wird alle vorhandenen Trainings löschen!</string>
+    <string name="backup_replace">Alle ersetzen</string>
+    <string name="backup_merge">Zu vorhandenen hinzufügen</string>
+    <string name="backup_merge_success">Trainings erfolgreich hinzugefügt!</string>
+    <string name="invalid">Ungültig</string>
+    <string name="red">Rot</string>
+    <string name="green">Grün</string>
+    <string name="blue">Blau</string>
+
+    <!-- DeviceView specific strings  -->
+    <string name="device_sync_title">Gerät &amp; Synchronisation</string>
+    <string name="refresh">Aktualisieren</string>
+    <string name="info">Info</string>
+    <string name="device_status">Gerätestatus</string>
+    <string name="last_db_sync">Letzte DB-Synchronisation:</string>
+    <string name="never">Nie</string>
+    <string name="nodes_discovered">Gefundene Nodes:</string>
+    <string name="db_snapshot_queued">DB-Snapshot zum Senden eingereiht</string>
+    <string name="no_trainings_to_send">Keine Trainings zum Senden</string>
+    <string name="send_failed">Senden fehlgeschlagen: %1$s</string>
+    <string name="send">Senden</string>
+    <string name="send_db_snapshot">DB-Snapshot senden</string>
+    <string name="found_nodes">%1$d Nodes gefunden</string>
+    <string name="failed_listing_nodes">Auflisten der Nodes fehlgeschlagen: %1$s</string>
+    <string name="error_colon">Fehler: %1$s</string>
+    <string name="refresh_nodes">Nodes aktualisieren</string>
+    <string name="connected_nodes">Verbundenen Nodes</string>
+    <string name="no_connected_nodes_found">Keine verbundenen Nodes gefunden.</string>
+</resources>
