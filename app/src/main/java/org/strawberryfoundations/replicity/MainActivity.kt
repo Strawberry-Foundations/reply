@@ -44,7 +44,7 @@ import androidx.compose.ui.unit.sp
 import kotlinx.coroutines.launch
 import org.strawberryfoundations.replicity.core.preferences.AppSettings
 import org.strawberryfoundations.replicity.core.preferences.SettingsDataStore
-import org.strawberryfoundations.replicity.ui.theme.ReplicityTheme
+import org.strawberryfoundations.replicity.ui.theme.GymscribeTheme
 import org.strawberryfoundations.replicity.ui.views.DeviceView
 import org.strawberryfoundations.replicity.ui.views.ProfileView
 import org.strawberryfoundations.replicity.ui.views.SettingsView
@@ -70,7 +70,7 @@ fun MainViewWithPersistence(settingsDataStore: SettingsDataStore) {
     val settings by settingsDataStore.settingsFlow.collectAsState(initial = AppSettings())
     val scope = rememberCoroutineScope()
 
-    ReplicityTheme(dynamicColor = settings.dynamicColor) {
+    GymscribeTheme(dynamicColor = settings.dynamicColor) {
         MainView(
             settings = settings,
             onSettingsChange = { update ->
@@ -188,7 +188,7 @@ fun DefaultPreview() {
         useEmojisForGroups = true
     )
 
-    ReplicityTheme(dynamicColor = previewSettings.dynamicColor) {
+    GymscribeTheme(dynamicColor = previewSettings.dynamicColor) {
         MainView(
             settings = previewSettings,
             onSettingsChange = {}

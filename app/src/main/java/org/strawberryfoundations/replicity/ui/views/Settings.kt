@@ -224,7 +224,7 @@ fun BackupSettingsSection() {
         onClick = if (!isExporting && !isImporting && !isMerging) {
             {
                 val timestamp = SimpleDateFormat("yyyy-MM-dd_HH-mm", Locale.getDefault()).format(Date())
-                exportLauncher.launch("replicity_backup_$timestamp.json")
+                exportLauncher.launch("gymscribe_backup_$timestamp.json")
             }
         } else null,
         trailingContent = {

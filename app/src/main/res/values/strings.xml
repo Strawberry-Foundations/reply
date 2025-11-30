@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <!-- Existing app strings -->
-    <string name="app_name" translatable="false">Replicity</string>
+    <string name="app_name" translatable="false">Gymscribe</string>
     <string name="training">Training</string>
     <string name="profile">Profile</string>
     <string name="settings">Settings</string>
