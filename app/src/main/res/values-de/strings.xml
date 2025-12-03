@@ -39,7 +39,7 @@
     <string name="settings_developed_by">Entwickelt von %s</string>
     <string name="settings_github">GitHub Repository</string>
 
-    <string name="dynamic_colors">Dynamische Material You Farben</string>
+    <string name="dynamic_colors">Material You</string>
     <string name="dynamic_colors_enabled">Systemfarben werden genutzt</string>
     <string name="dynamic_colors_disabled">Statische App-Farben werden verwendet</string>
 

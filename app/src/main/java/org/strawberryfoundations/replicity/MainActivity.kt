@@ -70,7 +70,7 @@ fun MainViewWithPersistence(settingsDataStore: SettingsDataStore) {
     val settings by settingsDataStore.settingsFlow.collectAsState(initial = AppSettings())
     val scope = rememberCoroutineScope()
 
-    GymscribeTheme(dynamicColor = settings.dynamicColor) {
+    GymscribeTheme(dynamicColor = settings.useDynamicColors) {
         MainView(
             settings = settings,
             onSettingsChange = { update ->
@@ -145,14 +145,14 @@ fun MainView(
                     NavigationBarItem(
                         icon = {
                             Icon(
-                                if (selectedItem == index) selectedIcons[index] else unselectedIcons[index],
+                                imageVector = if (selectedItem == index) selectedIcons[index] else unselectedIcons[index],
                                 contentDescription = item
                             )
                         },
                         label = {
                             Text(
-                                item,
-                                style = MaterialTheme.typography.titleSmall,
+                                text = item,
+                                style = MaterialTheme.typography.labelSmall,
                                 fontSize = 12.sp
                             )
                         },
@@ -184,11 +184,10 @@ fun MainView(
 @Composable
 fun DefaultPreview() {
     val previewSettings = AppSettings(
-        dynamicColor = true,
-        useEmojisForGroups = true
+        useDynamicColors = true,
     )
 
-    GymscribeTheme(dynamicColor = previewSettings.dynamicColor) {
+    GymscribeTheme(dynamicColor = previewSettings.useDynamicColors) {
         MainView(
             settings = previewSettings,
             onSettingsChange = {}

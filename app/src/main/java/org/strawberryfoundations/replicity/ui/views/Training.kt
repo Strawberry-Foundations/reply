@@ -1,17 +1,13 @@
 package org.strawberryfoundations.replicity.ui.views
 
 import android.annotation.SuppressLint
-import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.ExperimentalAnimationApi
-import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.Spring
+import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.spring
 import androidx.compose.animation.expandVertically
-import androidx.compose.animation.fadeIn
-import androidx.compose.animation.fadeOut
 import androidx.compose.animation.shrinkVertically
-import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -23,6 +19,8 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -30,6 +28,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.sizeIn
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
@@ -54,9 +53,7 @@ import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
-import androidx.compose.material3.FilterChip
-import androidx.compose.material3.FilterChipDefaults
-import androidx.compose.material3.FloatingActionButton
+import androidx.compose.material3.ExtendedFloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -82,7 +79,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.luminance
+import androidx.compose.ui.hapticfeedback.HapticFeedbackType
+import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.ExperimentalTextApi
 import androidx.compose.ui.text.font.Font
@@ -97,9 +97,9 @@ import org.strawberryfoundations.replicity.R
 import org.strawberryfoundations.replicity.core.model.Training
 import org.strawberryfoundations.replicity.core.preferences.AppSettings
 import org.strawberryfoundations.replicity.data.TrainingViewModel
-import org.strawberryfoundations.replicity.ui.theme.TitleMediumVFConfig
 import org.strawberryfoundations.replicity.ui.theme.ascenderHeight
 import org.strawberryfoundations.replicity.ui.theme.counterWidth
+import org.strawberryfoundations.replicity.ui.theme.font.GoogleSansFlex
 import java.util.Locale
 
 
@@ -284,13 +284,15 @@ fun rememberFormattedStep(step: Double): String {
     }
 }
 
-@SuppressLint("DefaultLocale", "UnusedMaterial3ScaffoldPaddingParameter")
+@SuppressLint("DefaultLocale", "UnusedMaterial3ScaffoldPaddingParameter", "FrequentlyChangingValue")
 @OptIn(ExperimentalLayoutApi::class, ExperimentalAnimationApi::class, ExperimentalTextApi::class)
 @Composable
 fun TrainingView(
     viewModel: TrainingViewModel = viewModel(),
     settings: AppSettings,
 ) {
+    val haptic = LocalHapticFeedback.current
+
     val allStr = stringResource(R.string.all)
     val upperBodyStr = stringResource(R.string.upper_body)
     val legsStr = stringResource(R.string.legs)
@@ -342,31 +344,43 @@ fun TrainingView(
         colorToHex(colorScheme.primaryContainer)
     }
 
+    val listState = rememberLazyListState()
+
     Scaffold(
         floatingActionButton = {
             AnimatedVisibility(visible = expandedItemIndex == -1) {
-                val newTrainingName = stringResource(R.string.new_training)
-                val addTrainingLabel = stringResource(R.string.add_training)
-                val str = stringResource(R.string.all)
+                val strNewTrainingName = stringResource(R.string.new_training)
+                val strResAll = stringResource(R.string.all)
 
-                FloatingActionButton(
+                ExtendedFloatingActionButton(
                     onClick = {
-                        val group = if (categories[selectedCategoryIndex] != str) {
+                        val group = if (categories[selectedCategoryIndex] != strResAll) {
                             categories[selectedCategoryIndex]
                         } else {
                             otherStr
                         }
                         viewModel.insert(
                             Training(
-                                name = newTrainingName,
+                                name = strNewTrainingName,
                                 color = defaultColorHex,
                                 group = group
                             )
                         )
-                    },
-                ) {
-                    Icon(Icons.Filled.Add, contentDescription = addTrainingLabel)
-                }
+                              },
+                    text = {
+                        Text(
+                            text = stringResource(R.string.new_training),
+                            style = MaterialTheme.typography.labelLarge
+                        )
+                           },
+                    icon = {
+                        Icon(
+                            imageVector = Icons.Filled.Add,
+                            contentDescription = stringResource(R.string.add_training)
+                        )
+                           },
+                    expanded = listState.firstVisibleItemIndex == 0
+                )
             }
         }
     ) { _ ->
@@ -374,105 +388,85 @@ fun TrainingView(
             modifier = Modifier
                 .fillMaxSize()
         ) {
-            val selectedColor = MaterialTheme.colorScheme.primaryContainer
-            val unselectedColor = MaterialTheme.colorScheme.surfaceVariant
-            val selectedTextColor = MaterialTheme.colorScheme.onPrimaryContainer
-            val unselectedTextColor = MaterialTheme.colorScheme.onSurfaceVariant
-            val shape = RoundedCornerShape(18.dp)
-
-            Row(
+            LazyRow(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(horizontal = 8.dp, vertical = 8.dp)
-                    .horizontalScroll(rememberScrollState()),
+                    .padding(vertical = 8.dp),
+                contentPadding = PaddingValues(horizontal = 12.dp),
                 horizontalArrangement = Arrangement.spacedBy(8.dp)
             ) {
-                categories.forEachIndexed { index, cat ->
+                itemsIndexed(categories) { index, name ->
                     val isSelected = selectedCategoryIndex == index
-                    val onChipClick = remember(index) { { selectedCategoryIndex = index; expandedItemIndex = -1 } }
 
-                    val animatedBackground by animateColorAsState(
-                        targetValue = if (isSelected) selectedColor else unselectedColor,
-                        label = "chipBg"
-                    )
-                    val animatedTextColor by animateColorAsState(
-                        targetValue = if (isSelected) selectedTextColor else unselectedTextColor,
-                        label = "chipText"
-                    )
+                    val group = when (name) {
+                        allStr -> "${stringResource(R.string.all)} 🏋"
+                        upperBodyStr -> "${stringResource(R.string.upper_body)} 💪"
+                        legsStr -> "${stringResource(R.string.legs)} 🦵"
+                        otherStr -> "${stringResource(R.string.other)} 🧩"
+                        else -> "${stringResource(R.string.other)} 🧩"
+                    }
 
-                    FilterChip(
-                        selected = isSelected,
-                        onClick = onChipClick,
-                        label = {
-                            val emoji = when (index) {
-                                1 -> "💪 "
-                                2 -> "🦵 "
-                                3 -> "🧩 "
-                                else -> "🏋 "
-                            }
-
-                            val fontFamily = FontFamily(
-                                Font(
-                                    R.font.roboto_flex,
-                                    variationSettings = FontVariation.Settings(
-                                        FontVariation.weight(450),
-                                        FontVariation.width(70f),
-                                        ascenderHeight(TitleMediumVFConfig.ASCENDER_HEIGHT),
-                                        counterWidth(TitleMediumVFConfig.COUNTER_WIDTH)
-                                    )
-                                )
-                            )
-
-                            if (settings.useEmojisForGroups) {
-                                Text(
-                                    text = emoji + cat,
-                                    style = MaterialTheme.typography.titleMedium.copy(
-                                        fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Normal,
-                                        color = animatedTextColor,
-                                        fontFamily = fontFamily
-                                    )
-                                )
-                            } else {
-                                Text(
-                                    text = cat,
-                                    style = MaterialTheme.typography.titleMedium.copy(
-                                        fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Normal,
-                                        color = animatedTextColor,
-                                        fontFamily = fontFamily
-                                    )
-                                )
-                            }
-                        },
-                        leadingIcon = {
-                            AnimatedContent(
-                                targetState = isSelected,
-                                transitionSpec = {
-                                    fadeIn().togetherWith(fadeOut())
-                                }, label = "chipIcon"
-                            ) { showIcon ->
-                                if (showIcon) {
-                                    Icon(
-                                        Icons.Filled.Check,
-                                        contentDescription = null,
-                                        tint = animatedTextColor
-                                    )
-                                }
-                            }
-                        },
-                        colors = FilterChipDefaults.filterChipColors(
-                            containerColor = animatedBackground,
-                            labelColor = animatedTextColor,
-                            selectedContainerColor = animatedBackground,
-                            selectedLabelColor = animatedTextColor
+                    val scale by animateFloatAsState(
+                        targetValue = if (isSelected) 1.06f else 1f,
+                        animationSpec = spring(
+                            dampingRatio = Spring.DampingRatioMediumBouncy,
+                            stiffness = Spring.StiffnessMedium
                         ),
-                        shape = shape,
-                        elevation = FilterChipDefaults.elevatedFilterChipElevation()
+                        label = "scale"
                     )
+
+                    Button(
+                        onClick = {
+                            if (settings.useHapticFeedback) {
+                                haptic.performHapticFeedback(HapticFeedbackType.LongPress)
+                            }
+                            selectedCategoryIndex = index
+                        },
+                        colors = if (isSelected) {
+                            ButtonDefaults.buttonColors()
+                        } else {
+                            ButtonDefaults.filledTonalButtonColors()
+                        },
+                        shape = if (isSelected) {
+                            RoundedCornerShape(16.dp)
+                        } else {
+                            RoundedCornerShape(24.dp)
+                        },
+                        modifier = Modifier
+                            .graphicsLayer {
+                                scaleX = scale
+                                scaleY = scale
+                            }
+                            .sizeIn(minWidth = 56.dp, minHeight = 36.dp),
+                    ) {
+                        if (isSelected) {
+                            Row(
+                                modifier = Modifier.padding(horizontal = 8.dp),
+                                horizontalArrangement = Arrangement.Center,
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                Icon(
+                                    imageVector = Icons.Default.Check,
+                                    contentDescription = "selected",
+                                )
+                                Spacer(Modifier.width(6.dp))
+                                Text(
+                                    text = group,
+                                    fontSize = 14.sp
+                                )
+                            }
+                        } else {
+                            Text(
+                                text = group,
+                                fontSize = 14.sp,
+                                modifier = Modifier.padding(horizontal = 8.dp)
+                            )
+                        }
+                    }
                 }
             }
 
-            val listState = rememberLazyListState()
-
+            
             Box(
                 modifier = Modifier.fillMaxSize()
             ) {
@@ -547,11 +541,11 @@ fun TrainingView(
                                                         Font(
                                                             R.font.roboto_flex,
                                                             variationSettings = FontVariation.Settings(
-                                                                FontVariation.weight(TitleMediumVFConfig.WEIGHT),
+                                                                FontVariation.weight(GoogleSansFlex.TitleMediumVFConfig.WEIGHT),
                                                                 FontVariation.width(130f),
-                                                                FontVariation.slant(TitleMediumVFConfig.SLANT),
-                                                                ascenderHeight(TitleMediumVFConfig.ASCENDER_HEIGHT),
-                                                                counterWidth(TitleMediumVFConfig.COUNTER_WIDTH)
+                                                                FontVariation.slant(GoogleSansFlex.TitleMediumVFConfig.SLANT),
+                                                                ascenderHeight(GoogleSansFlex.TitleMediumVFConfig.ASCENDER_HEIGHT),
+                                                                counterWidth(GoogleSansFlex.TitleMediumVFConfig.COUNTER_WIDTH)
                                                             )
                                                         )
                                                     )
@@ -659,11 +653,7 @@ fun TrainingView(
                                                             else -> ""
                                                         }
 
-                                                        val text = if (settings.useEmojisForGroups && emoji.isNotBlank()) {
-                                                            "$emoji $group"
-                                                        } else {
-                                                            group.ifBlank { otherStr }
-                                                        }
+                                                        val text = "$emoji $group"
 
                                                         OutlinedTextField(
                                                             value = text,
@@ -709,13 +699,11 @@ fun TrainingView(
                                                                                 otherStr -> "🧩"
                                                                                 else -> ""
                                                                             }
-                                                                            if (settings.useEmojisForGroups && emoji.isNotBlank()) {
-                                                                                Text(
-                                                                                    text = emoji,
-                                                                                    style = MaterialTheme.typography.bodyMedium,
-                                                                                    modifier = Modifier.padding(end = 8.dp)
-                                                                                )
-                                                                            }
+                                                                            Text(
+                                                                                text = emoji,
+                                                                                style = MaterialTheme.typography.bodyMedium,
+                                                                                modifier = Modifier.padding(end = 8.dp)
+                                                                            )
                                                                             Text(
                                                                                 text = option,
                                                                                 style = MaterialTheme.typography.bodyMedium.copy(

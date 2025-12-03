@@ -69,9 +69,9 @@ import org.strawberryfoundations.replicity.R
 import org.strawberryfoundations.replicity.core.preferences.UserPreferences
 import org.strawberryfoundations.replicity.core.preferences.getUserDataFlow
 import org.strawberryfoundations.replicity.core.preferences.saveUserData
-import org.strawberryfoundations.replicity.ui.theme.DisplayLargeVFConfig
 import org.strawberryfoundations.replicity.ui.theme.ascenderHeight
 import org.strawberryfoundations.replicity.ui.theme.counterWidth
+import org.strawberryfoundations.replicity.ui.theme.font.GoogleSansFlex
 
 
 @Composable
@@ -411,10 +411,10 @@ private fun LoginContent(
                 Font(
                     R.font.roboto_flex,
                     variationSettings = FontVariation.Settings(
-                        FontVariation.weight(DisplayLargeVFConfig.WEIGHT),
+                        FontVariation.weight(GoogleSansFlex.DisplayLargeVFConfig.WEIGHT),
                         FontVariation.width(550f),
-                        FontVariation.slant(DisplayLargeVFConfig.SLANT),
-                        ascenderHeight(DisplayLargeVFConfig.ASCENDER_HEIGHT),
+                        FontVariation.slant(GoogleSansFlex.DisplayLargeVFConfig.SLANT),
+                        ascenderHeight(GoogleSansFlex.DisplayLargeVFConfig.ASCENDER_HEIGHT),
                         counterWidth(450)
                     )
                 )

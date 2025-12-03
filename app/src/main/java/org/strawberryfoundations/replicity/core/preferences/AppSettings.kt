@@ -10,14 +10,14 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 data class AppSettings(
-    val dynamicColor: Boolean = true,
-    val useEmojisForGroups: Boolean = false,
-    val weightSteps: List<Double> = listOf(0.625, 2.5, 5.0, 10.0, 15.0, 20.0)
+    val useDynamicColors: Boolean = true,
+    val useHapticFeedback: Boolean = false,
+    val weightSteps: List<Double> = listOf(2.5, 5.0, 10.0, 15.0)
 )
 
 object SettingsKeys {
     val DYNAMIC_COLOR = booleanPreferencesKey("dynamic_color")
-    val USE_EMOJIS_FOR_GROUPS = booleanPreferencesKey("use_emojis_for_groups")
+    val HAPTIC_FEEDBACK = booleanPreferencesKey("haptic_feedback")
     val WEIGHT_STEPS = stringPreferencesKey("weight_steps")
 }
 
@@ -26,8 +26,8 @@ val Context.dataStore by preferencesDataStore(name = "settings")
 class SettingsDataStore(private val context: Context) {
     val settingsFlow: Flow<AppSettings> = context.dataStore.data.map { prefs ->
         AppSettings(
-            dynamicColor = prefs[SettingsKeys.DYNAMIC_COLOR] != false,
-            useEmojisForGroups = prefs[SettingsKeys.USE_EMOJIS_FOR_GROUPS] == true,
+            useDynamicColors = prefs[SettingsKeys.DYNAMIC_COLOR] != false,
+            useHapticFeedback = prefs[SettingsKeys.HAPTIC_FEEDBACK] == false,
             weightSteps = prefs[SettingsKeys.WEIGHT_STEPS]
                 ?.split(",")
                 ?.mapNotNull { it.toDoubleOrNull() }
@@ -38,16 +38,16 @@ class SettingsDataStore(private val context: Context) {
     suspend fun updateSettings(update: (AppSettings) -> AppSettings) {
         context.dataStore.edit { prefs ->
             val current = AppSettings(
-                dynamicColor = prefs[SettingsKeys.DYNAMIC_COLOR] ?: true,
-                useEmojisForGroups = prefs[SettingsKeys.USE_EMOJIS_FOR_GROUPS] ?: false,
+                useDynamicColors = prefs[SettingsKeys.DYNAMIC_COLOR] ?: true,
+                useHapticFeedback = prefs[SettingsKeys.HAPTIC_FEEDBACK] ?: false,
                 weightSteps = prefs[SettingsKeys.WEIGHT_STEPS]
                     ?.split(",")
                     ?.mapNotNull { it.toDoubleOrNull() }
                     ?: listOf(0.625, 2.5, 5.0, 10.0, 15.0, 20.0)
             )
             val new = update(current)
-            prefs[SettingsKeys.DYNAMIC_COLOR] = new.dynamicColor
-            prefs[SettingsKeys.USE_EMOJIS_FOR_GROUPS] = new.useEmojisForGroups
+            prefs[SettingsKeys.DYNAMIC_COLOR] = new.useDynamicColors
+            prefs[SettingsKeys.HAPTIC_FEEDBACK] = new.useHapticFeedback
             prefs[SettingsKeys.WEIGHT_STEPS] = new.weightSteps.joinToString(",")
         }
     }

@@ -21,6 +21,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Code
+import androidx.compose.material.icons.filled.ColorLens
 import androidx.compose.material.icons.filled.Copyright
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Download
@@ -29,6 +30,8 @@ import androidx.compose.material.icons.filled.EmojiEmotions
 import androidx.compose.material.icons.filled.Gavel
 import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.Palette
+import androidx.compose.material.icons.filled.Scale
+import androidx.compose.material.icons.filled.Sync
 import androidx.compose.material.icons.filled.Upload
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.AssistChip
@@ -61,15 +64,16 @@ import androidx.compose.ui.text.ExperimentalTextApi
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontVariation
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import kotlinx.coroutines.launch
 import org.strawberryfoundations.replicity.R
 import org.strawberryfoundations.replicity.core.BackupManager
 import org.strawberryfoundations.replicity.core.preferences.AppSettings
-import org.strawberryfoundations.replicity.ui.theme.TitleMediumVFConfig
 import org.strawberryfoundations.replicity.ui.theme.ascenderHeight
 import org.strawberryfoundations.replicity.ui.theme.counterWidth
+import org.strawberryfoundations.replicity.ui.theme.font.GoogleSansFlex
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
@@ -275,15 +279,25 @@ fun getAppVersion(context: Context): String {
 }
 
 @Composable
-fun SettingsSectionTitle(title: String) {
-    Text(
-        text = title,
-        style = MaterialTheme.typography.titleMedium,
-        color = MaterialTheme.colorScheme.primary,
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(horizontal = 16.dp, vertical = 12.dp)
-    )
+fun SettingsSectionTitle(title: String, icon: ImageVector) {
+    Row(
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.spacedBy(4.dp),
+        modifier = Modifier.padding(start = 16.dp, bottom = 6.dp, top = 16.dp)
+    ) {
+        Icon(
+            imageVector = icon,
+            contentDescription = title,
+            tint = MaterialTheme.colorScheme.primary,
+        )
+
+        Text(
+            text = title,
+            style = MaterialTheme.typography.displayMedium,
+            fontSize = 15.sp,
+            color = MaterialTheme.colorScheme.primary,
+        )
+    }
 }
 
 @Composable
@@ -316,12 +330,14 @@ fun SettingsItem(
         Column(modifier = Modifier.weight(1f)) {
             Text(
                 text = title,
-                style = MaterialTheme.typography.bodyLarge
+                style = MaterialTheme.typography.bodyMedium,
+                fontSize = 17.sp,
+                fontWeight = FontWeight.Bold
             )
             if (subtitle != null) {
                 Text(
                     text = subtitle,
-                    style = MaterialTheme.typography.bodySmall,
+                    style = MaterialTheme.typography.bodyMedium,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
             }
@@ -356,62 +372,38 @@ fun SettingsView(
         ) {
             // Appearance Section
             item {
-                SettingsSectionTitle(stringResource(R.string.settings_section_appearance))
+                SettingsSectionTitle(
+                    title = stringResource(R.string.settings_section_appearance),
+                    icon = Icons.Default.ColorLens
+                )
             }
             item {
                 SettingsItem(
                     icon = Icons.Filled.Palette,
                     title = stringResource(R.string.dynamic_colors),
-                    subtitle = if (settings.dynamicColor)
+                    subtitle = if (settings.useDynamicColors)
                         stringResource(R.string.dynamic_colors_enabled)
                     else
                         stringResource(R.string.dynamic_colors_disabled),
                     trailingContent = {
                         Switch(
-                            checked = settings.dynamicColor,
+                            checked = settings.useDynamicColors,
                             onCheckedChange = { checked ->
-                                onSettingsChange { copy(dynamicColor = checked) }
+                                onSettingsChange { copy(useDynamicColors = checked) }
                             }
                         )
                     }
                 )
             }
-            item {
-                SettingsItem(
-                    icon = Icons.Filled.EmojiEmotions,
-                    title = stringResource(R.string.use_emojis_for_groups),
-                    subtitle = stringResource(R.string.use_emojis_for_groups_desc),
-                    trailingContent = {
-                        Switch(
-                            checked = settings.useEmojisForGroups,
-                            onCheckedChange = { checked ->
-                                onSettingsChange { copy(useEmojisForGroups = checked) }
-                            }
-                        )
-                    }
-                )
-            }
-
-            item { HorizontalDivider(
-                modifier = Modifier.padding(horizontal = 16.dp),
-            ) }
 
             // Weight Steps Section
             item {
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = 16.dp, vertical = 12.dp),
-                    horizontalArrangement = Arrangement.SpaceBetween,
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Text(
-                        text = stringResource(R.string.weight_steps_section),
-                        style = MaterialTheme.typography.titleMedium,
-                        color = MaterialTheme.colorScheme.primary
-                    )
-                }
+                SettingsSectionTitle(
+                    title = stringResource(R.string.weight_steps_section),
+                    icon = Icons.Default.Scale
+                )
             }
+
             item {
                 Row(
                     modifier = Modifier
@@ -453,8 +445,8 @@ fun SettingsView(
                                                 variationSettings = FontVariation.Settings(
                                                     FontVariation.weight(500),
                                                     FontVariation.width(70f),
-                                                    ascenderHeight(TitleMediumVFConfig.ASCENDER_HEIGHT),
-                                                    counterWidth(TitleMediumVFConfig.COUNTER_WIDTH)
+                                                    ascenderHeight(GoogleSansFlex.TitleMediumVFConfig.ASCENDER_HEIGHT),
+                                                    counterWidth(GoogleSansFlex.TitleMediumVFConfig.COUNTER_WIDTH)
                                                 )
                                             )
                                         )
@@ -466,25 +458,30 @@ fun SettingsView(
                 }
             }
 
-            // Backup & Sync Section
             item { HorizontalDivider(
                 modifier = Modifier.padding(horizontal = 16.dp),
             ) }
-
+            // Backup & Sync Section
             item {
-                SettingsSectionTitle(stringResource(R.string.backup_sync_section))
+                SettingsSectionTitle(
+                    title = stringResource(R.string.backup_sync_section),
+                    icon = Icons.Filled.Sync
+                )
             }
             item {
                 BackupSettingsSection()
             }
 
-            // About Section
             item { HorizontalDivider(
                 modifier = Modifier.padding(horizontal = 16.dp),
             ) }
 
+            // About Section
             item {
-                SettingsSectionTitle(stringResource(R.string.settings_section_about))
+                SettingsSectionTitle(
+                    title = stringResource(R.string.settings_section_about),
+                    icon = Icons.Filled.Info
+                )
             }
             item {
                 SettingsItem(
