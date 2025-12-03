@@ -35,7 +35,7 @@
     <string name="settings_terms_of_service">Nutzungsbedingungen</string>
     <string name="settings_open_source_licenses">Open-Source-Lizenzen</string>
     <string name="settings_copyright_notice">© %1$s %2$s</string>
-    <string name="settings_all_rights_reserved">Alle Rechte vorbehalten. Ein FOSS Projekt</string>
+    <string name="settings_all_rights_reserved">Alle Rechte vorbehalten. Ein Projekt von Strawberry Foundations</string>
     <string name="settings_developed_by">Entwickelt von %s</string>
     <string name="settings_github">GitHub Repository</string>
 

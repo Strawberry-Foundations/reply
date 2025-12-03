@@ -15,8 +15,8 @@ class CustomFont {
 
     val numeralMedium = TextStyle(
         fontFamily = googleSansCode.numeralMedium,
-        fontSize = 14.sp,
-        lineHeight = 14.sp,
+        fontSize = 16.sp,
+        lineHeight = 16.sp,
         letterSpacing = 0.sp,
     )
 }

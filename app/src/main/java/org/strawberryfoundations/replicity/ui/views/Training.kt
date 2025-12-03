@@ -2,9 +2,11 @@ package org.strawberryfoundations.replicity.ui.views
 
 import android.annotation.SuppressLint
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.animateContentSize
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.animation.core.Spring
 import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.core.spring
 import androidx.compose.animation.expandVertically
 import androidx.compose.animation.shrinkVertically
@@ -85,9 +87,6 @@ import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.ExperimentalTextApi
-import androidx.compose.ui.text.font.Font
-import androidx.compose.ui.text.font.FontFamily
-import androidx.compose.ui.text.font.FontVariation
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -97,9 +96,7 @@ import org.strawberryfoundations.replicity.R
 import org.strawberryfoundations.replicity.core.model.Training
 import org.strawberryfoundations.replicity.core.preferences.AppSettings
 import org.strawberryfoundations.replicity.data.TrainingViewModel
-import org.strawberryfoundations.replicity.ui.theme.ascenderHeight
-import org.strawberryfoundations.replicity.ui.theme.counterWidth
-import org.strawberryfoundations.replicity.ui.theme.font.GoogleSansFlex
+import org.strawberryfoundations.replicity.ui.theme.customFont
 import java.util.Locale
 
 
@@ -132,7 +129,8 @@ fun SimpleColorPickerDialog(
 
     AlertDialog(
         onDismissRequest = onDismiss,
-        title = { Text(stringResource(R.string.select_color)) },
+        shape = RoundedCornerShape(28.dp),
+        title = { Text(stringResource(R.string.select_color), style = MaterialTheme.typography.headlineSmall) },
         text = {
             Column(horizontalAlignment = Alignment.CenterHorizontally) {
                 Box(
@@ -157,9 +155,10 @@ fun SimpleColorPickerDialog(
                             Surface(
                                 shape = CircleShape,
                                 color = preset,
-                                border = if (isSelected) BorderStroke(2.dp, MaterialTheme.colorScheme.primary) else null,
+                                border = if (isSelected) BorderStroke(3.dp, MaterialTheme.colorScheme.primary) else null,
+                                shadowElevation = if (isSelected) 6.dp else 2.dp,
                                 modifier = Modifier
-                                    .size(32.dp)
+                                    .size(40.dp)
                                     .clickable(onClick = onClickPreset)
                             ) {}
                         }
@@ -230,7 +229,8 @@ fun NoteEditDialog(
 
     AlertDialog(
         onDismissRequest = onDismiss,
-        title = { Text(stringResource(R.string.edit_note_title)) },
+        shape = RoundedCornerShape(28.dp),
+        title = { Text(stringResource(R.string.edit_note_title), style = MaterialTheme.typography.headlineSmall) },
         text = {
             OutlinedTextField(
                 value = currentNote,
@@ -379,7 +379,8 @@ fun TrainingView(
                             contentDescription = stringResource(R.string.add_training)
                         )
                            },
-                    expanded = listState.firstVisibleItemIndex == 0
+                    expanded = listState.firstVisibleItemIndex == 0,
+                    shape = RoundedCornerShape(24.dp)
                 )
             }
         }
@@ -428,9 +429,9 @@ fun TrainingView(
                             ButtonDefaults.filledTonalButtonColors()
                         },
                         shape = if (isSelected) {
-                            RoundedCornerShape(16.dp)
+                            RoundedCornerShape(20.dp)
                         } else {
-                            RoundedCornerShape(24.dp)
+                            RoundedCornerShape(28.dp)
                         },
                         modifier = Modifier
                             .graphicsLayer {
@@ -491,21 +492,49 @@ fun TrainingView(
                         }
 
                         val isExpanded = expandedItemIndex == index
+                        val cardElevation by animateDpAsState(
+                            targetValue = if (isExpanded) 12.dp else 6.dp,
+                            animationSpec = spring(
+                                stiffness = Spring.StiffnessMedium,
+                                dampingRatio = Spring.DampingRatioLowBouncy
+                            ),
+                        )
+
+                        val cardScale by animateFloatAsState(
+                            targetValue = if (isExpanded) 1.015f else 1f,
+                            animationSpec = spring(
+                                stiffness = Spring.StiffnessMedium,
+                                dampingRatio = Spring.DampingRatioMediumBouncy
+                            ),
+                        )
 
                         Card(
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .padding(vertical = 4.dp)
+                                .padding(vertical = 6.dp)
+                                .graphicsLayer { scaleX = cardScale; scaleY = cardScale }
                                 .clickable {
                                     expandedItemIndex = if (isExpanded) -1 else index
+                                    if (settings.useHapticFeedback) {
+                                        haptic.performHapticFeedback(HapticFeedbackType.Confirm)
+                                    }
                                 },
                             colors = CardDefaults.cardColors(containerColor = cardColor),
-                            border = BorderStroke(2.dp, borderColor),
-                            shape = MaterialTheme.shapes.large,
-                            elevation = CardDefaults.cardElevation(defaultElevation = 4.dp, pressedElevation = 8.dp)
+                            shape = RoundedCornerShape(24.dp),
+                            elevation = CardDefaults.cardElevation(
+                                defaultElevation = cardElevation,
+                                pressedElevation = cardElevation * 2f
+                            )
                         ) {
                             Column(
-                                modifier = Modifier.fillMaxWidth()
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .animateContentSize(
+                                        animationSpec = spring(
+                                            stiffness = Spring.StiffnessMedium,
+                                            dampingRatio = Spring.DampingRatioNoBouncy
+                                        )
+                                    )
                             ) {
                                 Box(
                                     modifier = Modifier
@@ -520,9 +549,10 @@ fun TrainingView(
                                         verticalAlignment = Alignment.CenterVertically
                                     ) {
                                         Text(
-                                            training.name,
+                                            text = training.name,
                                             color = textColor,
-                                            style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold),
+                                            style = MaterialTheme.typography.labelLarge,
+                                            fontSize = 16.sp,
                                             modifier = Modifier.weight(1f)
                                         )
                                         Spacer(Modifier.width(8.dp))
@@ -534,32 +564,23 @@ fun TrainingView(
                                         ) {
                                             Text(
                                                 "${training.weight} kg",
-                                                style = MaterialTheme.typography.titleMedium.copy(
-                                                    fontWeight = FontWeight.Bold,
-                                                    fontSize = 13.sp,
-                                                    fontFamily = FontFamily(
-                                                        Font(
-                                                            R.font.roboto_flex,
-                                                            variationSettings = FontVariation.Settings(
-                                                                FontVariation.weight(GoogleSansFlex.TitleMediumVFConfig.WEIGHT),
-                                                                FontVariation.width(130f),
-                                                                FontVariation.slant(GoogleSansFlex.TitleMediumVFConfig.SLANT),
-                                                                ascenderHeight(GoogleSansFlex.TitleMediumVFConfig.ASCENDER_HEIGHT),
-                                                                counterWidth(GoogleSansFlex.TitleMediumVFConfig.COUNTER_WIDTH)
-                                                            )
-                                                        )
-                                                    )
-
-                                                ),
+                                                style = customFont.numeralMedium,
                                                 modifier = Modifier.padding(horizontal = 12.dp, vertical = 4.dp)
                                             )
                                         }
                                     }
                                 }
+
                                 AnimatedVisibility(
                                     visible = isExpanded,
-                                    enter = expandVertically(animationSpec = spring(stiffness = Spring.StiffnessMediumLow)),
-                                    exit = shrinkVertically(animationSpec = spring(stiffness = Spring.StiffnessMediumLow))
+                                    enter = expandVertically(animationSpec = spring(
+                                        stiffness = Spring.StiffnessLow,
+                                        dampingRatio = Spring.DampingRatioMediumBouncy
+                                    )),
+                                    exit = shrinkVertically(animationSpec = spring(
+                                        stiffness = Spring.StiffnessMedium,
+                                        dampingRatio = Spring.DampingRatioLowBouncy
+                                    ))
                                 ) {
                                     var name by remember(training.name) { mutableStateOf(training.name) }
                                     var weight by remember(training.weight) { mutableStateOf(training.weight) }
@@ -571,7 +592,9 @@ fun TrainingView(
                                         mutableStateOf(training.color.ifBlank { defaultColorHex })
                                     }
                                     var colorDialogOpen by remember { mutableStateOf(false) }
-                                    var colorPickerInitialColor by remember(itemColorHex) { mutableStateOf(hexToColor(itemColorHex)) }
+                                    var colorPickerInitialColor by remember(itemColorHex) {
+                                        mutableStateOf(hexToColor(itemColorHex))
+                                    }
 
                                     var showNoteDialog by remember { mutableStateOf(false) }
                                     var noteInputForDialog by remember(note) { mutableStateOf(note) }
@@ -621,19 +644,22 @@ fun TrainingView(
                                         ) {
                                             Surface(
                                                 color = Color.White.copy(alpha = 0.18f),
-                                                shape = MaterialTheme.shapes.medium,
+                                                shape = RoundedCornerShape(20.dp),
+                                                shadowElevation = 0.dp,
                                                 modifier = Modifier.fillMaxWidth()
                                             ) {
                                                 Column(Modifier.padding(12.dp)) {
                                                     val textFieldColors = OutlinedTextFieldDefaults.colors(
-                                                        focusedBorderColor = textColor.copy(alpha=0.7f),
+                                                        focusedContainerColor = Color.Transparent,
+                                                        unfocusedContainerColor = Color.Transparent,
+                                                        focusedBorderColor = textColor.copy(alpha = 0.7f),
                                                         unfocusedBorderColor = textColor.copy(alpha = 0.4f),
                                                         cursorColor = textColor,
                                                         focusedTextColor = textColor,
                                                         unfocusedTextColor = textColor,
-                                                        disabledTextColor = textColor.copy(alpha=0.7f),
-                                                        focusedLabelColor = textColor.copy(alpha=0.7f),
-                                                        unfocusedLabelColor = textColor.copy(alpha=0.4f)
+                                                        disabledTextColor = textColor.copy(alpha = 0.7f),
+                                                        focusedLabelColor = textColor.copy(alpha = 0.7f),
+                                                        unfocusedLabelColor = textColor.copy(alpha = 0.4f)
                                                     )
 
                                                     OutlinedTextField(
@@ -667,7 +693,11 @@ fun TrainingView(
                                                                 ) { groupExpanded = !groupExpanded },
                                                             readOnly = true,
                                                             trailingIcon = {
-                                                                Icon(Icons.Filled.ArrowDropDown, contentDescription = stringResource(R.string.group), tint = textColor)
+                                                                Icon(
+                                                                    imageVector = Icons.Filled.ArrowDropDown,
+                                                                    contentDescription = stringResource(R.string.group),
+                                                                    tint = textColor
+                                                                )
                                                             },
                                                             colors = textFieldColors
                                                         )
@@ -841,7 +871,7 @@ fun TrainingView(
                                             ) {
                                                 Surface(
                                                     modifier = Modifier
-                                                        .size(36.dp)
+                                                        .size(40.dp)
                                                         .clickable {
                                                             colorPickerInitialColor =
                                                                 hexToColor(itemColorHex)
@@ -849,7 +879,8 @@ fun TrainingView(
                                                         },
                                                     shape = CircleShape,
                                                     color = hexToColor(itemColorHex),
-                                                    border = BorderStroke(2.dp, borderColor)
+                                                    border = BorderStroke(3.dp, borderColor),
+                                                    shadowElevation = 4.dp
                                                 ) {
                                                     Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
                                                         Icon(
@@ -900,7 +931,9 @@ fun TrainingView(
                                                         )
                                                         expandedItemIndex = -1
                                                     },
-                                                    colors = ButtonDefaults.buttonColors(containerColor = cardColor)
+                                                    colors = ButtonDefaults.buttonColors(containerColor = cardColor),
+                                                    shape = RoundedCornerShape(16.dp),
+                                                    elevation = ButtonDefaults.buttonElevation(defaultElevation = 4.dp, pressedElevation = 8.dp)
                                                 ) {
                                                     Icon(
                                                         Icons.Filled.Save,
@@ -932,8 +965,9 @@ fun TrainingView(
                     showDeleteDialog = false
                     trainingToDelete = null
                 },
-                title = { Text("\u26A0\uFE0F ${stringResource(R.string.delete_training)}", style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.Bold) },
-                text = { Text(stringResource(R.string.delete_training_confirm, trainingToDelete?.name ?: "")) },
+                shape = RoundedCornerShape(28.dp),
+                title = { Text("⚠️ ${stringResource(R.string.delete_training)}", style = MaterialTheme.typography.headlineSmall, fontWeight = FontWeight.Bold) },
+                text = { Text(stringResource(R.string.delete_training_confirm, trainingToDelete?.name ?: ""), style = MaterialTheme.typography.bodyLarge) },
                 confirmButton = {
                     TextButton(
                         onClick = {
