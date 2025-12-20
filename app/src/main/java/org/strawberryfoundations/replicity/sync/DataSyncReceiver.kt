@@ -10,7 +10,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.serialization.json.Json
-import org.strawberryfoundations.replicity.core.model.Training
+import org.strawberryfoundations.replicity.core.model.Exercise
 import org.strawberryfoundations.replicity.data.AppDatabase
 
 
@@ -31,7 +31,7 @@ class DataSyncReceiver : WearableListenerService() {
                                 try {
                                     result.inputStream.bufferedReader(Charsets.UTF_8).use { reader ->
                                         val json = reader.readText()
-                                        val list: List<Training> = Json.decodeFromString(json)
+                                        val list: List<Exercise> = Json.decodeFromString(json)
                                         val dao = AppDatabase.getInstance(applicationContext).trainingDao()
                                         for (t in list) {
                                             dao.insert(t)

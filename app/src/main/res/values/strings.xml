@@ -9,6 +9,7 @@
     <string name="all">All</string>
     <string name="upper_body">Upper body</string>
     <string name="legs">Legs</string>
+    <string name="cardio">Cardio</string>
     <string name="other">Other</string>
     <string name="add_training">Add training</string>
     <string name="group">Group</string>
@@ -123,4 +124,6 @@
     <string name="refresh_nodes">Refresh nodes</string>
     <string name="connected_nodes">Connected nodes</string>
     <string name="no_connected_nodes_found">No connected nodes found.</string>
+    <string name="your_workouts">Your workouts</string>
+    <string name="back">Back</string>
 </resources>

@@ -8,6 +8,7 @@
     <string name="all">Alle</string>
     <string name="upper_body">Oberkörper</string>
     <string name="legs">Beine</string>
+    <string name="cardio">Cardio</string>
     <string name="other">Sonstiges</string>
     <string name="add_training">Training hinzufügen</string>
     <string name="group">Gruppe</string>
@@ -122,4 +123,6 @@
     <string name="refresh_nodes">Nodes aktualisieren</string>
     <string name="connected_nodes">Verbundenen Nodes</string>
     <string name="no_connected_nodes_found">Keine verbundenen Nodes gefunden.</string>
+    <string name="your_workouts">Deine Workouts</string>
+    <string name="back">Zurück</string>
 </resources>

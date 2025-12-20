@@ -72,6 +72,19 @@ class GoogleSansFlex {
             )
         )
 
+    @OptIn(ExperimentalTextApi::class)
+    val titleSmallFontFamily =
+        FontFamily(
+            Font(
+                R.font.google_sans_flex,
+                variationSettings = FontVariation.Settings(
+                    FontVariation.weight(700),
+                    FontVariation.width(110f),
+                    FontVariation.Setting("ROND", 100f)
+                )
+            )
+        )
+
 
     @OptIn(ExperimentalTextApi::class)
     val headlineSmallFontFamily =

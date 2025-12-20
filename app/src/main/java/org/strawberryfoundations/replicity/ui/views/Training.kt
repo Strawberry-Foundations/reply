@@ -87,9 +87,10 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import org.strawberryfoundations.replicity.R
-import org.strawberryfoundations.replicity.core.model.Training
+import org.strawberryfoundations.replicity.core.model.Exercise
+import org.strawberryfoundations.replicity.core.model.ExerciseGroup
 import org.strawberryfoundations.replicity.core.preferences.AppSettings
-import org.strawberryfoundations.replicity.data.TrainingViewModel
+import org.strawberryfoundations.replicity.data.ExerciseViewModel
 import org.strawberryfoundations.replicity.ui.composable.ColorPickerDialog
 import org.strawberryfoundations.replicity.ui.composable.NoteEditDialog
 import org.strawberryfoundations.replicity.ui.theme.colorToHex
@@ -114,7 +115,7 @@ fun rememberFormattedStep(step: Double): String {
 @OptIn(ExperimentalLayoutApi::class, ExperimentalAnimationApi::class, ExperimentalTextApi::class)
 @Composable
 fun TrainingView(
-    viewModel: TrainingViewModel = viewModel(),
+    viewModel: ExerciseViewModel = viewModel(),
     settings: AppSettings,
 ) {
     val haptic = LocalHapticFeedback.current
@@ -122,12 +123,14 @@ fun TrainingView(
     val allStr = stringResource(R.string.all)
     val upperBodyStr = stringResource(R.string.upper_body)
     val legsStr = stringResource(R.string.legs)
+    val cardioStr = stringResource(R.string.cardio)
     val otherStr = stringResource(R.string.other)
 
     val categories = listOf(
         allStr,
         upperBodyStr,
         legsStr,
+        cardioStr,
         otherStr
     )
 
@@ -137,14 +140,15 @@ fun TrainingView(
     val exercises by viewModel.trainings.collectAsState()
 
     var showDeleteDialog by remember { mutableStateOf(false) }
-    var trainingToDelete by remember { mutableStateOf<Training?>(null) }
+    var trainingToDelete by remember { mutableStateOf<Exercise?>(null) }
 
-    val filteredExercises by remember(exercises, selectedCategoryIndex, upperBodyStr, legsStr, otherStr) {
+    val filteredExercises by remember(exercises, selectedCategoryIndex, upperBodyStr, legsStr, cardioStr, otherStr) {
         derivedStateOf {
             when (selectedCategoryIndex) {
-                1 -> exercises.filter { it.group == upperBodyStr }
-                2 -> exercises.filter { it.group == legsStr }
-                3 -> exercises.filter { it.group == otherStr }
+                1 -> exercises.filter { it.group == ExerciseGroup.UPPER_BODY }
+                2 -> exercises.filter { it.group == ExerciseGroup.LEGS }
+                3 -> exercises.filter { it.group == ExerciseGroup.CARDIO }
+                4 -> exercises.filter { it.group == ExerciseGroup.OTHER }
                 else -> exercises.toList()
             }
         }
@@ -176,17 +180,18 @@ fun TrainingView(
         floatingActionButton = {
             AnimatedVisibility(visible = expandedItemIndex == -1) {
                 val strNewTrainingName = stringResource(R.string.new_training)
-                val strResAll = stringResource(R.string.all)
 
+                // Add Training Button
                 ExtendedFloatingActionButton(
                     onClick = {
-                        val group = if (categories[selectedCategoryIndex] != strResAll) {
-                            categories[selectedCategoryIndex]
-                        } else {
-                            otherStr
+                        val group = when (selectedCategoryIndex) {
+                            1 -> ExerciseGroup.UPPER_BODY
+                            2 -> ExerciseGroup.LEGS
+                            3 -> ExerciseGroup.OTHER
+                            else -> ExerciseGroup.OTHER
                         }
                         viewModel.insert(
-                            Training(
+                            Exercise(
                                 name = strNewTrainingName,
                                 color = defaultColorHex,
                                 group = group
@@ -222,6 +227,7 @@ fun TrainingView(
                 contentPadding = PaddingValues(horizontal = 12.dp),
                 horizontalArrangement = Arrangement.spacedBy(8.dp)
             ) {
+                // Group Filters
                 itemsIndexed(categories) { index, name ->
                     val isSelected = selectedCategoryIndex == index
 
@@ -229,7 +235,7 @@ fun TrainingView(
                         allStr -> "${stringResource(R.string.all)} 🏋"
                         upperBodyStr -> "${stringResource(R.string.upper_body)} 💪"
                         legsStr -> "${stringResource(R.string.legs)} 🦵"
-                        otherStr -> "${stringResource(R.string.other)} 🧩"
+                        cardioStr -> "${stringResource(R.string.cardio)} 🏃"
                         else -> "${stringResource(R.string.other)} 🧩"
                     }
 
@@ -264,11 +270,11 @@ fun TrainingView(
                                 scaleX = scale
                                 scaleY = scale
                             }
-                            .sizeIn(minWidth = 56.dp, minHeight = 36.dp),
+                            .sizeIn(minWidth = 44.dp, minHeight = 36.dp),
                     ) {
                         if (isSelected) {
                             Row(
-                                modifier = Modifier.padding(horizontal = 8.dp),
+                                modifier = Modifier.padding(horizontal = 6.dp),
                                 horizontalArrangement = Arrangement.Center,
                                 verticalAlignment = Alignment.CenterVertically
                             ) {
@@ -286,14 +292,14 @@ fun TrainingView(
                             Text(
                                 text = group,
                                 fontSize = 14.sp,
-                                modifier = Modifier.padding(horizontal = 8.dp)
+                                modifier = Modifier.padding(horizontal = 4.dp)
                             )
                         }
                     }
                 }
             }
 
-            
+            // Exercises
             Box(
                 modifier = Modifier.fillMaxSize()
             ) {
@@ -307,7 +313,11 @@ fun TrainingView(
                         items = filteredExercises,
                         key = { _, training -> training.id }
                     ) { index, training ->
-                        val cardColor = remember(training.color, themeColorHexMap, colorScheme.surface) {
+                        val cardColor = remember(
+                            key1 = training.color,
+                            key2 = themeColorHexMap,
+                            key3 = colorScheme.surface
+                        ) {
                             themeColorHexMap[training.color]
                                 ?: if (training.color.isNotBlank()) hexToColor(training.color)
                                 else colorScheme.surface
@@ -389,7 +399,7 @@ fun TrainingView(
                                             shadowElevation = 2.dp
                                         ) {
                                             Text(
-                                                "${training.weight} kg",
+                                                "${training.weight ?: 0.0} kg",
                                                 style = customFont.numeralMedium,
                                                 modifier = Modifier.padding(horizontal = 12.dp, vertical = 4.dp)
                                             )
@@ -397,6 +407,7 @@ fun TrainingView(
                                     }
                                 }
 
+                                // Expanded Group card
                                 AnimatedVisibility(
                                     visible = isExpanded,
                                     enter = expandVertically(animationSpec = spring(
@@ -499,16 +510,21 @@ fun TrainingView(
 
                                                     Box {
                                                         val emoji = when (group) {
-                                                            upperBodyStr -> "💪"
-                                                            legsStr -> "🦵"
-                                                            otherStr -> "🧩"
-                                                            else -> ""
+                                                            ExerciseGroup.UPPER_BODY -> "💪"
+                                                            ExerciseGroup.LEGS -> "🦵"
+                                                            ExerciseGroup.CARDIO -> "🏃"
+                                                            ExerciseGroup.OTHER -> "🧩"
                                                         }
 
-                                                        val text = "$emoji $group"
+                                                        val groupText = when (group) {
+                                                            ExerciseGroup.UPPER_BODY -> upperBodyStr
+                                                            ExerciseGroup.LEGS -> legsStr
+                                                            ExerciseGroup.CARDIO -> cardioStr
+                                                            ExerciseGroup.OTHER -> otherStr
+                                                        }
 
                                                         OutlinedTextField(
-                                                            value = text,
+                                                            value = "$emoji $groupText",
                                                             onValueChange = {},
                                                             label = { Text(stringResource(R.string.group)) },
                                                             modifier = Modifier
@@ -541,27 +557,35 @@ fun TrainingView(
                                                                 )
                                                                 .clip(RoundedCornerShape(12.dp))
                                                         ) {
-                                                            val groupOptions = remember { listOf(upperBodyStr, legsStr, otherStr) }
+                                                            val groupOptions = remember { ExerciseGroup.entries.toTypedArray() }
                                                             groupOptions.forEachIndexed { index, option ->
+                                                                val emoji = when (option) {
+                                                                    ExerciseGroup.UPPER_BODY -> "💪"
+                                                                    ExerciseGroup.LEGS -> "🦵"
+                                                                    ExerciseGroup.CARDIO -> "🏃"
+                                                                    ExerciseGroup.OTHER -> "🧩"
+                                                                }
+
+                                                                val groupText = when (option) {
+                                                                    ExerciseGroup.UPPER_BODY -> upperBodyStr
+                                                                    ExerciseGroup.LEGS -> legsStr
+                                                                    ExerciseGroup.CARDIO -> cardioStr
+                                                                    ExerciseGroup.OTHER -> otherStr
+                                                                }
+
                                                                 DropdownMenuItem(
                                                                     text = {
                                                                         Row(
                                                                             verticalAlignment = Alignment.CenterVertically,
                                                                             modifier = Modifier.fillMaxWidth()
                                                                         ) {
-                                                                            val emoji = when (option) {
-                                                                                upperBodyStr -> "💪"
-                                                                                legsStr -> "🦵"
-                                                                                otherStr -> "🧩"
-                                                                                else -> ""
-                                                                            }
                                                                             Text(
                                                                                 text = emoji,
                                                                                 style = MaterialTheme.typography.bodyMedium,
                                                                                 modifier = Modifier.padding(end = 8.dp)
                                                                             )
                                                                             Text(
-                                                                                text = option,
+                                                                                text = groupText,
                                                                                 style = MaterialTheme.typography.bodyMedium.copy(
                                                                                     fontWeight = if (group == option) FontWeight.Bold else FontWeight.Normal
                                                                                 ),
@@ -603,8 +627,8 @@ fun TrainingView(
                                                     }
                                                     Spacer(modifier = Modifier.height(8.dp))
                                                     OutlinedTextField(
-                                                        value = weight,
-                                                        onValueChange = { weight = it },
+                                                        value = weight?.toString() ?: "",
+                                                        onValueChange = { weight = it.toDoubleOrNull() },
                                                         label = { Text(stringResource(R.string.weight_kg)) },
                                                         singleLine = true,
                                                         modifier = Modifier.fillMaxWidth(),
@@ -626,9 +650,9 @@ fun TrainingView(
                                                             ) {
                                                                 IconButton(
                                                                     onClick = {
-                                                                        val current = weight.replace(',', '.').toDoubleOrNull() ?: 0.0
+                                                                        val current = weight ?: 0.0
                                                                         val newWeight = (current - stepValue).coerceAtLeast(0.0)
-                                                                        weight = if (newWeight.rem(1.0) == 0.0) newWeight.toInt().toString() else String.format(Locale.US, "%.3f", newWeight).trimEnd('0').trimEnd('.')
+                                                                        weight = if (newWeight.rem(1.0) == 0.0) newWeight.toInt().toDouble() else String.format(Locale.US, "%.3f", newWeight).trimEnd('0').trimEnd('.').toDouble()
                                                                     },
                                                                     modifier = Modifier.size(32.dp)
                                                                 ) {
@@ -649,9 +673,9 @@ fun TrainingView(
 
                                                                 IconButton(
                                                                     onClick = {
-                                                                        val current = weight.replace(',', '.').toDoubleOrNull() ?: 0.0
+                                                                        val current = weight ?: 0.0
                                                                         val newWeight = current + stepValue
-                                                                        weight = if (newWeight.rem(1.0) == 0.0) newWeight.toInt().toString() else String.format(Locale.US, "%.3f", newWeight).trimEnd('0').trimEnd('.')
+                                                                        weight = if (newWeight.rem(1.0) == 0.0) newWeight.toInt().toDouble() else String.format(Locale.US, "%.3f", newWeight).trimEnd('0').trimEnd('.').toDouble()
                                                                     },
                                                                     modifier = Modifier.size(32.dp)
                                                                 ) {

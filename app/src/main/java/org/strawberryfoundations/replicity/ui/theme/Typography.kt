@@ -40,9 +40,9 @@ val Typography = Typography(
         letterSpacing = 0.sp,
     ),
     titleSmall = TextStyle(
-        fontFamily = robotoFlex.titleMediumFontFamily,
+        fontFamily = googleSansFlex.titleSmallFontFamily,
         fontSize = 13.sp,
-        lineHeight = 28.sp,
+        lineHeight = 13.sp,
         letterSpacing = 0.sp,
     ),
     bodyLarge = TextStyle(
