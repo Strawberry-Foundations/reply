@@ -5,12 +5,8 @@ import kotlinx.coroutines.flow.first
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.Json
 import org.strawberryfoundations.replicity.core.model.Exercise
-import org.strawberryfoundations.replicity.core.preferences.AppSettings
-import org.strawberryfoundations.replicity.core.preferences.SettingsDataStore
-import org.strawberryfoundations.replicity.core.preferences.UserPreferences
-import org.strawberryfoundations.replicity.core.preferences.getUserDataFlow
-import org.strawberryfoundations.replicity.core.preferences.saveUserData
-import org.strawberryfoundations.replicity.data.AppDatabase
+import org.strawberryfoundations.replicity.core.model.UserPreferences
+import org.strawberryfoundations.replicity.database.AppDatabase
 import java.io.InputStream
 import java.io.OutputStream
 import java.text.SimpleDateFormat

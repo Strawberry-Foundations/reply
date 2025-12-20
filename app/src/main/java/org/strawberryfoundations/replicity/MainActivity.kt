@@ -1,7 +1,6 @@
 package org.strawberryfoundations.replicity
 
 import android.os.Bundle
-import android.transition.Fade
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.BackHandler
 import androidx.activity.compose.setContent
@@ -15,14 +14,12 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material.icons.filled.AccountCircle
 import androidx.compose.material.icons.filled.FitnessCenter
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material.icons.filled.Watch
 import androidx.compose.material.icons.outlined.FitnessCenter
 import androidx.compose.material.icons.outlined.Settings
 import androidx.compose.material.icons.outlined.Watch
-import androidx.compose.material.icons.outlined.AccountCircle
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -41,18 +38,13 @@ import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.Crossfade
 import androidx.compose.animation.ExperimentalAnimationApi
-import androidx.compose.animation.core.EaseInOutBack
 import androidx.compose.animation.core.EaseInOutCubic
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
-import androidx.compose.animation.scaleIn
-import androidx.compose.animation.scaleOut
 import androidx.compose.animation.slideInHorizontally
 import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.animation.core.tween
@@ -60,10 +52,7 @@ import androidx.compose.animation.core.FastOutSlowInEasing
 import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
@@ -77,10 +66,10 @@ import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
-import org.strawberryfoundations.replicity.core.preferences.AppSettings
-import org.strawberryfoundations.replicity.core.preferences.SettingsDataStore
-import org.strawberryfoundations.replicity.core.preferences.UserPreferences
-import org.strawberryfoundations.replicity.core.preferences.getUserDataFlow
+import org.strawberryfoundations.replicity.core.AppSettings
+import org.strawberryfoundations.replicity.core.SettingsDataStore
+import org.strawberryfoundations.replicity.core.getUserDataFlow
+import org.strawberryfoundations.replicity.core.model.UserPreferences
 import org.strawberryfoundations.replicity.ui.theme.GymscribeTheme
 import org.strawberryfoundations.replicity.ui.views.DeviceView
 import org.strawberryfoundations.replicity.ui.views.ProfileView

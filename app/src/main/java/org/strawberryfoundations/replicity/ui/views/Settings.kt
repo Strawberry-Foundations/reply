@@ -1,8 +1,6 @@
 package org.strawberryfoundations.replicity.ui.views
 
 import android.annotation.SuppressLint
-import android.content.Context
-import android.content.pm.PackageManager
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.Image
@@ -71,7 +69,8 @@ import androidx.compose.ui.unit.sp
 import kotlinx.coroutines.launch
 import org.strawberryfoundations.replicity.R
 import org.strawberryfoundations.replicity.core.BackupManager
-import org.strawberryfoundations.replicity.core.preferences.AppSettings
+import org.strawberryfoundations.replicity.core.getAppVersion
+import org.strawberryfoundations.replicity.core.AppSettings
 import org.strawberryfoundations.replicity.ui.theme.ascenderHeight
 import org.strawberryfoundations.replicity.ui.theme.counterWidth
 import org.strawberryfoundations.replicity.ui.theme.font.GoogleSansFlex
@@ -271,14 +270,6 @@ fun BackupSettingsSection() {
     }
 }
 
-fun getAppVersion(context: Context): String {
-    return try {
-        val packageInfo = context.packageManager.getPackageInfo(context.packageName, 0)
-        packageInfo.versionName
-    } catch (_: PackageManager.NameNotFoundException) {
-        "N/A"
-    }.toString()
-}
 
 @Composable
 fun SettingsSectionTitle(title: String, icon: ImageVector) {

@@ -1,10 +1,12 @@
-package org.strawberryfoundations.replicity.core.preferences
+package org.strawberryfoundations.replicity.core
 
 import android.content.Context
 import androidx.datastore.core.DataStore
 import androidx.datastore.dataStore
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
+import org.strawberryfoundations.replicity.core.model.UserPreferences
+import org.strawberryfoundations.replicity.core.UserPreferencesSerializer
 
 
 val Context.userPreferencesDataStore: DataStore<UserPreferences> by dataStore(

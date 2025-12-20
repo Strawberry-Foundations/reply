@@ -1,4 +1,4 @@
-package org.strawberryfoundations.replicity.data
+package org.strawberryfoundations.replicity.database
 
 import android.app.Application
 import androidx.lifecycle.AndroidViewModel

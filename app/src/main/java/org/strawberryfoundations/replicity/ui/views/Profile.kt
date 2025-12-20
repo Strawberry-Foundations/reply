@@ -66,9 +66,9 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import org.json.JSONObject
 import org.strawberryfoundations.replicity.R
-import org.strawberryfoundations.replicity.core.preferences.UserPreferences
-import org.strawberryfoundations.replicity.core.preferences.getUserDataFlow
-import org.strawberryfoundations.replicity.core.preferences.saveUserData
+import org.strawberryfoundations.replicity.core.getUserDataFlow
+import org.strawberryfoundations.replicity.core.saveUserData
+import org.strawberryfoundations.replicity.core.model.UserPreferences
 import org.strawberryfoundations.replicity.ui.theme.ascenderHeight
 import org.strawberryfoundations.replicity.ui.theme.counterWidth
 import org.strawberryfoundations.replicity.ui.theme.font.GoogleSansFlex

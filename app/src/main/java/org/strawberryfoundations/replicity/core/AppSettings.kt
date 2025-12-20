@@ -1,4 +1,4 @@
-package org.strawberryfoundations.replicity.core.preferences
+package org.strawberryfoundations.replicity.core
 
 import android.content.Context
 import androidx.datastore.preferences.core.*

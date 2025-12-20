@@ -1,10 +1,14 @@
 package org.strawberryfoundations.replicity.core.model
 
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.res.stringResource
 import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.Index
 import androidx.room.PrimaryKey
 import kotlinx.serialization.Serializable
+import org.strawberryfoundations.replicity.R
+
 
 @Serializable
 enum class ExerciseGroup {
@@ -12,6 +16,21 @@ enum class ExerciseGroup {
     LEGS,
     CARDIO,
     OTHER
+}
+
+fun getExerciseGroupEmoji(group: ExerciseGroup): String = when (group) {
+    ExerciseGroup.UPPER_BODY -> "💪"
+    ExerciseGroup.LEGS -> "🦵"
+    ExerciseGroup.CARDIO -> "🏃"
+    ExerciseGroup.OTHER -> "🧩"
+}
+
+@Composable
+fun getExerciseGroupStringResource(group: ExerciseGroup): String = when (group) {
+    ExerciseGroup.UPPER_BODY -> stringResource(R.string.upper_body)
+    ExerciseGroup.LEGS -> stringResource(R.string.legs)
+    ExerciseGroup.CARDIO -> stringResource(R.string.cardio)
+    ExerciseGroup.OTHER -> stringResource(R.string.other)
 }
 
 @Serializable

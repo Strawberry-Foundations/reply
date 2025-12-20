@@ -89,8 +89,10 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import org.strawberryfoundations.replicity.R
 import org.strawberryfoundations.replicity.core.model.Exercise
 import org.strawberryfoundations.replicity.core.model.ExerciseGroup
-import org.strawberryfoundations.replicity.core.preferences.AppSettings
-import org.strawberryfoundations.replicity.data.ExerciseViewModel
+import org.strawberryfoundations.replicity.core.AppSettings
+import org.strawberryfoundations.replicity.core.model.getExerciseGroupEmoji
+import org.strawberryfoundations.replicity.core.model.getExerciseGroupStringResource
+import org.strawberryfoundations.replicity.database.ExerciseViewModel
 import org.strawberryfoundations.replicity.ui.composable.ColorPickerDialog
 import org.strawberryfoundations.replicity.ui.composable.NoteEditDialog
 import org.strawberryfoundations.replicity.ui.theme.colorToHex
@@ -118,41 +120,25 @@ fun TrainingView(
     viewModel: ExerciseViewModel = viewModel(),
     settings: AppSettings,
 ) {
+    // Basic variable initialization
     val haptic = LocalHapticFeedback.current
-
-    val allStr = stringResource(R.string.all)
-    val upperBodyStr = stringResource(R.string.upper_body)
-    val legsStr = stringResource(R.string.legs)
-    val cardioStr = stringResource(R.string.cardio)
-    val otherStr = stringResource(R.string.other)
-
-    val categories = listOf(
-        allStr,
-        upperBodyStr,
-        legsStr,
-        cardioStr,
-        otherStr
-    )
-
-    var selectedCategoryIndex by remember { mutableIntStateOf(0) }
+    val exercises by viewModel.trainings.collectAsState()
+    val exerciseGroups = remember { listOf(null) + ExerciseGroup.entries }
+    var selectedGroup by remember { mutableStateOf<ExerciseGroup?>(null) }
     var expandedItemIndex by remember { mutableIntStateOf(-1) }
 
-    val exercises by viewModel.trainings.collectAsState()
-
-    var showDeleteDialog by remember { mutableStateOf(false) }
-    var trainingToDelete by remember { mutableStateOf<Exercise?>(null) }
-
-    val filteredExercises by remember(exercises, selectedCategoryIndex, upperBodyStr, legsStr, cardioStr, otherStr) {
+    val filteredExercises by remember(exercises, selectedGroup) {
         derivedStateOf {
-            when (selectedCategoryIndex) {
-                1 -> exercises.filter { it.group == ExerciseGroup.UPPER_BODY }
-                2 -> exercises.filter { it.group == ExerciseGroup.LEGS }
-                3 -> exercises.filter { it.group == ExerciseGroup.CARDIO }
-                4 -> exercises.filter { it.group == ExerciseGroup.OTHER }
-                else -> exercises.toList()
+            if (selectedGroup == null) {
+                exercises.toList()
+            } else {
+                exercises.filter { it.group == selectedGroup }
             }
         }
     }
+
+    var showDeleteDialog by remember { mutableStateOf(false) }
+    var trainingToDelete by remember { mutableStateOf<Exercise?>(null) }
 
     val colorScheme = MaterialTheme.colorScheme
     val themeColorHexMap = remember(colorScheme) {
@@ -184,17 +170,11 @@ fun TrainingView(
                 // Add Training Button
                 ExtendedFloatingActionButton(
                     onClick = {
-                        val group = when (selectedCategoryIndex) {
-                            1 -> ExerciseGroup.UPPER_BODY
-                            2 -> ExerciseGroup.LEGS
-                            3 -> ExerciseGroup.OTHER
-                            else -> ExerciseGroup.OTHER
-                        }
                         viewModel.insert(
                             Exercise(
                                 name = strNewTrainingName,
                                 color = defaultColorHex,
-                                group = group
+                                group = selectedGroup ?: ExerciseGroup.OTHER
                             )
                         )
                               },
@@ -228,15 +208,15 @@ fun TrainingView(
                 horizontalArrangement = Arrangement.spacedBy(8.dp)
             ) {
                 // Group Filters
-                itemsIndexed(categories) { index, name ->
-                    val isSelected = selectedCategoryIndex == index
+                itemsIndexed(exerciseGroups) { _, category ->
+                    val isSelected = selectedGroup == category
 
-                    val group = when (name) {
-                        allStr -> "${stringResource(R.string.all)} 🏋"
-                        upperBodyStr -> "${stringResource(R.string.upper_body)} 💪"
-                        legsStr -> "${stringResource(R.string.legs)} 🦵"
-                        cardioStr -> "${stringResource(R.string.cardio)} 🏃"
-                        else -> "${stringResource(R.string.other)} 🧩"
+                    val label = if (category == null) {
+                        "${stringResource(R.string.all)} 🏋"
+                    } else {
+                        val emoji = getExerciseGroupEmoji(category)
+                        val stringRes = getExerciseGroupStringResource(category)
+                        "$stringRes $emoji"
                     }
 
                     val scale by animateFloatAsState(
@@ -253,7 +233,7 @@ fun TrainingView(
                             if (settings.useHapticFeedback) {
                                 haptic.performHapticFeedback(HapticFeedbackType.LongPress)
                             }
-                            selectedCategoryIndex = index
+                            selectedGroup = category
                         },
                         colors = if (isSelected) {
                             ButtonDefaults.buttonColors()
@@ -284,13 +264,13 @@ fun TrainingView(
                                 )
                                 Spacer(Modifier.width(6.dp))
                                 Text(
-                                    text = group,
+                                    text = label,
                                     fontSize = 14.sp
                                 )
                             }
                         } else {
                             Text(
-                                text = group,
+                                text = label,
                                 fontSize = 14.sp,
                                 modifier = Modifier.padding(horizontal = 4.dp)
                             )
@@ -509,22 +489,9 @@ fun TrainingView(
                                                     Spacer(modifier = Modifier.height(8.dp))
 
                                                     Box {
-                                                        val emoji = when (group) {
-                                                            ExerciseGroup.UPPER_BODY -> "💪"
-                                                            ExerciseGroup.LEGS -> "🦵"
-                                                            ExerciseGroup.CARDIO -> "🏃"
-                                                            ExerciseGroup.OTHER -> "🧩"
-                                                        }
-
-                                                        val groupText = when (group) {
-                                                            ExerciseGroup.UPPER_BODY -> upperBodyStr
-                                                            ExerciseGroup.LEGS -> legsStr
-                                                            ExerciseGroup.CARDIO -> cardioStr
-                                                            ExerciseGroup.OTHER -> otherStr
-                                                        }
-
                                                         OutlinedTextField(
-                                                            value = "$emoji $groupText",
+                                                            value = "${getExerciseGroupEmoji(group)} " +
+                                                                    getExerciseGroupStringResource(group),
                                                             onValueChange = {},
                                                             label = { Text(stringResource(R.string.group)) },
                                                             modifier = Modifier
@@ -546,7 +513,9 @@ fun TrainingView(
                                                         Box(
                                                             modifier = Modifier
                                                                 .matchParentSize()
-                                                                .clickable { groupExpanded = !groupExpanded }
+                                                                .clickable {
+                                                                    groupExpanded = !groupExpanded
+                                                                }
                                                         )
                                                         DropdownMenu(
                                                             expanded = groupExpanded,
@@ -558,20 +527,10 @@ fun TrainingView(
                                                                 .clip(RoundedCornerShape(12.dp))
                                                         ) {
                                                             val groupOptions = remember { ExerciseGroup.entries.toTypedArray() }
-                                                            groupOptions.forEachIndexed { index, option ->
-                                                                val emoji = when (option) {
-                                                                    ExerciseGroup.UPPER_BODY -> "💪"
-                                                                    ExerciseGroup.LEGS -> "🦵"
-                                                                    ExerciseGroup.CARDIO -> "🏃"
-                                                                    ExerciseGroup.OTHER -> "🧩"
-                                                                }
 
-                                                                val groupText = when (option) {
-                                                                    ExerciseGroup.UPPER_BODY -> upperBodyStr
-                                                                    ExerciseGroup.LEGS -> legsStr
-                                                                    ExerciseGroup.CARDIO -> cardioStr
-                                                                    ExerciseGroup.OTHER -> otherStr
-                                                                }
+                                                            groupOptions.forEachIndexed { index, option ->
+                                                                val emoji = getExerciseGroupEmoji(option)
+                                                                val groupText = getExerciseGroupStringResource(option)
 
                                                                 DropdownMenuItem(
                                                                     text = {
@@ -609,9 +568,13 @@ fun TrainingView(
                                                                     modifier = Modifier
                                                                         .background(
                                                                             color = if (group == option)
-                                                                                MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.3f)
+                                                                                MaterialTheme.colorScheme.primaryContainer.copy(
+                                                                                    alpha = 0.3f
+                                                                                )
                                                                             else Color.Transparent,
-                                                                            shape = RoundedCornerShape(8.dp)
+                                                                            shape = RoundedCornerShape(
+                                                                                8.dp
+                                                                            )
                                                                         )
                                                                         .padding(horizontal = 4.dp)
                                                                 )

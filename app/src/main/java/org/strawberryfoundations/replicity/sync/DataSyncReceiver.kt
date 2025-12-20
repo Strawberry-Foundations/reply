@@ -11,7 +11,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.serialization.json.Json
 import org.strawberryfoundations.replicity.core.model.Exercise
-import org.strawberryfoundations.replicity.data.AppDatabase
+import org.strawberryfoundations.replicity.database.AppDatabase
 
 
 class DataSyncReceiver : WearableListenerService() {

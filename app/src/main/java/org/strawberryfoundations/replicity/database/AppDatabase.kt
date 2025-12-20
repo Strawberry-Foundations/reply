@@ -1,4 +1,4 @@
-package org.strawberryfoundations.replicity.data
+package org.strawberryfoundations.replicity.database
 
 import org.strawberryfoundations.replicity.core.model.Exercise
 import android.content.Context
