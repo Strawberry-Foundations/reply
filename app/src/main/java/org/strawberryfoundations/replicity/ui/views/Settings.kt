@@ -82,6 +82,7 @@ import java.util.Date
 import java.util.Locale
 
 
+@SuppressLint("LocalContextGetResourceValueCall")
 @Composable
 fun BackupSettingsSection() {
     val context = LocalContext.current
@@ -384,10 +385,7 @@ fun SettingsView(
                 SettingsItem(
                     icon = Icons.Filled.Palette,
                     title = stringResource(R.string.dynamic_colors),
-                    subtitle = if (settings.useDynamicColors)
-                        stringResource(R.string.dynamic_colors_enabled)
-                    else
-                        stringResource(R.string.dynamic_colors_disabled),
+                    subtitle = stringResource(R.string.dynamic_colors_description),
                     trailingContent = {
                         Switch(
                             checked = settings.useDynamicColors,

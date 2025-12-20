@@ -1,5 +1,6 @@
 package org.strawberryfoundations.replicity.ui.views
 
+import android.annotation.SuppressLint
 import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -56,6 +57,7 @@ import java.util.Locale
 
 
 @OptIn(ExperimentalMaterial3Api::class)
+@SuppressLint("LocalContextGetResourceValueCall")
 @Composable
 fun DeviceView() {
     val context = LocalContext.current

@@ -82,12 +82,9 @@ class GoogleSansFlex {
                     FontVariation.weight(HeadlineSmallVFConfig.WEIGHT),
                     FontVariation.width(HeadlineSmallVFConfig.WIDTH),
                     FontVariation.slant(HeadlineSmallVFConfig.SLANT),
-                    ascenderHeight(
-                        HeadlineSmallVFConfig.ASCENDER_HEIGHT
-                    ),
-                    counterWidth(
-                        HeadlineSmallVFConfig.COUNTER_WIDTH
-                    )
+                    ascenderHeight(HeadlineSmallVFConfig.ASCENDER_HEIGHT),
+                    counterWidth(HeadlineSmallVFConfig.COUNTER_WIDTH),
+                    FontVariation.Setting("ROND", 100f)
                 )
             )
         )

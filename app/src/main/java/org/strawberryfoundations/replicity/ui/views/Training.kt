@@ -2,27 +2,25 @@ package org.strawberryfoundations.replicity.ui.views
 
 import android.annotation.SuppressLint
 import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.animateContentSize
 import androidx.compose.animation.ExperimentalAnimationApi
+import androidx.compose.animation.animateContentSize
 import androidx.compose.animation.core.Spring
-import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.animateDpAsState
+import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.spring
 import androidx.compose.animation.expandVertically
 import androidx.compose.animation.shrinkVertically
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.FlowRow
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -33,9 +31,9 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.sizeIn
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
-import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
@@ -62,8 +60,6 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Slider
-import androidx.compose.material3.SliderDefaults
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -71,7 +67,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.key
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -90,188 +85,19 @@ import androidx.compose.ui.text.ExperimentalTextApi
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.core.graphics.toColorInt
 import androidx.lifecycle.viewmodel.compose.viewModel
 import org.strawberryfoundations.replicity.R
 import org.strawberryfoundations.replicity.core.model.Training
 import org.strawberryfoundations.replicity.core.preferences.AppSettings
 import org.strawberryfoundations.replicity.data.TrainingViewModel
+import org.strawberryfoundations.replicity.ui.composable.ColorPickerDialog
+import org.strawberryfoundations.replicity.ui.composable.NoteEditDialog
+import org.strawberryfoundations.replicity.ui.theme.colorToHex
 import org.strawberryfoundations.replicity.ui.theme.customFont
+import org.strawberryfoundations.replicity.ui.theme.darkenColor
+import org.strawberryfoundations.replicity.ui.theme.hexToColor
 import java.util.Locale
 
-
-@Composable
-fun SimpleColorPickerDialog(
-    initialColor: Color,
-    onColorSelected: (Color) -> Unit,
-    onDismiss: () -> Unit
-) {
-    val colorScheme = MaterialTheme.colorScheme
-    val materialYouColors = remember(colorScheme) {
-        listOf(
-            colorScheme.primary,
-            colorScheme.secondary,
-            colorScheme.tertiary,
-            colorScheme.error,
-            colorScheme.surface,
-            colorScheme.background,
-            colorScheme.primaryContainer,
-            colorScheme.secondaryContainer,
-            colorScheme.tertiaryContainer,
-            colorScheme.outline,
-            colorScheme.inversePrimary,
-        ).distinct()
-    }
-
-    var color by remember { mutableStateOf(initialColor) }
-    var hexInput by remember(color) { mutableStateOf(colorToHex(color)) }
-    var hexError by remember { mutableStateOf(false) }
-
-    AlertDialog(
-        onDismissRequest = onDismiss,
-        shape = RoundedCornerShape(28.dp),
-        title = { Text(stringResource(R.string.select_color), style = MaterialTheme.typography.headlineSmall) },
-        text = {
-            Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                Box(
-                    Modifier
-                        .size(60.dp)
-                        .background(color, shape = CircleShape)
-                )
-                Spacer(Modifier.height(12.dp))
-                Row(
-                    modifier = Modifier.horizontalScroll(rememberScrollState()),
-                    horizontalArrangement = Arrangement.spacedBy(6.dp)
-                ) {
-                    materialYouColors.forEach { preset ->
-                        key(preset) {
-                            val isSelected = color == preset
-                            val onClickPreset = remember(preset) {
-                                {
-                                    color = preset
-                                    hexError = false
-                                }
-                            }
-                            Surface(
-                                shape = CircleShape,
-                                color = preset,
-                                border = if (isSelected) BorderStroke(3.dp, MaterialTheme.colorScheme.primary) else null,
-                                shadowElevation = if (isSelected) 6.dp else 2.dp,
-                                modifier = Modifier
-                                    .size(40.dp)
-                                    .clickable(onClick = onClickPreset)
-                            ) {}
-                        }
-                    }
-                }
-                Spacer(Modifier.height(14.dp))
-                OutlinedTextField(
-                    value = hexInput,
-                    onValueChange = { newHex ->
-                        hexInput = newHex
-                        if (newHex.matches(Regex("#[0-9A-Fa-f]{6}", RegexOption.IGNORE_CASE))) {
-                            runCatching { hexToColor(newHex) }.getOrNull()?.let { parsedColor ->
-                                color = parsedColor
-                                hexError = false
-                            } ?: run { hexError = true }
-                        } else {
-                            hexError = true
-                        }
-                    },
-                    label = { Text("HEX") },
-                    isError = hexError,
-                    singleLine = true,
-                    modifier = Modifier.width(120.dp),
-                    supportingText = {
-                        if (hexError) Text(stringResource(R.string.invalid), color = MaterialTheme.colorScheme.error)
-                    }
-                )
-                Spacer(Modifier.height(10.dp))
-                Text("${stringResource(R.string.red)}: ${(color.red * 255).toInt()}")
-                Slider(
-                    value = color.red,
-                    onValueChange = { color = color.copy(red = it); hexError = false },
-                    colors = SliderDefaults.colors(thumbColor = Color.Red, activeTrackColor = Color.Red)
-                )
-                Text("${stringResource(R.string.green)}: ${(color.green * 255).toInt()}")
-                Slider(
-                    value = color.green,
-                    onValueChange = { color = color.copy(green = it); hexError = false },
-                    colors = SliderDefaults.colors(thumbColor = Color.Green, activeTrackColor = Color.Green)
-                )
-                Text("${stringResource(R.string.blue)}: ${(color.blue * 255).toInt()}")
-                Slider(
-                    value = color.blue,
-                    onValueChange = { color = color.copy(blue = it); hexError = false },
-                    colors = SliderDefaults.colors(thumbColor = Color.Blue, activeTrackColor = Color.Blue)
-                )
-            }
-        },
-        confirmButton = {
-            TextButton(
-                enabled = !hexError,
-                onClick = { onColorSelected(color) }
-            ) { Text(stringResource(R.string.ok)) }
-        },
-        dismissButton = {
-            TextButton(onClick = onDismiss) { Text(stringResource(R.string.cancel)) }
-        }
-    )
-}
-
-@Composable
-fun NoteEditDialog(
-    initialNote: String,
-    onNoteSave: (String) -> Unit,
-    onDismiss: () -> Unit
-) {
-    var currentNote by remember(initialNote) { mutableStateOf(initialNote) }
-
-    AlertDialog(
-        onDismissRequest = onDismiss,
-        shape = RoundedCornerShape(28.dp),
-        title = { Text(stringResource(R.string.edit_note_title), style = MaterialTheme.typography.headlineSmall) },
-        text = {
-            OutlinedTextField(
-                value = currentNote,
-                onValueChange = { currentNote = it },
-                label = { Text(stringResource(R.string.note)) },
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .heightIn(min = 120.dp),
-            )
-        },
-        confirmButton = {
-            TextButton(onClick = { onNoteSave(currentNote) }) {
-                Text(stringResource(R.string.save))
-            }
-        },
-        dismissButton = {
-            TextButton(onClick = onDismiss) {
-                Text(stringResource(R.string.cancel))
-            }
-        }
-    )
-}
-
-fun colorToHex(color: Color): String =
-    "#%02X%02X%02X".format(
-        (color.red * 255).toInt(),
-        (color.green * 255).toInt(),
-        (color.blue * 255).toInt()
-    )
-
-fun hexToColor(hex: String): Color =
-    runCatching { Color(hex.toColorInt()) }.getOrDefault(Color.LightGray)
-
-fun darkenColor(color: Color, factor: Float = 0.85f): Color {
-    return Color(
-        red = (color.red * factor).coerceIn(0f, 1f),
-        green = (color.green * factor).coerceIn(0f, 1f),
-        blue = (color.blue * factor).coerceIn(0f, 1f),
-        alpha = color.alpha
-    )
-}
 
 @Composable
 fun rememberFormattedStep(step: Double): String {
@@ -842,7 +668,7 @@ fun TrainingView(
                                             }
 
                                             if (colorDialogOpen) {
-                                                SimpleColorPickerDialog(
+                                                ColorPickerDialog(
                                                     initialColor = colorPickerInitialColor,
                                                     onColorSelected = { selectedColor ->
                                                         colorPickerInitialColor = selectedColor

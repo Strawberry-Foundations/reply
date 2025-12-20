@@ -75,7 +75,7 @@ import org.strawberryfoundations.replicity.ui.theme.font.GoogleSansFlex
 
 
 @Composable
-@SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
+@SuppressLint("UnusedMaterial3ScaffoldPaddingParameter", "LocalContextGetResourceValueCall")
 fun ProfileView() {
     val coroutineScope = rememberCoroutineScope()
     val context = LocalContext.current

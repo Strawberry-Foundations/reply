@@ -41,8 +41,7 @@
     <string name="settings_github">GitHub Repo</string>
 
     <string name="dynamic_colors">Material You</string>
-    <string name="dynamic_colors_enabled">System colors are used</string>
-    <string name="dynamic_colors_disabled">Static app colors are used</string>
+    <string name="dynamic_colors_description">Personalize your app with dynamic colors based on your device\'s wallpaper</string>
 
     <string name="use_emojis_for_groups">Use emojis for groups</string>
     <string name="use_emojis_for_groups_desc">Show emojis next to group names for a more visual experience.</string>
