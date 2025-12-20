@@ -67,6 +67,8 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import kotlinx.coroutines.launch
+import org.strawberryfoundations.materialsymbolicons.MaterialSymbolIcons
+import org.strawberryfoundations.materialsymbolicons.filled.Weight
 import org.strawberryfoundations.replicity.R
 import org.strawberryfoundations.replicity.core.BackupManager
 import org.strawberryfoundations.replicity.core.getAppVersion
@@ -390,7 +392,7 @@ fun SettingsView(
             item {
                 SettingsSectionTitle(
                     title = stringResource(R.string.weight_steps_section),
-                    icon = Icons.Default.Scale
+                    icon = MaterialSymbolIcons.Filled.Weight
                 )
             }
 

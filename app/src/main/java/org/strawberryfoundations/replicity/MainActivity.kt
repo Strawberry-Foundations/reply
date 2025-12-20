@@ -16,10 +16,8 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.FitnessCenter
 import androidx.compose.material.icons.filled.Settings
-import androidx.compose.material.icons.filled.Watch
 import androidx.compose.material.icons.outlined.FitnessCenter
 import androidx.compose.material.icons.outlined.Settings
-import androidx.compose.material.icons.outlined.Watch
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -66,6 +64,9 @@ import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
+import org.strawberryfoundations.materialsymbolicons.MaterialSymbolIcons
+import org.strawberryfoundations.materialsymbolicons.filled.DevicesWearables
+import org.strawberryfoundations.materialsymbolicons.outlined.DevicesWearables
 import org.strawberryfoundations.replicity.core.AppSettings
 import org.strawberryfoundations.replicity.core.SettingsDataStore
 import org.strawberryfoundations.replicity.core.getUserDataFlow
@@ -144,12 +145,12 @@ fun MainView(
 
     val selectedIcons = listOf(
         Icons.Filled.FitnessCenter,
-        Icons.Filled.Watch,
+        MaterialSymbolIcons.Filled.DevicesWearables,
         Icons.Filled.Settings,
     )
     val unselectedIcons = listOf(
         Icons.Outlined.FitnessCenter,
-        Icons.Outlined.Watch,
+        MaterialSymbolIcons.Outlined.DevicesWearables,
         Icons.Outlined.Settings,
     )
 
