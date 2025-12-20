@@ -20,7 +20,7 @@
     <string name="delete_training_confirm">Do you really want to delete the training "%1$s"?</string>
     <string name="cancel">Cancel</string>
     <string name="name">Name</string>
-    <string name="new_training">New Training</string>
+    <string name="new_training">New Workout</string>
     <string name="ok">OK</string>
     <string name="select_color">Select color</string>
     <string name="color">Color</string>

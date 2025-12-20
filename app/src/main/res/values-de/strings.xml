@@ -19,7 +19,7 @@
     <string name="delete_training_confirm">Willst du das Training „%1$s“ wirklich löschen?</string>
     <string name="cancel">Abbrechen</string>
     <string name="name">Name</string>
-    <string name="new_training">Neues Training</string>
+    <string name="new_training">Neues Workout</string>
     <string name="ok">OK</string>
     <string name="select_color">Farbe wählen</string>
     <string name="color">Farbe</string>
