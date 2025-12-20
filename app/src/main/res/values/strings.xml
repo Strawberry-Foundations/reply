@@ -1,32 +1,54 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <!-- Existing app strings -->
     <string name="app_name" translatable="false">Gymscribe</string>
-    <string name="training">Training</string>
+
+    <!-- Navigation title strings -->
+    <string name="workout">Workout</string>
     <string name="profile">Profile</string>
-    <string name="settings">Settings</string>
     <string name="device">Device</string>
+    <string name="settings">Settings</string>
+
+    <!-- Basic strings -->
+    <string name="ok">OK</string>
+    <string name="cancel">Cancel</string>
+    <string name="reset">Reset</string>
+    <string name="add">Add</string>
+    <string name="done">Done</string>
+    <string name="delete">Delete</string>
+    <string name="edit">Edit</string>
+    <string name="invalid">Invalid</string>
+    <string name="never">Never</string>
+
+    <string name="name">Name</string>
+    <string name="color">Color</string>
+    <string name="group">Group</string>
+    <string name="weight">Weight</string>
+    <string name="select_color">Select color</string>
+    <string name="note">Note</string>
+    <string name="no_note">No note</string>
+    <string name="edit_note">Edit note</string>
+    <string name="save">Save</string>
+    <string name="add_training">Add workout</string>
+
+    <string name="red">Red</string>
+    <string name="green">Green</string>
+    <string name="blue">Blue</string>
+
+
+    <!-- Groups -->
     <string name="all">All</string>
     <string name="upper_body">Upper body</string>
     <string name="legs">Legs</string>
     <string name="cardio">Cardio</string>
     <string name="other">Other</string>
-    <string name="add_training">Add training</string>
-    <string name="group">Group</string>
-    <string name="weight_kg">Weight (kg)</string>
-    <string name="note">Note</string>
-    <string name="save">Save</string>
+
+
+
     <string name="delete_training">Delete training</string>
     <string name="delete_training_confirm">Do you really want to delete the training "%1$s"?</string>
-    <string name="cancel">Cancel</string>
-    <string name="name">Name</string>
-    <string name="new_training">New Workout</string>
-    <string name="ok">OK</string>
-    <string name="select_color">Select color</string>
-    <string name="color">Color</string>
     <string name="decrease_weight_by">Decrease weight by %s kg</string>
     <string name="increase_weight_by">Increase weight by %s kg</string>
-    <string name="edit_note_title">Edit note</string>
+
 
     <!-- Settings -->
     <string name="settings_title">Settings</string>
@@ -48,12 +70,8 @@
     <string name="use_emojis_for_groups_desc">Show emojis next to group names for a more visual experience.</string>
 
     <string name="weight_steps_section">Weight steps</string>
-    <string name="edit">Edit</string>
     <string name="edit_weight_steps">Edit weight steps</string>
     <string name="new_step">New step</string>
-    <string name="add">Add</string>
-    <string name="done">Done</string>
-    <string name="delete">Delete</string>
 
     <!-- Profile Page -->
     <string name="welcome_user">Welcome, %1$s</string>
@@ -100,10 +118,6 @@
     <string name="backup_replace">Replace All</string>
     <string name="backup_merge">Add to Existing</string>
     <string name="backup_merge_success">Trainings added successfully!</string>
-    <string name="invalid">Invalid</string>
-    <string name="red">Red</string>
-    <string name="green">Green</string>
-    <string name="blue">Blue</string>
 
     <!-- DeviceView specific strings -->
     <string name="device_sync_title">Device &amp; Sync</string>
@@ -111,7 +125,6 @@
     <string name="info">Info</string>
     <string name="device_status">Device status</string>
     <string name="last_db_sync">Last DB sync:</string>
-    <string name="never">Never</string>
     <string name="nodes_discovered">Nodes discovered:</string>
     <string name="db_snapshot_queued">DB snapshot queued for send</string>
     <string name="no_trainings_to_send">No trainings to send</string>

@@ -165,7 +165,7 @@ fun TrainingView(
     Scaffold(
         floatingActionButton = {
             AnimatedVisibility(visible = expandedItemIndex == -1) {
-                val strNewTrainingName = stringResource(R.string.new_training)
+                val strNewTrainingName = stringResource(R.string.add_training)
 
                 // Add Training Button
                 ExtendedFloatingActionButton(
@@ -180,7 +180,7 @@ fun TrainingView(
                               },
                     text = {
                         Text(
-                            text = stringResource(R.string.new_training),
+                            text = stringResource(R.string.add_training),
                             style = MaterialTheme.typography.labelLarge
                         )
                            },
@@ -592,7 +592,7 @@ fun TrainingView(
                                                     OutlinedTextField(
                                                         value = weight?.toString() ?: "",
                                                         onValueChange = { weight = it.toDoubleOrNull() },
-                                                        label = { Text(stringResource(R.string.weight_kg)) },
+                                                        label = { Text(stringResource(R.string.weight)) },
                                                         singleLine = true,
                                                         modifier = Modifier.fillMaxWidth(),
                                                         colors = textFieldColors
@@ -713,7 +713,7 @@ fun TrainingView(
                                                 ) {
                                                     Icon(
                                                         imageVector = Icons.Filled.EditNote,
-                                                        contentDescription = stringResource(R.string.edit_note_title),
+                                                        contentDescription = stringResource(R.string.edit_note),
                                                         tint = textColor
                                                     )
                                                 }

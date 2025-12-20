@@ -30,7 +30,7 @@ fun NoteEditDialog(
     AlertDialog(
         onDismissRequest = onDismiss,
         shape = RoundedCornerShape(28.dp),
-        title = { Text(stringResource(R.string.edit_note_title), style = MaterialTheme.typography.headlineSmall) },
+        title = { Text(stringResource(R.string.edit_note), style = MaterialTheme.typography.headlineSmall) },
         text = {
             OutlinedTextField(
                 value = currentNote,
