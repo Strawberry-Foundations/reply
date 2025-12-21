@@ -66,7 +66,9 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import org.strawberryfoundations.materialsymbolicons.MaterialSymbolIcons
 import org.strawberryfoundations.materialsymbolicons.filled.DevicesWearables
+import org.strawberryfoundations.materialsymbolicons.filled.Exercise
 import org.strawberryfoundations.materialsymbolicons.outlined.DevicesWearables
+import org.strawberryfoundations.materialsymbolicons.outlined.Exercise
 import org.strawberryfoundations.replicity.core.AppSettings
 import org.strawberryfoundations.replicity.core.SettingsDataStore
 import org.strawberryfoundations.replicity.core.getUserDataFlow
@@ -144,12 +146,12 @@ fun MainView(
     )
 
     val selectedIcons = listOf(
-        Icons.Filled.FitnessCenter,
+        MaterialSymbolIcons.Filled.Exercise,
         MaterialSymbolIcons.Filled.DevicesWearables,
         Icons.Filled.Settings,
     )
     val unselectedIcons = listOf(
-        Icons.Outlined.FitnessCenter,
+        MaterialSymbolIcons.Outlined.Exercise,
         MaterialSymbolIcons.Outlined.DevicesWearables,
         Icons.Outlined.Settings,
     )
