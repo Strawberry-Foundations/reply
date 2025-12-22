@@ -34,6 +34,13 @@ val Typography = Typography(
         letterSpacing = 0.sp,
     ),
 
+    titleLarge = TextStyle(
+        fontFamily = googleSansFlex.titleMediumFontFamily,
+        fontSize = 17.sp,
+        lineHeight = 17.sp,
+        letterSpacing = 0.sp,
+    ),
+
     titleMedium = TextStyle(
         fontFamily = googleSansFlex.titleMediumFontFamily,
         fontSize = 15.sp,

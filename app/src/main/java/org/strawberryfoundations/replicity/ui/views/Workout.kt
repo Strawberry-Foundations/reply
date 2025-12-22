@@ -391,12 +391,12 @@ fun TrainingView(
                                 AnimatedVisibility(
                                     visible = isExpanded,
                                     enter = expandVertically(animationSpec = spring(
-                                        stiffness = Spring.StiffnessLow,
-                                        dampingRatio = Spring.DampingRatioMediumBouncy
+                                        stiffness = Spring.StiffnessMedium,
+                                        dampingRatio = Spring.DampingRatioNoBouncy
                                     )),
                                     exit = shrinkVertically(animationSpec = spring(
                                         stiffness = Spring.StiffnessMedium,
-                                        dampingRatio = Spring.DampingRatioLowBouncy
+                                        dampingRatio = Spring.DampingRatioNoBouncy
                                     ))
                                 ) {
                                     var name by remember(training.name) { mutableStateOf(training.name) }

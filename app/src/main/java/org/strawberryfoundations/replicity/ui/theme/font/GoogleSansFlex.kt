@@ -37,20 +37,6 @@ class GoogleSansFlex {
             )
         )
 
-    // OBSOLETE
-    @OptIn(ExperimentalTextApi::class)
-    val displayLargeFontFamily =
-        FontFamily(
-            Font(
-                R.font.google_sans_flex,
-                variationSettings = FontVariation.Settings(
-                    FontVariation.weight(DisplayLargeVFConfig.WEIGHT),
-                    FontVariation.width(DisplayLargeVFConfig.WIDTH),
-                    FontVariation.Setting("ROND", 100f)
-                )
-            )
-        )
-
     @OptIn(ExperimentalTextApi::class)
     val titleMediumFontFamily =
         FontFamily(
