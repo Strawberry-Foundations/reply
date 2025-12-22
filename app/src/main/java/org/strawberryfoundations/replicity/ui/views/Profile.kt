@@ -56,6 +56,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.core.net.toUri
 import coil.compose.AsyncImage
+import coil.request.ImageRequest
 import io.ktor.client.HttpClient
 import io.ktor.client.engine.cio.CIO
 import io.ktor.client.request.get
@@ -66,6 +67,7 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import org.json.JSONObject
 import org.strawberryfoundations.replicity.R
+import org.strawberryfoundations.replicity.core.AvatarCache
 import org.strawberryfoundations.replicity.core.getUserDataFlow
 import org.strawberryfoundations.replicity.core.saveUserData
 import org.strawberryfoundations.replicity.core.model.UserPreferences
@@ -109,7 +111,6 @@ fun ProfileView() {
                 .fillMaxSize()
                 .verticalScroll(rememberScrollState()),
             horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.Center
         ) {
             if (isLoggedIn && userData != null) {
                 LoggedInContent(
@@ -193,6 +194,9 @@ private fun LoggedInContent(
     userData: UserPreferences,
     onSignOut: () -> Unit
 ) {
+    val context = LocalContext.current
+    val imageLoader = remember { AvatarCache.getImageLoader(context) }
+    
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -209,10 +213,16 @@ private fun LoggedInContent(
                     .padding(24.dp)
             ) {
                 AsyncImage(
-                    model = userData.profilePictureUrl,
+                    model = ImageRequest.Builder(context)
+                        .data(userData.profilePictureUrl)
+                        .memoryCacheKey(userData.username) // Eindeutiger Cache-Key
+                        .diskCacheKey(userData.username)
+                        .crossfade(true)
+                        .build(),
                     contentDescription = stringResource(R.string.profile_picture),
+                    imageLoader = imageLoader,
                     modifier = Modifier
-                        .size(120.dp)
+                        .size(96.dp)
                         .clip(CircleShape),
                     contentScale = ContentScale.Crop,
                     placeholder = painterResource(R.drawable.ic_launcher),
@@ -223,7 +233,8 @@ private fun LoggedInContent(
                 
                 Text(
                     text = userData.fullName,
-                    style = MaterialTheme.typography.headlineMedium,
+                    style = MaterialTheme.typography.displayLarge,
+                    fontSize = 26.sp,
                     fontWeight = FontWeight.Bold,
                     textAlign = TextAlign.Center,
                     color = MaterialTheme.colorScheme.onSurface
@@ -231,7 +242,8 @@ private fun LoggedInContent(
                 
                 Text(
                     text = "@${userData.username}",
-                    style = MaterialTheme.typography.bodyLarge,
+                    style = MaterialTheme.typography.labelMedium,
+                    fontSize = 16.sp,
                     color = MaterialTheme.colorScheme.primary
                 )
             }
@@ -249,8 +261,7 @@ private fun LoggedInContent(
             ) {
                 Text(
                     text = stringResource(R.string.account_information),
-                    style = MaterialTheme.typography.titleMedium,
-                    fontWeight = FontWeight.Bold,
+                    style = MaterialTheme.typography.displayMedium,
                     modifier = Modifier.padding(bottom = 12.dp),
                     color = MaterialTheme.colorScheme.onSurface
                 )
@@ -283,7 +294,7 @@ private fun LoggedInContent(
             ) {
                 Text(
                     text = stringResource(R.string.settings),
-                    style = MaterialTheme.typography.titleMedium,
+                    style = MaterialTheme.typography.displayMedium,
                     fontWeight = FontWeight.Bold,
                     modifier = Modifier.padding(bottom = 12.dp),
                     color = MaterialTheme.colorScheme.onSurface
@@ -336,13 +347,12 @@ private fun ProfileInfoRow(
     ) {
         Text(
             text = label,
-            style = MaterialTheme.typography.bodyMedium,
+            style = MaterialTheme.typography.labelLarge,
             color = MaterialTheme.colorScheme.onSurfaceVariant
         )
         Text(
             text = value,
             style = MaterialTheme.typography.bodyMedium,
-            fontWeight = FontWeight.Medium
         )
     }
 }
@@ -407,18 +417,6 @@ private fun LoginContent(
             style = MaterialTheme.typography.titleMedium,
             fontSize = 18.sp,
             textAlign = TextAlign.Center,
-            fontFamily = FontFamily(
-                Font(
-                    R.font.roboto_flex,
-                    variationSettings = FontVariation.Settings(
-                        FontVariation.weight(GoogleSansFlex.DisplayLargeVFConfig.WEIGHT),
-                        FontVariation.width(550f),
-                        FontVariation.slant(GoogleSansFlex.DisplayLargeVFConfig.SLANT),
-                        ascenderHeight(GoogleSansFlex.DisplayLargeVFConfig.ASCENDER_HEIGHT),
-                        counterWidth(450)
-                    )
-                )
-            )
         )
         
         Spacer(modifier = Modifier.height(16.dp))

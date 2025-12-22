@@ -289,7 +289,7 @@ fun SettingsSectionTitle(title: String, icon: ImageVector) {
         Text(
             text = title,
             style = MaterialTheme.typography.displayMedium,
-            fontSize = 15.sp,
+            fontSize = 16.sp,
             color = MaterialTheme.colorScheme.primary,
         )
     }
@@ -325,7 +325,7 @@ fun SettingsItem(
         Column(modifier = Modifier.weight(1f)) {
             Text(
                 text = title,
-                style = MaterialTheme.typography.bodyMedium,
+                style = MaterialTheme.typography.displaySmall,
                 fontSize = 17.sp,
                 fontWeight = FontWeight.Bold
             )
@@ -429,20 +429,7 @@ fun SettingsView(
                             label = {
                                 Text(
                                     text = step.toString(),
-                                    style = MaterialTheme.typography.titleMedium.copy(
-                                        fontSize = 14.sp,
-                                        fontFamily = FontFamily(
-                                            Font(
-                                                R.font.roboto_flex,
-                                                variationSettings = FontVariation.Settings(
-                                                    FontVariation.weight(500),
-                                                    FontVariation.width(70f),
-                                                    ascenderHeight(GoogleSansFlex.TitleMediumVFConfig.ASCENDER_HEIGHT),
-                                                    counterWidth(GoogleSansFlex.TitleMediumVFConfig.COUNTER_WIDTH)
-                                                )
-                                            )
-                                        )
-                                    )
+                                    style = MaterialTheme.typography.titleMedium
                                 ) },
                             modifier = Modifier.padding(end = 8.dp)
                         )

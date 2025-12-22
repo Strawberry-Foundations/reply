@@ -62,6 +62,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
+import coil.request.ImageRequest
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import org.strawberryfoundations.materialsymbolicons.MaterialSymbolIcons
@@ -70,6 +71,7 @@ import org.strawberryfoundations.materialsymbolicons.filled.Exercise
 import org.strawberryfoundations.materialsymbolicons.outlined.DevicesWearables
 import org.strawberryfoundations.materialsymbolicons.outlined.Exercise
 import org.strawberryfoundations.replicity.core.AppSettings
+import org.strawberryfoundations.replicity.core.AvatarCache
 import org.strawberryfoundations.replicity.core.SettingsDataStore
 import org.strawberryfoundations.replicity.core.getUserDataFlow
 import org.strawberryfoundations.replicity.core.model.UserPreferences
@@ -121,6 +123,7 @@ fun MainView(
     onSettingsChange: (AppSettings.() -> AppSettings) -> Unit,
 ) {
     val context = LocalContext.current
+    val imageLoader = remember { AvatarCache.getImageLoader(context) }
     var userData by remember { mutableStateOf<UserPreferences?>(null) }
 
     LaunchedEffect(Unit) {
@@ -181,14 +184,20 @@ fun MainView(
                         Text(
                             text = items[selectedItem],
                             style = MaterialTheme.typography.displayLarge,
-                            fontSize = 22.sp
+                            fontSize = 24.sp
                         )
                     },
                     actions = {
                         IconButton(onClick = { showProfile = true }) {
                             AsyncImage(
-                                model = userData?.profilePictureUrl,
+                                model = ImageRequest.Builder(context)
+                                    .data(userData?.profilePictureUrl)
+                                    .memoryCacheKey(userData?.username ?: "default")
+                                    .diskCacheKey(userData?.username ?: "default")
+                                    .crossfade(true)
+                                    .build(),
                                 contentDescription = stringResource(R.string.profile_picture),
+                                imageLoader = imageLoader,
                                 modifier = Modifier
                                     .size(38.dp)
                                     .clip(CircleShape),

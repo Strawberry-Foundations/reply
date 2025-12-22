@@ -5,7 +5,7 @@ import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontVariation
 import org.strawberryfoundations.replicity.R
-import org.strawberryfoundations.replicity.ui.theme.font.RobotoFlex.DisplayLargeVFConfig
+import org.strawberryfoundations.replicity.ui.theme.font.GoogleSansFlex.DisplayLargeVFConfig
 
 
 class GoogleSansCode {
