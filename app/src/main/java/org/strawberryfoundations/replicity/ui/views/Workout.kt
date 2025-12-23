@@ -292,14 +292,14 @@ fun TrainingView(
                     itemsIndexed(
                         items = filteredExercises,
                         key = { _, training -> training.id }
-                    ) { index, training ->
+                    ) { index, exercise ->
                         val cardColor = remember(
-                            key1 = training.color,
+                            key1 = exercise.color,
                             key2 = themeColorHexMap,
                             key3 = colorScheme.surface
                         ) {
-                            themeColorHexMap[training.color]
-                                ?: if (training.color.isNotBlank()) hexToColor(training.color)
+                            themeColorHexMap[exercise.color]
+                                ?: if (exercise.color.isNotBlank()) hexToColor(exercise.color)
                                 else colorScheme.surface
                         }
                         val borderColor = remember(cardColor) { darkenColor(cardColor, 0.70f) }
@@ -365,7 +365,7 @@ fun TrainingView(
                                         verticalAlignment = Alignment.CenterVertically
                                     ) {
                                         Text(
-                                            text = training.name,
+                                            text = exercise.name,
                                             color = textColor,
                                             style = MaterialTheme.typography.labelLarge,
                                             fontSize = 16.sp,
@@ -379,7 +379,7 @@ fun TrainingView(
                                             shadowElevation = 2.dp
                                         ) {
                                             Text(
-                                                "${training.weight ?: 0.0} kg",
+                                                "${exercise.weight ?: 0.0} kg",
                                                 style = customFont.numeralMedium,
                                                 modifier = Modifier.padding(horizontal = 12.dp, vertical = 4.dp)
                                             )
@@ -399,14 +399,14 @@ fun TrainingView(
                                         dampingRatio = Spring.DampingRatioNoBouncy
                                     ))
                                 ) {
-                                    var name by remember(training.name) { mutableStateOf(training.name) }
-                                    var weight by remember(training.weight) { mutableStateOf(training.weight) }
-                                    var note by remember(training.note) { mutableStateOf(training.note) }
-                                    var group by remember(training.group) { mutableStateOf(training.group) }
+                                    var name by remember(exercise.name) { mutableStateOf(exercise.name) }
+                                    var weight by remember(exercise.weight) { mutableStateOf(exercise.weight) }
+                                    var note by remember(exercise.note) { mutableStateOf(exercise.note) }
+                                    var group by remember(exercise.group) { mutableStateOf(exercise.group) }
                                     var groupExpanded by remember { mutableStateOf(false) }
 
-                                    var itemColorHex by remember(training.color, defaultColorHex) {
-                                        mutableStateOf(training.color.ifBlank { defaultColorHex })
+                                    var itemColorHex by remember(exercise.color, defaultColorHex) {
+                                        mutableStateOf(exercise.color.ifBlank { defaultColorHex })
                                     }
                                     var colorDialogOpen by remember { mutableStateOf(false) }
                                     var colorPickerInitialColor by remember(itemColorHex) {
@@ -735,7 +735,7 @@ fun TrainingView(
                                                 Spacer(modifier = Modifier.weight(1f))
                                                 IconButton(
                                                     onClick = {
-                                                        trainingToDelete = training
+                                                        trainingToDelete = exercise
                                                         showDeleteDialog = true
                                                     }
                                                 ) {
@@ -749,7 +749,7 @@ fun TrainingView(
                                                 Button(
                                                     onClick = {
                                                         viewModel.update(
-                                                            training.copy(
+                                                            exercise.copy(
                                                                 name = name,
                                                                 weight = weight,
                                                                 note = note,

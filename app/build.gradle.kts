@@ -34,9 +34,6 @@ android {
         sourceCompatibility = JavaVersion.VERSION_11
         targetCompatibility = JavaVersion.VERSION_11
     }
-    kotlinOptions {
-        jvmTarget = "11"
-    }
     buildFeatures {
         compose = true
     }
@@ -44,6 +41,10 @@ android {
     lint {
         baseline = file("lint-baseline.xml")
     }
+}
+
+kotlin {
+    jvmToolchain(11)
 }
 
 dependencies {
