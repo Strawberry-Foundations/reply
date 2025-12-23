@@ -482,7 +482,12 @@ fun TrainingView(
                                                     OutlinedTextField(
                                                         value = name,
                                                         onValueChange = { name = it },
-                                                        label = { Text(stringResource(R.string.name)) },
+                                                        label = {
+                                                            Text(
+                                                                text = stringResource(R.string.name),
+                                                                style = MaterialTheme.typography.bodyMedium
+                                                            )
+                                                                },
                                                         modifier = Modifier.fillMaxWidth(),
                                                         colors = textFieldColors
                                                     )
@@ -493,7 +498,12 @@ fun TrainingView(
                                                             value = "${getExerciseGroupEmoji(group)} " +
                                                                     getExerciseGroupStringResource(group),
                                                             onValueChange = {},
-                                                            label = { Text(stringResource(R.string.group)) },
+                                                            label = {
+                                                                Text(
+                                                                    text = stringResource(R.string.group),
+                                                                    style = MaterialTheme.typography.bodyMedium
+                                                                )
+                                                                    },
                                                             modifier = Modifier
                                                                 .fillMaxWidth()
                                                                 .clickable(
@@ -592,7 +602,12 @@ fun TrainingView(
                                                     OutlinedTextField(
                                                         value = weight?.toString() ?: "",
                                                         onValueChange = { weight = it.toDoubleOrNull() },
-                                                        label = { Text(stringResource(R.string.weight)) },
+                                                        label = {
+                                                            Text(
+                                                                text = stringResource(R.string.weight),
+                                                                style = MaterialTheme.typography.bodyMedium
+                                                            )
+                                                                },
                                                         singleLine = true,
                                                         modifier = Modifier.fillMaxWidth(),
                                                         colors = textFieldColors
