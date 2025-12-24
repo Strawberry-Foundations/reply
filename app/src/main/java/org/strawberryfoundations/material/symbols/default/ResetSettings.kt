@@ -1,13 +1,13 @@
-package org.strawberryfoundations.materialsymbolicons.default
+package org.strawberryfoundations.material.symbols.default
 
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.graphics.vector.path
 import androidx.compose.ui.unit.dp
-import org.strawberryfoundations.materialsymbolicons.MaterialSymbolIcons
+import org.strawberryfoundations.material.symbols.MaterialSymbols
 
-val MaterialSymbolIcons.Default.ResetSettings: ImageVector
+val MaterialSymbols.Default.ResetSettings: ImageVector
     get() {
         if (_resetsettings != null) return _resetsettings!!
         

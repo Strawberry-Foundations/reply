@@ -64,11 +64,11 @@ import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
-import org.strawberryfoundations.materialsymbolicons.MaterialSymbolIcons
-import org.strawberryfoundations.materialsymbolicons.filled.DevicesWearables
-import org.strawberryfoundations.materialsymbolicons.filled.Exercise
-import org.strawberryfoundations.materialsymbolicons.outlined.DevicesWearables
-import org.strawberryfoundations.materialsymbolicons.outlined.Exercise
+import org.strawberryfoundations.material.symbols.MaterialSymbols
+import org.strawberryfoundations.material.symbols.filled.DevicesWearables
+import org.strawberryfoundations.material.symbols.filled.Exercise
+import org.strawberryfoundations.material.symbols.outlined.DevicesWearables
+import org.strawberryfoundations.material.symbols.outlined.Exercise
 import org.strawberryfoundations.reply.core.AppSettings
 import org.strawberryfoundations.reply.core.AvatarCache
 import org.strawberryfoundations.reply.core.SettingsDataStore
@@ -151,13 +151,13 @@ fun MainView(
     )
 
     val selectedIcons = listOf(
-        MaterialSymbolIcons.Filled.Exercise,
-        MaterialSymbolIcons.Filled.DevicesWearables,
+        MaterialSymbols.Filled.Exercise,
+        MaterialSymbols.Filled.DevicesWearables,
         Icons.Filled.Settings,
     )
     val unselectedIcons = listOf(
-        MaterialSymbolIcons.Outlined.Exercise,
-        MaterialSymbolIcons.Outlined.DevicesWearables,
+        MaterialSymbols.Outlined.Exercise,
+        MaterialSymbols.Outlined.DevicesWearables,
         Icons.Outlined.Settings,
     )
 

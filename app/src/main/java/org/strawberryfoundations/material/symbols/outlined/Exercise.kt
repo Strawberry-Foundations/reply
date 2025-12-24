@@ -1,13 +1,13 @@
-package org.strawberryfoundations.materialsymbolicons.outlined
+package org.strawberryfoundations.material.symbols.outlined
 
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.graphics.vector.path
 import androidx.compose.ui.unit.dp
-import org.strawberryfoundations.materialsymbolicons.MaterialSymbolIcons
+import org.strawberryfoundations.material.symbols.MaterialSymbols
 
-val MaterialSymbolIcons.Outlined.Exercise: ImageVector
+val MaterialSymbols.Outlined.Exercise: ImageVector
     get() {
         val current = _exercise
         if (current != null) return current

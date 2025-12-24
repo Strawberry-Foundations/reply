@@ -67,8 +67,8 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import kotlinx.coroutines.launch
-import org.strawberryfoundations.materialsymbolicons.MaterialSymbolIcons
-import org.strawberryfoundations.materialsymbolicons.filled.Weight
+import org.strawberryfoundations.material.symbols.MaterialSymbols
+import org.strawberryfoundations.material.symbols.filled.Weight
 import org.strawberryfoundations.reply.R
 import org.strawberryfoundations.reply.core.AppSettings
 import org.strawberryfoundations.reply.core.BackupManager
@@ -428,7 +428,7 @@ fun SettingsView(
             item {
                 SettingsSectionTitle(
                     title = stringResource(R.string.weight_steps_section),
-                    icon = MaterialSymbolIcons.Filled.Weight
+                    icon = MaterialSymbols.Filled.Weight
                 )
             }
 

@@ -1,13 +1,13 @@
-package org.strawberryfoundations.materialsymbolicons.filled
+package org.strawberryfoundations.material.symbols.filled
 
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.graphics.vector.path
 import androidx.compose.ui.unit.dp
-import org.strawberryfoundations.materialsymbolicons.MaterialSymbolIcons
+import org.strawberryfoundations.material.symbols.MaterialSymbols
 
-val MaterialSymbolIcons.Filled.Exercise: ImageVector
+val MaterialSymbols.Filled.Exercise: ImageVector
     get() {
         if (_exercise != null) return _exercise!!
         

@@ -1,18 +1,18 @@
-package org.strawberryfoundations.materialsymbolicons.outlined
+package org.strawberryfoundations.material.symbols.filled
 
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.graphics.vector.path
 import androidx.compose.ui.unit.dp
-import org.strawberryfoundations.materialsymbolicons.MaterialSymbolIcons
+import org.strawberryfoundations.material.symbols.MaterialSymbols
 
-val MaterialSymbolIcons.Outlined.Weight: ImageVector
+val MaterialSymbols.Filled.Weight: ImageVector
     get() {
         if (_weight != null) return _weight!!
         
         _weight = ImageVector.Builder(
-            name = "Outlined.Weight",
+            name = "Filled.Weight",
             defaultWidth = 24.dp,
             defaultHeight = 24.dp,
             viewportWidth = 960f,
@@ -21,13 +21,7 @@ val MaterialSymbolIcons.Outlined.Weight: ImageVector
             path(
                 fill = SolidColor(Color(0xFFe3e3e3))
             ) {
-                moveTo(240f, 760f)
-                horizontalLineToRelative(480f)
-                lineToRelative(-57f, -400f)
-                horizontalLineTo(297f)
-                lineToRelative(-57f, 400f)
-                close()
-                moveToRelative(240f, -480f)
+                moveTo(480f, 280f)
                 quadToRelative(17f, 0f, 28.5f, -11.5f)
                 reflectiveQuadTo(520f, 240f)
                 quadToRelative(0f, -17f, -11.5f, -28.5f)
@@ -59,10 +53,6 @@ val MaterialSymbolIcons.Outlined.Weight: ImageVector
                 reflectiveQuadToRelative(35f, 85f)
                 quadToRelative(0f, 11f, -2f, 20.5f)
                 reflectiveQuadToRelative(-5f, 19.5f)
-                close()
-                moveTo(240f, 760f)
-                horizontalLineToRelative(480f)
-                horizontalLineToRelative(-480f)
                 close()
             }
         }.build()
