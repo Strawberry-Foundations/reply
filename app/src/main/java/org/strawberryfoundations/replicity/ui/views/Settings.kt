@@ -27,9 +27,10 @@ import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.Gavel
 import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.Palette
-import androidx.compose.material.icons.filled.Scale
 import androidx.compose.material.icons.filled.Sync
 import androidx.compose.material.icons.filled.Upload
+import androidx.compose.material.icons.rounded.TouchApp
+import androidx.compose.material.icons.rounded.Vibration
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.AssistChip
 import androidx.compose.material3.Button
@@ -54,14 +55,13 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.ExperimentalTextApi
-import androidx.compose.ui.text.font.Font
-import androidx.compose.ui.text.font.FontFamily
-import androidx.compose.ui.text.font.FontVariation
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -70,12 +70,9 @@ import kotlinx.coroutines.launch
 import org.strawberryfoundations.materialsymbolicons.MaterialSymbolIcons
 import org.strawberryfoundations.materialsymbolicons.filled.Weight
 import org.strawberryfoundations.replicity.R
+import org.strawberryfoundations.replicity.core.AppSettings
 import org.strawberryfoundations.replicity.core.BackupManager
 import org.strawberryfoundations.replicity.core.getAppVersion
-import org.strawberryfoundations.replicity.core.AppSettings
-import org.strawberryfoundations.replicity.ui.theme.ascenderHeight
-import org.strawberryfoundations.replicity.ui.theme.counterWidth
-import org.strawberryfoundations.replicity.ui.theme.font.GoogleSansFlex
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
@@ -353,6 +350,8 @@ fun SettingsView(
 ) {
     val context = LocalContext.current
     val uriHandler = LocalUriHandler.current
+    val haptic = LocalHapticFeedback.current
+
     val appVersion = remember { getAppVersion(context) }
 
     val termsOfServiceUrl = "https://your-app.com/terms"
@@ -377,11 +376,48 @@ fun SettingsView(
                     icon = Icons.Filled.Palette,
                     title = stringResource(R.string.dynamic_colors),
                     subtitle = stringResource(R.string.dynamic_colors_description),
+                    onClick = {
+                        onSettingsChange { copy(useDynamicColors = !settings.useDynamicColors) }
+                    },
                     trailingContent = {
                         Switch(
                             checked = settings.useDynamicColors,
                             onCheckedChange = { checked ->
                                 onSettingsChange { copy(useDynamicColors = checked) }
+                            }
+                        )
+                    }
+                )
+            }
+
+            // Interaction Section
+            item {
+                SettingsSectionTitle(
+                    title = stringResource(R.string.settings_section_interaction),
+                    icon = Icons.Rounded.TouchApp,
+                )
+            }
+
+            item {
+                SettingsItem(
+                    icon = Icons.Rounded.Vibration,
+                    title = stringResource(R.string.haptic_feedback_title),
+                    subtitle = stringResource(R.string.haptic_feedback_description),
+                    onClick = {
+                        val newValue = !settings.useHapticFeedback
+                        if (newValue) {
+                            haptic.performHapticFeedback(HapticFeedbackType.Confirm)
+                        }
+                        onSettingsChange { copy(useHapticFeedback = newValue) }
+                    },
+                    trailingContent = {
+                        Switch(
+                            checked = settings.useHapticFeedback,
+                            onCheckedChange = { checked ->
+                                if (checked) {
+                                    haptic.performHapticFeedback(HapticFeedbackType.Confirm)
+                                }
+                                onSettingsChange { copy(useHapticFeedback = checked) }
                             }
                         )
                     }

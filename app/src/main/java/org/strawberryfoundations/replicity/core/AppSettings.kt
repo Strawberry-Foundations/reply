@@ -26,8 +26,8 @@ val Context.dataStore by preferencesDataStore(name = "settings")
 class SettingsDataStore(private val context: Context) {
     val settingsFlow: Flow<AppSettings> = context.dataStore.data.map { prefs ->
         AppSettings(
-            useDynamicColors = prefs[SettingsKeys.DYNAMIC_COLOR] != false,
-            useHapticFeedback = prefs[SettingsKeys.HAPTIC_FEEDBACK] == false,
+            useDynamicColors = prefs[SettingsKeys.DYNAMIC_COLOR] ?: true,
+            useHapticFeedback = prefs[SettingsKeys.HAPTIC_FEEDBACK] ?: false,
             weightSteps = prefs[SettingsKeys.WEIGHT_STEPS]
                 ?.split(",")
                 ?.mapNotNull { it.toDoubleOrNull() }

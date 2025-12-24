@@ -51,6 +51,7 @@
     <!-- Settings -->
     <string name="settings_title">Einstellungen</string>
     <string name="settings_section_appearance">Darstellung</string>
+    <string name="settings_section_interaction">Interaktion</string>
     <string name="settings_section_about">Über die App</string>
     <string name="settings_app_version">App-Version</string>
     <string name="settings_privacy_policy">Datenschutzrichtlinie</string>
@@ -64,8 +65,9 @@
     <string name="dynamic_colors">Material You</string>
     <string name="dynamic_colors_description">Personalisiere deine App mit dynamischen Farben basierend auf dem Hintergrundbild deines Geräts</string>
 
-    <string name="use_emojis_for_groups">Emojis für Gruppen verwenden</string>
-    <string name="use_emojis_for_groups_desc">Zeige Emojis neben Gruppennamen für eine anschaulichere Darstellung.</string>
+    <!-- Settings Section: Haptic Feedback -->
+    <string name="haptic_feedback_title">Haptisches Feedback</string>
+    <string name="haptic_feedback_description">Vibrationen bei Aktionen</string>
 
     <string name="weight_steps_section">Gewichtsschritte</string>
     <string name="edit_weight_steps">Gewichtsschritte bearbeiten</string>
