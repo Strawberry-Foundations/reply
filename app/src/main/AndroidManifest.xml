@@ -28,7 +28,7 @@
         </activity>
 
         <service
-            android:name="org.strawberryfoundations.replicity.sync.DataSyncReceiver"
+            android:name="org.strawberryfoundations.reply.sync.DataSyncReceiver"
             android:exported="true">
             <intent-filter>
                 <action android:name="com.google.android.gms.wearable.DATA_CHANGED" />
