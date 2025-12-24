@@ -19,6 +19,6 @@ class ExampleInstrumentedTest {
     fun useAppContext() {
         // Context of the app under test.
         val appContext = InstrumentationRegistry.getInstrumentation().targetContext
-        assertEquals("org.strawberryfoundations.replicity", appContext.packageName)
+        assertEquals("org.strawberryfoundations.reply", appContext.packageName)
     }
 }
