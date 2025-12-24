@@ -32,7 +32,6 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.MaterialShapes
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarDefaults
@@ -75,7 +74,7 @@ import org.strawberryfoundations.replicity.core.AvatarCache
 import org.strawberryfoundations.replicity.core.SettingsDataStore
 import org.strawberryfoundations.replicity.core.getUserDataFlow
 import org.strawberryfoundations.replicity.core.model.UserPreferences
-import org.strawberryfoundations.replicity.ui.theme.GymscribeTheme
+import org.strawberryfoundations.replicity.ui.theme.AppTheme
 import org.strawberryfoundations.replicity.ui.views.DeviceView
 import org.strawberryfoundations.replicity.ui.views.ProfileView
 import org.strawberryfoundations.replicity.ui.views.SettingsView
@@ -103,7 +102,7 @@ fun MainViewWithPersistence(settingsDataStore: SettingsDataStore) {
     val settings by settingsDataStore.settingsFlow.collectAsState(initial = AppSettings())
     val scope = rememberCoroutineScope()
 
-    GymscribeTheme(dynamicColor = settings.useDynamicColors) {
+    AppTheme(dynamicColor = settings.useDynamicColors) {
         MainView(
             settings = settings,
             onSettingsChange = { update ->
@@ -346,7 +345,7 @@ fun DefaultPreview() {
         useDynamicColors = true,
     )
 
-    GymscribeTheme(dynamicColor = previewSettings.useDynamicColors) {
+    AppTheme(dynamicColor = previewSettings.useDynamicColors) {
         MainView(
             settings = previewSettings,
             onSettingsChange = {}

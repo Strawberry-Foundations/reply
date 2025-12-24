@@ -1,7 +1,7 @@
-# Gymscribe
+# Reply
 Your personal, smart training and weight diary for your pocket
 
-Why Gymscribe?
+Why Reply?
 - Intuitive tracking of weight, exercises, and sets
 - Quick logging: entries in seconds
 - Offline-capable and privacy-friendly

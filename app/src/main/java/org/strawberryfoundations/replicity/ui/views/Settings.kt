@@ -228,7 +228,7 @@ fun BackupSettingsSection() {
         onClick = if (!isExporting && !isImporting && !isMerging) {
             {
                 val timestamp = SimpleDateFormat("yyyy-MM-dd_HH-mm", Locale.getDefault()).format(Date())
-                exportLauncher.launch("gymscribe_backup_$timestamp.json")
+                exportLauncher.launch("reply_backup_$timestamp.json")
             }
         } else null,
         trailingContent = {
@@ -355,7 +355,7 @@ fun SettingsView(
     val appVersion = remember { getAppVersion(context) }
 
     val termsOfServiceUrl = "https://your-app.com/terms"
-    val githubUrl = "https://github.com/Strawberry-Foundations/gymscribe"
+    val githubUrl = "https://github.com/Strawberry-Foundations/reply"
 
     var showDialog by remember { mutableStateOf(false) }
 
@@ -529,22 +529,28 @@ fun SettingsView(
                     )
                     Spacer(modifier = Modifier.height(4.dp))
                     Text(
-                        text = "Gymscribe",
+                        text = stringResource(R.string.app_name),
                         style = MaterialTheme.typography.displayLarge,
                         fontSize = 28.sp,
                         lineHeight = 28.sp,
                         textAlign = TextAlign.Center
                     )
+                    Spacer(modifier = Modifier.height(4.dp))
+                    Text(
+                        text = stringResource(R.string.app_motto),
+                        style = MaterialTheme.typography.displaySmall,
+                        textAlign = TextAlign.Center
+                    )
                     Spacer(modifier = Modifier.height(6.dp))
                     Text(
-                        text = "Version $appVersion",
+                        text = stringResource(R.string.about_version, appVersion),
                         style = MaterialTheme.typography.displaySmall,
                         color = MaterialTheme.colorScheme.onSurfaceVariant,
                         textAlign = TextAlign.Center
                     )
                     Spacer(modifier = Modifier.height(8.dp))
                     Text(
-                        text = "© 2025 Juliandev02",
+                        text = stringResource(R.string.about_copyright),
                         style = MaterialTheme.typography.displaySmall,
                         fontWeight = FontWeight.Medium,
                         color = MaterialTheme.colorScheme.onSurfaceVariant,
@@ -552,7 +558,7 @@ fun SettingsView(
                     )
                     Spacer(modifier = Modifier.height(4.dp))
                     Text(
-                        text = stringResource(R.string.settings_all_rights_reserved),
+                        text = stringResource(R.string.about_all_rights_reserved),
                         style = MaterialTheme.typography.bodyMedium,
                         color = MaterialTheme.colorScheme.onSurfaceVariant,
                         textAlign = TextAlign.Center
@@ -576,6 +582,12 @@ fun SettingsView(
                             textAlign = TextAlign.Center
                         )
                     }
+                    Text(
+                        text = "Progress is the answer.",
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        textAlign = TextAlign.Center
+                    )
                 }
             }
             item { HorizontalDivider(

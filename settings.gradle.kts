@@ -19,5 +19,5 @@ dependencyResolutionManagement {
     }
 }
 
-rootProject.name = "Gymscribe"
+rootProject.name = "Reply"
 include(":app")

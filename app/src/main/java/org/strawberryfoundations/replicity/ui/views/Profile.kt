@@ -136,7 +136,7 @@ fun ProfileView() {
                             try {
                                 val code = fetchLoginCode()
                                 currentLoginCode = code
-                                val loginUrl = "https://id.strawberryfoundations.org/v2/de/login/oauth_dialog/gymscribe?code=$code"
+                                val loginUrl = "https://id.strawberryfoundations.org/v2/de/login/oauth_dialog/reply?code=$code"
                                 val intent = CustomTabsIntent.Builder().build().intent
                                 intent.data = loginUrl.toUri()
                                 context.startActivity(intent)
