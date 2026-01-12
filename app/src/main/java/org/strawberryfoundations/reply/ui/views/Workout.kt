@@ -10,7 +10,6 @@ import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.spring
 import androidx.compose.animation.expandVertically
 import androidx.compose.animation.shrinkVertically
-import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
@@ -42,10 +41,10 @@ import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.ColorLens
-import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.EditNote
 import androidx.compose.material.icons.filled.Remove
 import androidx.compose.material.icons.filled.Save
+import androidx.compose.material.icons.rounded.Delete
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
@@ -87,9 +86,9 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import org.strawberryfoundations.reply.R
+import org.strawberryfoundations.reply.core.AppSettings
 import org.strawberryfoundations.reply.core.model.Exercise
 import org.strawberryfoundations.reply.core.model.ExerciseGroup
-import org.strawberryfoundations.reply.core.AppSettings
 import org.strawberryfoundations.reply.core.model.getExerciseGroupEmoji
 import org.strawberryfoundations.reply.core.model.getExerciseGroupStringResource
 import org.strawberryfoundations.reply.database.ExerciseViewModel
@@ -707,8 +706,6 @@ fun TrainingView(
                                                         },
                                                     shape = CircleShape,
                                                     color = hexToColor(itemColorHex),
-                                                    border = BorderStroke(3.dp, borderColor),
-                                                    shadowElevation = 4.dp
                                                 ) {
                                                     Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
                                                         Icon(
@@ -720,30 +717,44 @@ fun TrainingView(
                                                     }
                                                 }
                                                 Spacer(Modifier.width(8.dp))
-                                                IconButton(
-                                                    onClick = {
-                                                        noteInputForDialog = note
-                                                        showNoteDialog = true
-                                                    }
+                                                Surface(
+                                                    modifier = Modifier
+                                                        .size(40.dp)
+                                                        .clickable {
+                                                            noteInputForDialog = note
+                                                            showNoteDialog = true
+                                                        },
+                                                    shape = CircleShape,
+                                                    color = hexToColor(itemColorHex),
                                                 ) {
-                                                    Icon(
-                                                        imageVector = Icons.Filled.EditNote,
-                                                        contentDescription = stringResource(R.string.edit_note),
-                                                        tint = textColor
-                                                    )
+                                                    Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                                                        Icon(
+                                                            imageVector = Icons.Filled.EditNote,
+                                                            contentDescription = stringResource(R.string.edit_note),
+                                                            tint = textColor
+                                                        )
+                                                    }
                                                 }
+
                                                 Spacer(modifier = Modifier.weight(1f))
-                                                IconButton(
-                                                    onClick = {
-                                                        trainingToDelete = exercise
-                                                        showDeleteDialog = true
-                                                    }
+
+                                                Surface(
+                                                    modifier = Modifier
+                                                        .size(40.dp)
+                                                        .clickable {
+                                                            trainingToDelete = exercise
+                                                            showDeleteDialog = true
+                                                        },
+                                                    shape = CircleShape,
+                                                    color = MaterialTheme.colorScheme.errorContainer,
                                                 ) {
-                                                    Icon(
-                                                        Icons.Filled.Delete,
-                                                        contentDescription = stringResource(R.string.delete_training),
-                                                        tint = MaterialTheme.colorScheme.error
-                                                    )
+                                                    Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                                                        Icon(
+                                                            Icons.Rounded.Delete,
+                                                            contentDescription = stringResource(R.string.delete_training),
+                                                            tint = MaterialTheme.colorScheme.error
+                                                        )
+                                                    }
                                                 }
                                                 Spacer(modifier = Modifier.width(8.dp))
                                                 Button(
@@ -761,7 +772,6 @@ fun TrainingView(
                                                     },
                                                     colors = ButtonDefaults.buttonColors(containerColor = cardColor),
                                                     shape = RoundedCornerShape(16.dp),
-                                                    elevation = ButtonDefaults.buttonElevation(defaultElevation = 4.dp, pressedElevation = 8.dp)
                                                 ) {
                                                     Icon(
                                                         Icons.Filled.Save,
@@ -794,8 +804,18 @@ fun TrainingView(
                     trainingToDelete = null
                 },
                 shape = RoundedCornerShape(28.dp),
-                title = { Text("⚠️ ${stringResource(R.string.delete_training)}", style = MaterialTheme.typography.headlineSmall, fontWeight = FontWeight.Bold) },
-                text = { Text(stringResource(R.string.delete_training_confirm, trainingToDelete?.name ?: ""), style = MaterialTheme.typography.bodyLarge) },
+                title = {
+                    Text(
+                        text = "⚠️ ${stringResource(R.string.delete_training)}",
+                        style = MaterialTheme.typography.labelLarge,
+                        fontSize = 20.sp
+                    )
+                        },
+                text = {
+                    Text(
+                        text = stringResource(R.string.delete_training_confirm, trainingToDelete?.name ?: ""),
+                        style = MaterialTheme.typography.bodyLarge)
+                       },
                 confirmButton = {
                     TextButton(
                         onClick = {
