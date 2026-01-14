@@ -73,6 +73,7 @@ import org.strawberryfoundations.reply.R
 import org.strawberryfoundations.reply.core.AppSettings
 import org.strawberryfoundations.reply.core.BackupManager
 import org.strawberryfoundations.reply.core.getAppVersion
+import org.strawberryfoundations.reply.ui.composable.WeightStepsDialog
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
@@ -624,54 +625,11 @@ fun SettingsView(
 
         // Weight Steps Dialog
         if (showDialog) {
-            var newStepInputDialog by remember { mutableStateOf("") }
-            AlertDialog(
-                onDismissRequest = { showDialog = false },
-                title = { Text(stringResource(R.string.edit_weight_steps)) },
-                text = {
-                    Column {
-                        settings.weightSteps.sorted().forEach { step ->
-                            Row(
-                                verticalAlignment = Alignment.CenterVertically,
-                                modifier = Modifier.fillMaxWidth()
-                            ) {
-                                Text(step.toString(), modifier = Modifier.weight(1f))
-                                IconButton(
-                                    onClick = {
-                                        onSettingsChange { copy(weightSteps = weightSteps - step) }
-                                    }
-                                ) {
-                                    Icon(Icons.Filled.Delete, contentDescription = stringResource(R.string.delete))
-                                }
-                            }
-                        }
-                        Spacer(Modifier.height(8.dp))
-                        androidx.compose.material3.OutlinedTextField(
-                            value = newStepInputDialog,
-                            onValueChange = { newStepInputDialog = it },
-                            label = { Text(stringResource(R.string.new_step)) },
-                            modifier = Modifier.fillMaxWidth()
-                        )
-                        Spacer(Modifier.height(8.dp))
-                        Button(
-                            onClick = {
-                                val value = newStepInputDialog.replace(',', '.').toDoubleOrNull()
-                                if (value != null && value > 0 && value !in settings.weightSteps) {
-                                    onSettingsChange { copy(weightSteps = weightSteps + value) }
-                                    newStepInputDialog = ""
-                                }
-                            },
-                            enabled = newStepInputDialog.isNotBlank()
-                        ) {
-                            Text(stringResource(R.string.add))
-                        }
-                    }
-                },
-                confirmButton = {
-                    androidx.compose.material3.TextButton(onClick = { showDialog = false }) {
-                        Text(stringResource(R.string.done))
-                    }
-                }
+            WeightStepsDialog(
+                weightSteps = settings.weightSteps,
+                onAddStep = { onSettingsChange { copy(weightSteps = weightSteps + it) } },
+                onRemoveStep = { onSettingsChange { copy(weightSteps = weightSteps - it) } },
+                onDismiss = { showDialog = false }
             )
         }
     }

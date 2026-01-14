@@ -15,7 +15,7 @@ android {
         minSdk = 33
         targetSdk = 36
         versionCode = 1
-        versionName = "2.0.0-beta3"
+        versionName = "2.0.0-beta4"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
@@ -48,6 +48,7 @@ kotlin {
 }
 
 dependencies {
+    implementation(libs.androidx.compose.foundation)
     val composeBom = platform(libs.androidx.compose.bom)
 
     // Compose
@@ -60,6 +61,7 @@ dependencies {
 
     // Material icons
     implementation(libs.androidx.material.icons.extended)
+    implementation(libs.androidx.navigation.compose)
 
     // DataStore
     implementation(libs.androidx.datastore.core)

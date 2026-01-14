@@ -3,7 +3,7 @@
     <!-- Navigation title strings -->
     <string name="workout">Workout</string>
     <string name="profile">Profil</string>
-    <string name="device">Gerät</string>
+    <string name="device">Mein Gerät</string>
     <string name="settings">Einstellungen</string>
 
     <!-- Basic strings -->
@@ -120,11 +120,11 @@
     <string name="backup_merge_success">Trainings erfolgreich hinzugefügt!</string>
 
     <!-- DeviceView specific strings  -->
-    <string name="device_sync_title">Gerät &amp; Synchronisation</string>
+    <string name="device_sync_title">Geräteübergreifende Synchronisierung</string>
     <string name="refresh">Aktualisieren</string>
     <string name="info">Info</string>
     <string name="device_status">Gerätestatus</string>
-    <string name="last_db_sync">Letzte DB-Synchronisation:</string>
+    <string name="last_db_sync">Letzte Synchronisierung:</string>
     <string name="nodes_discovered">Gefundene Nodes:</string>
     <string name="db_snapshot_queued">DB-Snapshot zum Senden eingereiht</string>
     <string name="no_trainings_to_send">Keine Trainings zum Senden</string>
@@ -139,4 +139,10 @@
     <string name="no_connected_nodes_found">Keine verbundenen Nodes gefunden.</string>
     <string name="your_workouts">Deine Workouts</string>
     <string name="back">Zurück</string>
+    <string name="connected">Verbunden</string>
+    <string name="not_connected">Nicht verbunden</string>
+    <string name="device_sync_description" >Durch die Kopplung mit einem Wearable werden deine Workouts und Trainingsdaten automatisch zwischen Smartphone und Smartwatch abgeglichen. \n\nSo hast du deine Routine auch während des Trainings immer im Blick, während deine Daten nahtlos in der App aktualisiert werden.</string>
+    <string name="statistics">Statistiken</string>
+    <string name="workouts">Workouts</string>
+    <string name="synchronize">Synchronisieren</string>
 </resources>

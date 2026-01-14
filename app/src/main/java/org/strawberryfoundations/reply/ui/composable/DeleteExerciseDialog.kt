@@ -9,12 +9,11 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.heightIn
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -27,26 +26,24 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
 import org.strawberryfoundations.reply.R
+import org.strawberryfoundations.reply.core.model.Exercise
 
 
 @Composable
-fun NoteEditDialog(
-    initialNote: String,
-    onNoteSave: (String) -> Unit,
+fun DeleteExerciseDialog(
+    exercise: Exercise,
+    onConfirm: () -> Unit,
     onDismiss: () -> Unit
 ) {
-    var currentNote by remember(initialNote) { mutableStateOf(initialNote) }
-
     var isVisible by remember { mutableStateOf(false) }
 
-    LaunchedEffect(Unit) {
-        isVisible = true
-    }
+    LaunchedEffect(Unit) { isVisible = true }
 
     val springSpec = spring<Float>(
         dampingRatio = Spring.DampingRatioMediumBouncy,
@@ -54,18 +51,15 @@ fun NoteEditDialog(
     )
 
     val scale by animateFloatAsState(
-        targetValue = if (isVisible) 1f else 0.8f,
+        targetValue = if (isVisible) 1f else 0.85f,
         animationSpec = springSpec,
         label = "scale"
     )
-
     val alpha by animateFloatAsState(
         targetValue = if (isVisible) 1f else 0f,
-        animationSpec = tween(durationMillis = 200),
+        animationSpec = tween(200),
         label = "alpha",
-        finishedListener = {
-            if (!isVisible) onDismiss()
-        }
+        finishedListener = { if (!isVisible) onDismiss() }
     )
 
     val closeWithAnimation = { isVisible = false }
@@ -88,36 +82,41 @@ fun NoteEditDialog(
         ) {
             Column(modifier = Modifier.padding(24.dp)) {
                 Text(
-                    text = stringResource(R.string.edit_note),
+                    text = "⚠️ ${stringResource(R.string.delete_training)}",
                     style = MaterialTheme.typography.labelLarge,
                     fontSize = 20.sp,
-                    modifier = Modifier.padding(bottom = 16.dp)
+                    color = MaterialTheme.colorScheme.error
                 )
 
-                OutlinedTextField(
-                    value = currentNote,
-                    onValueChange = { currentNote = it },
-                    label = { Text(stringResource(R.string.note)) },
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .heightIn(min = 120.dp),
+                Spacer(modifier = Modifier.height(16.dp))
+
+                Text(
+                    text = stringResource(R.string.delete_training_confirm, exercise.name),
+                    style = MaterialTheme.typography.bodyLarge,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
+
+                Spacer(modifier = Modifier.height(24.dp))
 
                 Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(top = 24.dp),
+                    modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.End
                 ) {
                     TextButton(onClick = closeWithAnimation) {
                         Text(stringResource(R.string.cancel))
                     }
                     Spacer(modifier = Modifier.width(8.dp))
-                    TextButton(onClick = {
-                        onNoteSave(currentNote)
-                        closeWithAnimation()
-                    }) {
-                        Text(stringResource(R.string.save))
+                    TextButton(
+                        onClick = {
+                            onConfirm()
+                            closeWithAnimation()
+                        }
+                    ) {
+                        Text(
+                            text = stringResource(R.string.delete_training),
+                            color = MaterialTheme.colorScheme.error,
+                            fontWeight = FontWeight.Bold
+                        )
                     }
                 }
             }

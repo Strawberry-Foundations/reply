@@ -24,13 +24,16 @@ import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialShapes
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
+import androidx.compose.material3.toShape
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -183,6 +186,7 @@ fun ProfileView() {
     }
 }
 
+@OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
 private fun LoggedInContent(
     userData: UserPreferences,
@@ -217,7 +221,7 @@ private fun LoggedInContent(
                     imageLoader = imageLoader,
                     modifier = Modifier
                         .size(96.dp)
-                        .clip(CircleShape),
+                        .clip(MaterialShapes.Cookie9Sided.toShape()),
                     contentScale = ContentScale.Crop,
                     placeholder = painterResource(R.drawable.ic_launcher),
                     error = painterResource(R.drawable.ic_launcher)

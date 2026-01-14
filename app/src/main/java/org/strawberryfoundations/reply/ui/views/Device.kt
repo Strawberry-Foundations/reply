@@ -18,10 +18,12 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.rounded.Send
+import androidx.compose.material.icons.rounded.BarChart
+import androidx.compose.material.icons.rounded.DeviceHub
 import androidx.compose.material.icons.rounded.Info
 import androidx.compose.material.icons.rounded.NearMe
 import androidx.compose.material.icons.rounded.NearMeDisabled
+import androidx.compose.material.icons.rounded.Refresh
 import androidx.compose.material.icons.rounded.Sync
 import androidx.compose.material.icons.rounded.Watch
 import androidx.compose.material3.Button
@@ -29,7 +31,6 @@ import androidx.compose.material3.ButtonGroup
 import androidx.compose.material3.Card
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
-import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
@@ -40,6 +41,8 @@ import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.material3.pulltorefresh.PullToRefreshDefaults
 import androidx.compose.material3.pulltorefresh.rememberPullToRefreshState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
@@ -47,10 +50,10 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.google.android.gms.wearable.Node
 import com.google.android.gms.wearable.Wearable
 import kotlinx.coroutines.Dispatchers
@@ -58,7 +61,9 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import org.strawberryfoundations.reply.R
+import org.strawberryfoundations.reply.core.AppSettings
 import org.strawberryfoundations.reply.database.AppDatabase
+import org.strawberryfoundations.reply.database.ExerciseViewModel
 import org.strawberryfoundations.reply.sync.DataSyncSender
 import org.strawberryfoundations.reply.ui.theme.customFont
 import java.text.SimpleDateFormat
@@ -69,16 +74,42 @@ import java.util.Locale
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterial3ExpressiveApi::class)
 @SuppressLint("LocalContextGetResourceValueCall", "UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
-fun DeviceView() {
+fun DeviceView(
+    settings: AppSettings,
+    viewModel: ExerciseViewModel = viewModel(),
+) {
     val context = LocalContext.current
     val scope = rememberCoroutineScope()
     val snackbarHostState = remember { SnackbarHostState() }
+
+    val workoutCount = viewModel.trainings.collectAsState().value.size
 
     val isSending = remember { mutableStateOf(false) }
     val isLoadingNodes = remember { mutableStateOf(false) }
     val nodesState = remember { mutableStateOf<List<Node>>(emptyList()) }
     val lastSync = remember { mutableStateOf<String?>(null) }
     val pullState = rememberPullToRefreshState()
+
+    LaunchedEffect( Unit ) {
+        scope.launch {
+            isLoadingNodes.value = true
+            try {
+                val nodeClient = Wearable.getNodeClient(context)
+                nodeClient.connectedNodes
+                    .addOnSuccessListener { nodes ->
+                        nodesState.value = nodes
+                        isLoadingNodes.value = false
+                    }
+                    .addOnFailureListener { e ->
+                        isLoadingNodes.value = false
+                        Log.w("DeviceView", "Failed listing nodes", e)
+                    }
+            } catch (e: Exception) {
+                isLoadingNodes.value = false
+                Log.w("DeviceView", "Error while checking nodes", e)
+            }
+        }
+    }
 
     Scaffold(
         snackbarHost = { SnackbarHost(hostState = snackbarHostState) }
@@ -123,8 +154,94 @@ fun DeviceView() {
             LazyColumn(
                 modifier = Modifier
                     .fillMaxSize()
-                    .padding(start = 8.dp, end = 8.dp, top = 8.dp)
+                    .padding(start = 12.dp, end = 12.dp, top = 8.dp)
             ) {
+
+                item { Spacer(modifier = Modifier.height(4.dp)) }
+
+                // Statistics
+                item {
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.spacedBy(4.dp),
+                    ) {
+                        Icon(
+                            imageVector = Icons.Rounded.BarChart,
+                            contentDescription = stringResource(id = R.string.statistics),
+                            tint = MaterialTheme.colorScheme.primary,
+                        )
+
+                        Text(
+                            text = stringResource(id = R.string.statistics),
+                            style = MaterialTheme.typography.titleLarge,
+                            color = MaterialTheme.colorScheme.primary,
+                        )
+                    }
+                }
+
+                item { Spacer(modifier = Modifier.height(8.dp)) }
+
+                item {
+                    Card(
+                        modifier = Modifier.fillMaxWidth(),
+                        shape = RoundedCornerShape(24.dp),
+                    ) {
+                        Column(modifier = Modifier.padding(12.dp)) {
+                            Row(
+                                modifier = Modifier.fillMaxWidth(),
+                                horizontalArrangement = Arrangement.SpaceBetween
+                            ) {
+                                Text(
+                                    text = stringResource(R.string.workouts),
+                                    style = MaterialTheme.typography.labelLarge,
+                                )
+                                Text(
+                                    text = workoutCount.toString(),
+                                    style = MaterialTheme.typography.bodyMedium,
+                                )
+                            }
+                        }
+                    }
+                }
+
+
+                item { Spacer(modifier = Modifier.height(12.dp)) }
+
+                // Device & Sync
+                item {
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.spacedBy(4.dp),
+                    ) {
+                        Icon(
+                            imageVector = Icons.Rounded.Sync,
+                            contentDescription = stringResource(id = R.string.device_sync_title),
+                            tint = MaterialTheme.colorScheme.primary,
+                        )
+
+                        Text(
+                            text = stringResource(id = R.string.device_sync_title),
+                            style = MaterialTheme.typography.titleLarge,
+                            color = MaterialTheme.colorScheme.primary,
+                            overflow = TextOverflow.Ellipsis,
+                            maxLines = 1
+                        )
+                    }
+                }
+
+                item { Spacer(modifier = Modifier.height(4.dp)) }
+
+                item {
+                    Text(
+                        text = stringResource(id = R.string.device_sync_description),
+                        style = MaterialTheme.typography.bodyMedium,
+                        lineHeight = 16.sp,
+                    )
+                }
+
+                item { Spacer(modifier = Modifier.height(12.dp)) }
+
+                // Device & Sync statistics
                 item {
                     Card(
                         modifier = Modifier.fillMaxWidth(),
@@ -153,7 +270,7 @@ fun DeviceView() {
                             ) {
                                 Text(
                                     text = stringResource(id = R.string.last_db_sync),
-                                    style = MaterialTheme.typography.labelLarge.copy(fontWeight = FontWeight.Bold),
+                                    style = MaterialTheme.typography.labelLarge,
                                     fontSize = 15.sp,
                                 )
                                 Text(
@@ -171,7 +288,7 @@ fun DeviceView() {
                             ) {
                                 Text(
                                     text = stringResource(id = R.string.nodes_discovered),
-                                    style = MaterialTheme.typography.labelLarge.copy(fontWeight = FontWeight.Bold),
+                                    style = MaterialTheme.typography.labelLarge,
                                     fontSize = 15.sp,
                                 )
                                 Text(
@@ -186,8 +303,8 @@ fun DeviceView() {
 
                 item { Spacer(modifier = Modifier.height(12.dp)) }
 
+                // Actions
                 item {
-                    // Actions
                     Row(
                         modifier = Modifier.fillMaxWidth(),
                         horizontalArrangement = Arrangement.Center,
@@ -204,7 +321,7 @@ fun DeviceView() {
                                             val trainings = withContext(Dispatchers.IO) { dao.getAll().first() }
                                             if (trainings.isNotEmpty()) {
                                                 DataSyncSender.sendDbSnapshot(context, trainings)
-                                                val fmt = SimpleDateFormat("yyyy-MM-dd HH:mm", Locale.getDefault())
+                                                val fmt = SimpleDateFormat("dd.MM.yy HH:mm", Locale.getDefault())
                                                 lastSync.value = fmt.format(Date())
                                                 scope.launch { snackbarHostState.showSnackbar(context.getString(R.string.db_snapshot_queued)) }
                                             } else {
@@ -219,13 +336,13 @@ fun DeviceView() {
                                     }
                                 }) {
                                 Icon(
-                                    imageVector = Icons.AutoMirrored.Rounded.Send,
+                                    imageVector = Icons.Rounded.Sync,
                                     contentDescription = stringResource(id = R.string.send),
                                     modifier = Modifier.padding(end = 2.dp)
                                 )
                                 Spacer(modifier = Modifier.width(8.dp))
                                 Text(
-                                    text = stringResource(id = R.string.send_db_snapshot),
+                                    text = stringResource(id = R.string.synchronize),
                                     style = MaterialTheme.typography.labelLarge,
                                 )
                             }
@@ -255,7 +372,7 @@ fun DeviceView() {
                                     }
                                 }) {
                                 Icon(
-                                    imageVector = Icons.Rounded.Sync,
+                                    imageVector = Icons.Rounded.Refresh,
                                     contentDescription = stringResource(id = R.string.device_sync_title),
                                     modifier = Modifier.padding(end = 2.dp)
                                 )
@@ -267,17 +384,24 @@ fun DeviceView() {
 
                 item { Spacer(modifier = Modifier.height(12.dp)) }
 
-                item { HorizontalDivider() }
-
-                item { Spacer(modifier = Modifier.height(12.dp)) }
-
+                // Connected nodes
                 item {
-                    // Node list
-                    Text(
-                        text = stringResource(id = R.string.connected_nodes),
-                        style = MaterialTheme.typography.titleMedium,
-                        fontSize = 17.sp
-                    )
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.spacedBy(4.dp),
+                    ) {
+                        Icon(
+                            imageVector = Icons.Rounded.DeviceHub,
+                            contentDescription = stringResource(id = R.string.connected_nodes),
+                            tint = MaterialTheme.colorScheme.primary,
+                        )
+
+                        Text(
+                            text = stringResource(id = R.string.connected_nodes),
+                            style = MaterialTheme.typography.titleLarge,
+                            color = MaterialTheme.colorScheme.primary,
+                        )
+                    }
                 }
                 
                 item { Spacer(modifier = Modifier.height(8.dp)) }
@@ -308,7 +432,8 @@ fun DeviceView() {
                                     Icon(
                                         imageVector = Icons.Rounded.Watch,
                                         contentDescription = stringResource(id = R.string.info),
-                                        modifier = Modifier.padding(end = 8.dp)
+                                        modifier = Modifier.padding(end = 8.dp),
+                                        tint = MaterialTheme.colorScheme.primary
                                     )
 
                                     Column(modifier = Modifier.weight(1f)) {
@@ -317,6 +442,7 @@ fun DeviceView() {
                                             style = MaterialTheme.typography.titleSmall,
                                             fontSize = 15.sp,
                                             maxLines = 1,
+                                            color = MaterialTheme.colorScheme.onSurface,
                                             overflow = TextOverflow.Ellipsis
                                         )
                                         Text(
@@ -349,7 +475,7 @@ fun DeviceView() {
                                             )
 
                                             Text(
-                                                text = node.isNearby.toString(),
+                                                text = if (node.isNearby) stringResource(R.string.connected) else stringResource(R.string.not_connected),
                                                 style = MaterialTheme.typography.labelSmall,
                                                 color = MaterialTheme.colorScheme.onSurface,
                                                 fontSize = 13.sp,

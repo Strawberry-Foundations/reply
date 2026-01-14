@@ -85,6 +85,8 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import org.strawberryfoundations.material.symbols.MaterialSymbols
+import org.strawberryfoundations.material.symbols.default.Check
 import org.strawberryfoundations.reply.R
 import org.strawberryfoundations.reply.core.AppSettings
 import org.strawberryfoundations.reply.core.model.Exercise
@@ -93,6 +95,7 @@ import org.strawberryfoundations.reply.core.model.getExerciseGroupEmoji
 import org.strawberryfoundations.reply.core.model.getExerciseGroupStringResource
 import org.strawberryfoundations.reply.database.ExerciseViewModel
 import org.strawberryfoundations.reply.ui.composable.ColorPickerDialog
+import org.strawberryfoundations.reply.ui.composable.DeleteExerciseDialog
 import org.strawberryfoundations.reply.ui.composable.NoteEditDialog
 import org.strawberryfoundations.reply.ui.theme.colorToHex
 import org.strawberryfoundations.reply.ui.theme.customFont
@@ -240,9 +243,9 @@ fun TrainingView(
                             ButtonDefaults.filledTonalButtonColors()
                         },
                         shape = if (isSelected) {
-                            RoundedCornerShape(20.dp)
+                            RoundedCornerShape(16.dp)
                         } else {
-                            RoundedCornerShape(28.dp)
+                            RoundedCornerShape(24.dp)
                         },
                         modifier = Modifier
                             .graphicsLayer {
@@ -258,7 +261,7 @@ fun TrainingView(
                                 verticalAlignment = Alignment.CenterVertically
                             ) {
                                 Icon(
-                                    imageVector = Icons.Default.Check,
+                                    imageVector = MaterialSymbols.Default.Check,
                                     contentDescription = "selected",
                                 )
                                 Spacer(Modifier.width(6.dp))
@@ -271,7 +274,6 @@ fun TrainingView(
                             Text(
                                 text = label,
                                 fontSize = 14.sp,
-                                modifier = Modifier.padding(horizontal = 4.dp)
                             )
                         }
                     }
@@ -488,7 +490,8 @@ fun TrainingView(
                                                             )
                                                                 },
                                                         modifier = Modifier.fillMaxWidth(),
-                                                        colors = textFieldColors
+                                                        colors = textFieldColors,
+                                                        shape = RoundedCornerShape(12.dp)
                                                     )
                                                     Spacer(modifier = Modifier.height(8.dp))
 
@@ -517,7 +520,8 @@ fun TrainingView(
                                                                     tint = textColor
                                                                 )
                                                             },
-                                                            colors = textFieldColors
+                                                            colors = textFieldColors,
+                                                            shape = RoundedCornerShape(12.dp)
                                                         )
                                                         Box(
                                                             modifier = Modifier
@@ -533,7 +537,8 @@ fun TrainingView(
                                                                 .background(
                                                                     color = cardColor,
                                                                 )
-                                                                .clip(RoundedCornerShape(12.dp))
+                                                                .clip(RoundedCornerShape(12.dp)),
+                                                            shape = RoundedCornerShape(12.dp)
                                                         ) {
                                                             val groupOptions = remember { ExerciseGroup.entries.toTypedArray() }
 
@@ -609,7 +614,8 @@ fun TrainingView(
                                                                 },
                                                         singleLine = true,
                                                         modifier = Modifier.fillMaxWidth(),
-                                                        colors = textFieldColors
+                                                        colors = textFieldColors,
+                                                        shape = RoundedCornerShape(12.dp)
                                                     )
                                                     Spacer(modifier = Modifier.height(8.dp))
                                                     val steps = remember { settings.weightSteps.sorted() }
@@ -630,6 +636,10 @@ fun TrainingView(
                                                                         val current = weight ?: 0.0
                                                                         val newWeight = (current - stepValue).coerceAtLeast(0.0)
                                                                         weight = if (newWeight.rem(1.0) == 0.0) newWeight.toInt().toDouble() else String.format(Locale.US, "%.3f", newWeight).trimEnd('0').trimEnd('.').toDouble()
+
+                                                                        if (settings.useHapticFeedback) {
+                                                                            haptic.performHapticFeedback(HapticFeedbackType.KeyboardTap)
+                                                                        }
                                                                     },
                                                                     modifier = Modifier.size(32.dp)
                                                                 ) {
@@ -653,6 +663,10 @@ fun TrainingView(
                                                                         val current = weight ?: 0.0
                                                                         val newWeight = current + stepValue
                                                                         weight = if (newWeight.rem(1.0) == 0.0) newWeight.toInt().toDouble() else String.format(Locale.US, "%.3f", newWeight).trimEnd('0').trimEnd('.').toDouble()
+
+                                                                        if (settings.useHapticFeedback) {
+                                                                            haptic.performHapticFeedback(HapticFeedbackType.KeyboardTap)
+                                                                        }
                                                                     },
                                                                     modifier = Modifier.size(32.dp)
                                                                 ) {
@@ -744,6 +758,9 @@ fun TrainingView(
                                                         .clickable {
                                                             trainingToDelete = exercise
                                                             showDeleteDialog = true
+                                                            if (settings.useHapticFeedback) {
+                                                                haptic.performHapticFeedback(HapticFeedbackType.Reject)
+                                                            }
                                                         },
                                                     shape = CircleShape,
                                                     color = MaterialTheme.colorScheme.errorContainer,
@@ -769,6 +786,10 @@ fun TrainingView(
                                                             )
                                                         )
                                                         expandedItemIndex = -1
+
+                                                        if (settings.useHapticFeedback) {
+                                                            haptic.performHapticFeedback(HapticFeedbackType.Confirm)
+                                                        }
                                                     },
                                                     colors = ButtonDefaults.buttonColors(containerColor = cardColor),
                                                     shape = RoundedCornerShape(16.dp),
@@ -798,46 +819,10 @@ fun TrainingView(
         }
 
         if (showDeleteDialog && trainingToDelete != null) {
-            AlertDialog(
-                onDismissRequest = {
-                    showDeleteDialog = false
-                    trainingToDelete = null
-                },
-                shape = RoundedCornerShape(28.dp),
-                title = {
-                    Text(
-                        text = "⚠️ ${stringResource(R.string.delete_training)}",
-                        style = MaterialTheme.typography.labelLarge,
-                        fontSize = 20.sp
-                    )
-                        },
-                text = {
-                    Text(
-                        text = stringResource(R.string.delete_training_confirm, trainingToDelete?.name ?: ""),
-                        style = MaterialTheme.typography.bodyLarge)
-                       },
-                confirmButton = {
-                    TextButton(
-                        onClick = {
-                            trainingToDelete?.let { viewModel.delete(it) }
-                            showDeleteDialog = false
-                            trainingToDelete = null
-                            expandedItemIndex = -1
-                        }
-                    ) {
-                        Text(stringResource(R.string.delete_training), color = MaterialTheme.colorScheme.error, fontWeight = FontWeight.Bold)
-                    }
-                },
-                dismissButton = {
-                    TextButton(
-                        onClick = {
-                            showDeleteDialog = false
-                            trainingToDelete = null
-                        }
-                    ) {
-                        Text(stringResource(R.string.cancel))
-                    }
-                }
+            DeleteExerciseDialog(
+                exercise = trainingToDelete!!,
+                onConfirm = { viewModel.delete(trainingToDelete!!) },
+                onDismiss = { showDeleteDialog = false }
             )
         }
     } // Ende Scaffold

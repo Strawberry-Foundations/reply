@@ -21,6 +21,8 @@ roomKtx = "2.8.4"
 ksp = "2.1.21-2.0.1"
 room = "2.8.4"
 playServicesWearable = "19.0.0"
+navigationCompose = "2.9.6"
+foundation = "1.10.0"
 
 
 [libraries]
@@ -52,6 +54,8 @@ kotlinx-serialization-json = { module = "org.jetbrains.kotlinx:kotlinx-serializa
 ktor-client-cio = { module = "io.ktor:ktor-client-cio", version.ref = "ktorClientCio" }
 ktor-client-core = { module = "io.ktor:ktor-client-core", version.ref = "ktorClientCore" }
 wear-gms-playservices = { module = "com.google.android.gms:play-services-wearable", version.ref = "playServicesWearable"}
+androidx-navigation-compose = { group = "androidx.navigation", name = "navigation-compose", version.ref = "navigationCompose" }
+androidx-compose-foundation = { group = "androidx.compose.foundation", name = "foundation", version.ref = "foundation" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
