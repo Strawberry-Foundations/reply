@@ -10,8 +10,8 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.serialization.json.Json
-import org.strawberryfoundations.reply.core.model.Exercise
-import org.strawberryfoundations.reply.database.AppDatabase
+import org.strawberryfoundations.reply.room.entities.Exercise
+import org.strawberryfoundations.reply.room.AppDatabase
 
 
 class DataSyncReceiver : WearableListenerService() {

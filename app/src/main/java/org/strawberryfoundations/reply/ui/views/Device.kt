@@ -48,6 +48,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
@@ -62,8 +63,8 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import org.strawberryfoundations.reply.R
 import org.strawberryfoundations.reply.core.AppSettings
-import org.strawberryfoundations.reply.database.AppDatabase
-import org.strawberryfoundations.reply.database.ExerciseViewModel
+import org.strawberryfoundations.reply.room.AppDatabase
+import org.strawberryfoundations.reply.room.ExerciseViewModel
 import org.strawberryfoundations.reply.sync.DataSyncSender
 import org.strawberryfoundations.reply.ui.theme.customFont
 import java.text.SimpleDateFormat
@@ -112,6 +113,7 @@ fun DeviceView(
     }
 
     Scaffold(
+        containerColor = Color.Transparent,
         snackbarHost = { SnackbarHost(hostState = snackbarHostState) }
     ) { _ ->
         PullToRefreshBox(

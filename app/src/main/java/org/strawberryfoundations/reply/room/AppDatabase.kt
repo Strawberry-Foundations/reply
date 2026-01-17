@@ -1,6 +1,6 @@
-package org.strawberryfoundations.reply.database
+package org.strawberryfoundations.reply.room
 
-import org.strawberryfoundations.reply.core.model.Exercise
+import org.strawberryfoundations.reply.room.entities.Exercise
 import android.content.Context
 import androidx.room.Database
 import androidx.room.Room
@@ -9,7 +9,7 @@ import androidx.room.migration.Migration
 import androidx.sqlite.db.SupportSQLiteDatabase
 
 
-@Database(entities = [Exercise::class], version = 4)
+@Database(entities = [Exercise::class], version = 5)
 abstract class AppDatabase : RoomDatabase() {
     abstract fun trainingDao(): ExerciseDao
 
@@ -46,13 +46,21 @@ abstract class AppDatabase : RoomDatabase() {
             }
         }
 
+        val MIGRATION_4_5 = object : Migration(4, 5) {
+            override fun migrate(db: SupportSQLiteDatabase) {
+                db.execSQL("ALTER TABLE trainings ADD COLUMN alt_name TEXT NULL")
+            }
+        }
+
         fun getInstance(context: Context): AppDatabase =
             INSTANCE ?: synchronized(this) {
                 INSTANCE ?: Room.databaseBuilder(
                     context.applicationContext,
                     AppDatabase::class.java, "training_db"
                 )
-                    .addMigrations(MIGRATION_2_3, MIGRATION_3_4)
+                    .addMigrations(
+                        MIGRATION_2_3, MIGRATION_3_4, MIGRATION_4_5
+                    )
                     .build().also { INSTANCE = it }
             }
     }

@@ -1,6 +1,6 @@
-package org.strawberryfoundations.reply.database
+package org.strawberryfoundations.reply.room
 
-import org.strawberryfoundations.reply.core.model.Exercise
+import org.strawberryfoundations.reply.room.entities.Exercise
 import androidx.room.*
 import kotlinx.coroutines.flow.Flow
 

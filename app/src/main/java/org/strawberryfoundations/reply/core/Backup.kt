@@ -4,9 +4,9 @@ import android.content.Context
 import kotlinx.coroutines.flow.first
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.Json
-import org.strawberryfoundations.reply.core.model.Exercise
+import org.strawberryfoundations.reply.room.entities.Exercise
 import org.strawberryfoundations.reply.core.model.UserPreferences
-import org.strawberryfoundations.reply.database.AppDatabase
+import org.strawberryfoundations.reply.room.AppDatabase
 import java.io.InputStream
 import java.io.OutputStream
 import java.text.SimpleDateFormat

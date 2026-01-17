@@ -54,6 +54,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.platform.LocalContext
@@ -360,7 +361,7 @@ fun SettingsView(
 
     var showDialog by remember { mutableStateOf(false) }
 
-    Scaffold { _ ->
+    Scaffold(containerColor = Color.Transparent) { _ ->
         LazyColumn(
             modifier = Modifier
                 .fillMaxSize()

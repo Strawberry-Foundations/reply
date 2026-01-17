@@ -1,4 +1,4 @@
-package org.strawberryfoundations.reply.database
+package org.strawberryfoundations.reply.room
 
 import android.app.Application
 import androidx.lifecycle.AndroidViewModel
@@ -7,7 +7,7 @@ import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
-import org.strawberryfoundations.reply.core.model.Exercise
+import org.strawberryfoundations.reply.room.entities.Exercise
 
 
 class ExerciseViewModel(application: Application): AndroidViewModel(application) {

@@ -12,6 +12,7 @@ import androidx.compose.animation.expandVertically
 import androidx.compose.animation.shrinkVertically
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -45,7 +46,6 @@ import androidx.compose.material.icons.filled.EditNote
 import androidx.compose.material.icons.filled.Remove
 import androidx.compose.material.icons.filled.Save
 import androidx.compose.material.icons.rounded.Delete
-import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
@@ -61,7 +61,6 @@ import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.derivedStateOf
@@ -89,11 +88,11 @@ import org.strawberryfoundations.material.symbols.MaterialSymbols
 import org.strawberryfoundations.material.symbols.default.Check
 import org.strawberryfoundations.reply.R
 import org.strawberryfoundations.reply.core.AppSettings
-import org.strawberryfoundations.reply.core.model.Exercise
-import org.strawberryfoundations.reply.core.model.ExerciseGroup
-import org.strawberryfoundations.reply.core.model.getExerciseGroupEmoji
-import org.strawberryfoundations.reply.core.model.getExerciseGroupStringResource
-import org.strawberryfoundations.reply.database.ExerciseViewModel
+import org.strawberryfoundations.reply.room.entities.Exercise
+import org.strawberryfoundations.reply.room.entities.ExerciseGroup
+import org.strawberryfoundations.reply.room.entities.getExerciseGroupEmoji
+import org.strawberryfoundations.reply.room.entities.getExerciseGroupStringResource
+import org.strawberryfoundations.reply.room.ExerciseViewModel
 import org.strawberryfoundations.reply.ui.composable.ColorPickerDialog
 import org.strawberryfoundations.reply.ui.composable.DeleteExerciseDialog
 import org.strawberryfoundations.reply.ui.composable.NoteEditDialog
@@ -121,6 +120,7 @@ fun rememberFormattedStep(step: Double): String {
 fun TrainingView(
     viewModel: ExerciseViewModel = viewModel(),
     settings: AppSettings,
+    onExerciseClick: (Long) -> Unit,
 ) {
     // Basic variable initialization
     val haptic = LocalHapticFeedback.current
@@ -165,6 +165,7 @@ fun TrainingView(
     val listState = rememberLazyListState()
 
     Scaffold(
+        containerColor = Color.Transparent,
         floatingActionButton = {
             AnimatedVisibility(visible = expandedItemIndex == -1) {
                 val strNewTrainingName = stringResource(R.string.add_training)
@@ -330,12 +331,15 @@ fun TrainingView(
                                 .fillMaxWidth()
                                 .padding(vertical = 6.dp)
                                 .graphicsLayer { scaleX = cardScale; scaleY = cardScale }
-                                .clickable {
-                                    expandedItemIndex = if (isExpanded) -1 else index
-                                    if (settings.useHapticFeedback) {
-                                        haptic.performHapticFeedback(HapticFeedbackType.Confirm)
+                                .combinedClickable(
+                                    onClick = { onExerciseClick(exercise.id) },
+                                    onLongClick = {
+                                        expandedItemIndex = if (isExpanded) -1 else index
+                                        if (settings.useHapticFeedback) {
+                                            haptic.performHapticFeedback(HapticFeedbackType.Confirm)
+                                        }
                                     }
-                                },
+                                ),
                             colors = CardDefaults.cardColors(containerColor = cardColor),
                             shape = RoundedCornerShape(24.dp),
                             elevation = CardDefaults.cardElevation(

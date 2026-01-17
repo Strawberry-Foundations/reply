@@ -1,4 +1,4 @@
-package org.strawberryfoundations.reply.core.model
+package org.strawberryfoundations.reply.room.entities
 
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.res.stringResource
@@ -45,6 +45,7 @@ data class Exercise(
     @PrimaryKey(autoGenerate = true) val id: Long = 0L,
 
     val name: String,
+    @ColumnInfo(name = "alt_name") val altName: String? = null,
     val weight: Double? = null,
     @ColumnInfo(name = "weight_unit") val weightUnit: String = "kg",
     val note: String = "",
