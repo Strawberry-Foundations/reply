@@ -69,15 +69,15 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
-import coil.compose.AsyncImage
-import coil.request.ImageRequest
-import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.launch
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
+import coil.compose.AsyncImage
+import coil.request.ImageRequest
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.launch
 import org.strawberryfoundations.material.symbols.MaterialSymbols
 import org.strawberryfoundations.material.symbols.filled.DevicesWearables
 import org.strawberryfoundations.material.symbols.filled.Exercise
@@ -89,8 +89,6 @@ import org.strawberryfoundations.reply.core.SettingsDataStore
 import org.strawberryfoundations.reply.core.getUserDataFlow
 import org.strawberryfoundations.reply.core.model.UserPreferences
 import org.strawberryfoundations.reply.room.ExerciseViewModel
-import org.strawberryfoundations.reply.room.entities.ExerciseGroup
-import org.strawberryfoundations.reply.room.entities.getExerciseGroupEmoji
 import org.strawberryfoundations.reply.ui.theme.AppTheme
 import org.strawberryfoundations.reply.ui.theme.darkenColor
 import org.strawberryfoundations.reply.ui.theme.hexToColor
@@ -137,7 +135,8 @@ fun MainViewWithPersistence(settingsDataStore: SettingsDataStore) {
 // Composable: MainView
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @OptIn(
-    ExperimentalMaterial3Api::class,ExperimentalAnimationApi::class,
+    ExperimentalMaterial3Api::class,
+    ExperimentalAnimationApi::class,
     ExperimentalMaterial3ExpressiveApi::class
 )
 @Composable
@@ -191,12 +190,13 @@ fun MainView(
         showProfile = false
     }
 
+    // Navigation host
     NavHost(
         navController = rootNavController,
         startDestination = "main",
         modifier = Modifier
             .fillMaxSize()
-            .background(MaterialTheme.colorScheme.background),
+            .background(color = MaterialTheme.colorScheme.background),
         enterTransition = {
             fadeIn(tween(300)) + slideInHorizontally(
                 initialOffsetX = { it / 8 },
@@ -222,12 +222,15 @@ fun MainView(
             )
         }
     ) {
+        // Navigation Route: main
         composable("main") {
+            // Main Scaffold
             Box(modifier = Modifier.fillMaxSize()) {
                 Scaffold(
                     modifier = Modifier.fillMaxSize(),
                     containerColor = MaterialTheme.colorScheme.background,
                     topBar = {
+                        // Top App Bar
                         CenterAlignedTopAppBar(
                             navigationIcon = {
                                 AnimatedContent(
@@ -243,12 +246,6 @@ fun MainView(
                                 }
                             },
                             title = {
-
-                                /* Text(
-                                    text = items[index],
-                                    style = MaterialTheme.typography.displayLarge,
-                                    fontSize = 24.sp
-                                ) */
                                 Row(
                                     modifier = Modifier.fillMaxWidth(),
                                     horizontalArrangement = Arrangement.Center
@@ -271,16 +268,16 @@ fun MainView(
                                 IconButton(onClick = { showProfile = true }) {
                                     AsyncImage(
                                         model = ImageRequest.Builder(context)
-                                            .data(userData?.profilePictureUrl)
-                                            .memoryCacheKey(userData?.username ?: "default")
-                                            .diskCacheKey(userData?.username ?: "default")
-                                            .crossfade(true)
+                                            .data(data = userData?.profilePictureUrl)
+                                            .memoryCacheKey(key = userData?.username ?: "default")
+                                            .diskCacheKey(key = userData?.username ?: "default")
+                                            .crossfade(enable = true)
                                             .build(),
                                         contentDescription = stringResource(R.string.profile_picture),
                                         imageLoader = imageLoader,
                                         modifier = Modifier
-                                            .size(38.dp)
-                                            .clip(MaterialShapes.Cookie9Sided.toShape()),
+                                            .size(size = 38.dp)
+                                            .clip(shape = MaterialShapes.Cookie9Sided.toShape()),
                                         contentScale = ContentScale.Crop,
                                         placeholder = painterResource(R.drawable.ic_launcher),
                                         error = painterResource(R.drawable.ic_launcher)
@@ -329,6 +326,7 @@ fun MainView(
                         }
                     },
                 ) { innerPadding ->
+                    // Main pages
                     AnimatedContent(
                         targetState = selectedItem,
                         modifier = Modifier
@@ -353,6 +351,7 @@ fun MainView(
                     }
                 }
 
+                // Profile page overlay
                 AnimatedVisibility(
                     visible = showProfile,
                     enter = slideInHorizontally(
@@ -402,6 +401,8 @@ fun MainView(
                 }
             }
         }
+
+        // Navigation Route: exerciseDetail/{exerciseId}
         composable(
             route = "exerciseDetail/{exerciseId}",
             arguments = listOf(navArgument("exerciseId") { type = NavType.LongType })

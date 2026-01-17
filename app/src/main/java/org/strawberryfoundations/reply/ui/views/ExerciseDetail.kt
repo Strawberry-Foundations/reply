@@ -15,15 +15,14 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.rounded.Label
-import androidx.compose.material.icons.filled.Info
-import androidx.compose.material.icons.filled.PlayArrow
-import androidx.compose.material.icons.rounded.EditNote
+import androidx.compose.material.icons.rounded.Info
+import androidx.compose.material.icons.rounded.PlayArrow
+import androidx.compose.material.icons.rounded.Edit
 import androidx.compose.material.icons.rounded.Layers
 import androidx.compose.material.icons.rounded.Save
 import androidx.compose.material3.BottomSheetDefaults
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.ContainedLoadingIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.Icon
@@ -105,7 +104,7 @@ fun ExerciseDetail(
 
                 IconButton(onClick = { showEditSheet = true }) {
                     Icon(
-                        imageVector = Icons.Rounded.EditNote,
+                        imageVector = Icons.Rounded.Edit,
                         contentDescription = null,
                         tint = MaterialTheme.colorScheme.primary
                     )
@@ -163,7 +162,7 @@ fun ExerciseDetail(
                         verticalAlignment = Alignment.Top
                     ) {
                         Icon(
-                            imageVector = Icons.Default.Info,
+                            imageVector = Icons.Rounded.Info,
                             contentDescription = null,
                             modifier = Modifier.size(20.dp),
                             tint = MaterialTheme.colorScheme.primary
@@ -246,7 +245,7 @@ fun ExerciseDetail(
                 containerColor = Color(0xFFD32F2F)
             )
         ) {
-            Icon(Icons.Default.PlayArrow, null, modifier = Modifier.size(28.dp))
+            Icon(Icons.Rounded.PlayArrow, null, modifier = Modifier.size(28.dp))
             Spacer(modifier = Modifier.width(12.dp))
             Text(
                 text = "ÜBUNG STARTEN",
@@ -317,7 +316,6 @@ fun EditExerciseContent(
             leadingIcon = { Icon(Icons.AutoMirrored.Rounded.Label, null, modifier = Modifier.size(18.dp)) }
         )
 
-        // Gewicht-Sektion mit deinen Quick-Add Buttons
         Column(modifier = Modifier.fillMaxWidth()) {
             OutlinedTextField(
                 value = weight.toString(),
@@ -348,7 +346,7 @@ fun EditExerciseContent(
         OutlinedTextField(
             value = note,
             onValueChange = { note = it },
-            label = { Text("Notiz / Einstellung") },
+            label = { Text("Notiz") },
             modifier = Modifier.fillMaxWidth(),
             minLines = 3,
             shape = RoundedCornerShape(12.dp)
