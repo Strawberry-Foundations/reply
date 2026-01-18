@@ -310,7 +310,8 @@ fun ExerciseDetail(
                 viewModel.update(updatedExercise)
                 showEditSheet = false
             },
-            onDismiss = { showEditSheet = false }
+            onDismiss = { showEditSheet = false },
+            settings = settings
         )
     }
 
