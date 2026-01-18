@@ -45,11 +45,13 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import org.strawberryfoundations.reply.R
 import org.strawberryfoundations.reply.room.ExerciseViewModel
 import org.strawberryfoundations.reply.room.entities.Exercise
 import org.strawberryfoundations.reply.room.entities.getExerciseGroupEmoji
@@ -184,14 +186,14 @@ fun ExerciseDetail(
                 horizontalArrangement = Arrangement.spacedBy(16.dp)
             ) {
                 StatCard(
-                    label = "Bestleistung",
+                    label = stringResource(R.string.best_performance),
                     value = "160.0 kg",
                     icon = "🏆",
                     modifier = Modifier.weight(1f),
                     shapeColor = Color(0xFFD77F10)
                 )
                 StatCard(
-                    label = "Zuletzt",
+                    label = stringResource(R.string.last_performance),
                     value = "${exercise.weight} kg",
                     icon = "⏱️",
                     modifier = Modifier.weight(1f),
@@ -202,7 +204,7 @@ fun ExerciseDetail(
             Spacer(modifier = Modifier.height(32.dp))
 
             Text(
-                text = "Verlauf",
+                text = stringResource(R.string.history),
                 style = MaterialTheme.typography.titleMedium,
                 fontWeight = FontWeight.Bold
             )
@@ -218,7 +220,7 @@ fun ExerciseDetail(
             ) {
                 Box(contentAlignment = Alignment.Center) {
                     Text(
-                        text = "Hier erscheint bald dein Fortschritts-Graph",
+                        text = stringResource(R.string.progress_graph_soon),
                         style = MaterialTheme.typography.bodySmall,
                         color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
@@ -248,7 +250,7 @@ fun ExerciseDetail(
             Icon(Icons.Rounded.PlayArrow, null, modifier = Modifier.size(28.dp))
             Spacer(modifier = Modifier.width(12.dp))
             Text(
-                text = "ÜBUNG STARTEN",
+                text = stringResource(R.string.start_exercise),
                 style = MaterialTheme.typography.labelLarge,
                 fontWeight = FontWeight.ExtraBold,
                 letterSpacing = 1.sp
@@ -294,7 +296,7 @@ fun EditExerciseContent(
         verticalArrangement = Arrangement.spacedBy(16.dp)
     ) {
         Text(
-            text = "Übung bearbeiten",
+            text = stringResource(R.string.edit_exercise),
             style = MaterialTheme.typography.titleLarge,
             fontWeight = FontWeight.Bold
         )
@@ -302,7 +304,7 @@ fun EditExerciseContent(
         OutlinedTextField(
             value = name,
             onValueChange = { name = it },
-            label = { Text("Name") },
+            label = { Text(stringResource(R.string.name)) },
             modifier = Modifier.fillMaxWidth(),
             shape = RoundedCornerShape(12.dp)
         )
@@ -310,7 +312,7 @@ fun EditExerciseContent(
         OutlinedTextField(
             value = altName,
             onValueChange = { altName = it },
-            label = { Text("Alternativer Name") },
+            label = { Text(stringResource(R.string.alt_name)) },
             modifier = Modifier.fillMaxWidth(),
             shape = RoundedCornerShape(12.dp),
             leadingIcon = { Icon(Icons.AutoMirrored.Rounded.Label, null, modifier = Modifier.size(18.dp)) }
@@ -320,7 +322,7 @@ fun EditExerciseContent(
             OutlinedTextField(
                 value = weight.toString(),
                 onValueChange = { weight = it.toDoubleOrNull() ?: weight },
-                label = { Text("Gewicht (kg)") },
+                label = { Text(stringResource(R.string.weight_kg)) },
                 modifier = Modifier.fillMaxWidth(),
                 shape = RoundedCornerShape(12.dp),
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal)
@@ -346,7 +348,7 @@ fun EditExerciseContent(
         OutlinedTextField(
             value = note,
             onValueChange = { note = it },
-            label = { Text("Notiz") },
+            label = { Text(stringResource(R.string.note)) },
             modifier = Modifier.fillMaxWidth(),
             minLines = 3,
             shape = RoundedCornerShape(12.dp)
@@ -363,7 +365,7 @@ fun EditExerciseContent(
         ) {
             Icon(Icons.Rounded.Save, null)
             Spacer(modifier = Modifier.width(8.dp))
-            Text("Speichern")
+            Text(stringResource(R.string.save))
         }
     }
 }

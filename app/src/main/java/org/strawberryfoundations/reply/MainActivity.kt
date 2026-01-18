@@ -22,14 +22,18 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.statusBars
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material.icons.outlined.Settings
+import androidx.compose.material.icons.rounded.Close
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.ContainedLoadingIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -366,36 +370,33 @@ fun MainView(
                         animationSpec = tween(300)
                     )
                 ) {
-                    Scaffold(
-                        modifier = Modifier.fillMaxSize(),
-                        containerColor = MaterialTheme.colorScheme.background,
-                        topBar = {
-                            CenterAlignedTopAppBar(
-                                navigationIcon = {
-                                    IconButton(onClick = { showProfile = false }) {
-                                        Icon(
-                                            imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                                            contentDescription = stringResource(R.string.back),
-                                            modifier = Modifier.size(24.dp)
-                                        )
-                                    }
-                                },
-                                title = {
-                                    Text(
-                                        text = stringResource(R.string.profile),
-                                        style = MaterialTheme.typography.displayLarge,
-                                        fontSize = 24.sp
-                                    )
-                                },
-                                colors = TopAppBarDefaults.topAppBarColors(
-                                    containerColor = navBarColor,
-                                    scrolledContainerColor = navBarColor
-                                )
-                            )
-                        }
-                    ) { innerPadding ->
-                        Column(modifier = Modifier.padding(innerPadding)) {
+                    Box(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .background(MaterialTheme.colorScheme.background)
+                            .padding(WindowInsets.statusBars.asPaddingValues())
+                    ) {
+                        Column(
+                            modifier = Modifier
+                                .fillMaxSize()
+                                .padding(top = 64.dp),
+                            horizontalAlignment = Alignment.CenterHorizontally,
+                        ) {
                             ProfileView()
+                        }
+
+                        IconButton(
+                            onClick = { showProfile = false },
+                            modifier = Modifier
+                                .align(Alignment.TopEnd)
+                                .padding(8.dp)
+                        ) {
+                            Icon(
+                                imageVector = Icons.Rounded.Close,
+                                contentDescription = "Close",
+                                modifier = Modifier.size(28.dp),
+                                tint = MaterialTheme.colorScheme.onBackground
+                            )
                         }
                     }
                 }
