@@ -93,7 +93,6 @@ import org.strawberryfoundations.reply.core.SettingsDataStore
 import org.strawberryfoundations.reply.core.getUserDataFlow
 import org.strawberryfoundations.reply.core.model.UserPreferences
 import org.strawberryfoundations.reply.room.ExerciseViewModel
-import org.strawberryfoundations.reply.room.entities.getExerciseGroupEmoji
 import org.strawberryfoundations.reply.ui.theme.AppTheme
 import org.strawberryfoundations.reply.ui.theme.darkenColor
 import org.strawberryfoundations.reply.ui.theme.hexToColor
@@ -105,24 +104,24 @@ import org.strawberryfoundations.reply.ui.views.TrainingView
 
 // Class: MainActivity
 class MainActivity : ComponentActivity() {
-    private lateinit var settingsDataStore: SettingsDataStore
+    private lateinit var appSettings: SettingsDataStore
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         window.decorView.setBackgroundColor(android.graphics.Color.BLACK)
-        settingsDataStore = SettingsDataStore(applicationContext)
+        appSettings = SettingsDataStore(applicationContext)
 
         setContent {
-            MainViewWithPersistence(settingsDataStore)
+            MainViewWithPersistence(appSettings)
         }
     }
 }
 
 // Composable: MainViewWithPersistence
 @Composable
-fun MainViewWithPersistence(settingsDataStore: SettingsDataStore) {
-    val settings by settingsDataStore.settingsFlow.collectAsState(initial = AppSettings())
+fun MainViewWithPersistence(appSettings: SettingsDataStore) {
+    val settings by appSettings.settingsFlow.collectAsState(initial = AppSettings())
     val scope = rememberCoroutineScope()
 
     AppTheme(dynamicColor = settings.useDynamicColors) {
@@ -130,7 +129,7 @@ fun MainViewWithPersistence(settingsDataStore: SettingsDataStore) {
             settings = settings,
             onSettingsChange = { update ->
                 scope.launch {
-                    settingsDataStore.updateSettings(update)
+                    appSettings.updateSettings(update)
                 }
             }
         )
@@ -346,7 +345,9 @@ fun MainView(
                                         rootNavController.navigate("exerciseDetail/$exerciseId")
                                     }
                                 )
-                                1 -> DeviceView(settings = settings)
+                                1 -> DeviceView(
+                                    settings = settings
+                                )
                                 2 -> SettingsView(
                                     settings = settings,
                                     onSettingsChange = onSettingsChange

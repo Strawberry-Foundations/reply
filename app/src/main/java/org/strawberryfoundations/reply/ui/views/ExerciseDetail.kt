@@ -12,20 +12,14 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.rounded.Label
-import androidx.compose.material.icons.filled.Adb
 import androidx.compose.material.icons.rounded.BarChart
-import androidx.compose.material.icons.rounded.Edit
 import androidx.compose.material.icons.rounded.History
 import androidx.compose.material.icons.rounded.Info
 import androidx.compose.material.icons.rounded.Layers
 import androidx.compose.material.icons.rounded.PlayArrow
-import androidx.compose.material.icons.rounded.Save
-import androidx.compose.material3.BottomSheetDefaults
-import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.FloatingToolbarDefaults
@@ -33,13 +27,9 @@ import androidx.compose.material3.FloatingToolbarDefaults.ScreenOffset
 import androidx.compose.material3.HorizontalFloatingToolbar
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.InputChip
-import androidx.compose.material3.InputChipDefaults
 import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.MaterialShapes
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.ModalBottomSheet
-import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.PlainTooltip
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -61,7 +51,6 @@ import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.zIndex
@@ -76,6 +65,7 @@ import org.strawberryfoundations.reply.room.entities.Exercise
 import org.strawberryfoundations.reply.room.entities.getExerciseGroupEmoji
 import org.strawberryfoundations.reply.room.entities.getExerciseGroupStringResource
 import org.strawberryfoundations.reply.ui.composable.DeleteExerciseDialog
+import org.strawberryfoundations.reply.ui.composable.EditExerciseDialog
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterial3ExpressiveApi::class)
 @Composable
@@ -314,19 +304,14 @@ fun ExerciseDetail(
     }
 
     if (showEditSheet) {
-        ModalBottomSheet(
-            onDismissRequest = { showEditSheet = false },
-            containerColor = MaterialTheme.colorScheme.surfaceContainer,
-            dragHandle = { BottomSheetDefaults.DragHandle() }
-        ) {
-            EditExerciseContent(
-                exercise = exercise,
-                onSave = { updatedExercise ->
-                    viewModel.update(updatedExercise)
-                    showEditSheet = false
-                }
-            )
-        }
+        EditExerciseDialog(
+            exercise = exercise,
+            onSave = { updatedExercise ->
+                viewModel.update(updatedExercise)
+                showEditSheet = false
+            },
+            onDismiss = { showEditSheet = false }
+        )
     }
 
     if (showDeleteDialog && trainingToDelete != null) {
@@ -335,101 +320,6 @@ fun ExerciseDetail(
             onConfirm = { viewModel.delete(trainingToDelete!!) },
             onDismiss = { showDeleteDialog = false }
         )
-    }
-}
-
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-fun EditExerciseContent(
-    exercise: Exercise,
-    onSave: (Exercise) -> Unit
-) {
-    var name by remember { mutableStateOf(exercise.name) }
-    var altName by remember { mutableStateOf(exercise.altName ?: "") }
-    var note by remember { mutableStateOf(exercise.note) }
-    var weight by remember { mutableStateOf(exercise.weight) }
-
-    Column(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(horizontal = 24.dp)
-            .padding(bottom = 32.dp)
-            .verticalScroll(rememberScrollState()),
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.spacedBy(16.dp)
-    ) {
-        Text(
-            text = stringResource(R.string.edit_exercise),
-            style = MaterialTheme.typography.titleLarge,
-            fontWeight = FontWeight.Bold
-        )
-
-        OutlinedTextField(
-            value = name,
-            onValueChange = { name = it },
-            label = { Text(stringResource(R.string.name)) },
-            modifier = Modifier.fillMaxWidth(),
-            shape = RoundedCornerShape(12.dp)
-        )
-
-        OutlinedTextField(
-            value = altName,
-            onValueChange = { altName = it },
-            label = { Text(stringResource(R.string.alt_name)) },
-            modifier = Modifier.fillMaxWidth(),
-            shape = RoundedCornerShape(12.dp),
-            leadingIcon = { Icon(Icons.AutoMirrored.Rounded.Label, null, modifier = Modifier.size(18.dp)) }
-        )
-
-        Column(modifier = Modifier.fillMaxWidth()) {
-            OutlinedTextField(
-                value = weight.toString(),
-                onValueChange = { weight = it.toDoubleOrNull() ?: weight },
-                label = { Text(stringResource(R.string.weight_kg)) },
-                modifier = Modifier.fillMaxWidth(),
-                shape = RoundedCornerShape(12.dp),
-                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal)
-            )
-
-            Spacer(modifier = Modifier.height(8.dp))
-
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceEvenly
-            ) {
-                listOf(2.5, 5.0, 10.0).forEach { amount ->
-                    InputChip(
-                        selected = false,
-                        onClick = { weight = weight?.plus(amount) },
-                        label = { Text("+$amount") },
-                        colors = InputChipDefaults.inputChipColors(containerColor = MaterialTheme.colorScheme.primaryContainer)
-                    )
-                }
-            }
-        }
-
-        OutlinedTextField(
-            value = note,
-            onValueChange = { note = it },
-            label = { Text(stringResource(R.string.note)) },
-            modifier = Modifier.fillMaxWidth(),
-            minLines = 3,
-            shape = RoundedCornerShape(12.dp)
-        )
-
-        Button(
-            onClick = {
-                onSave(exercise.copy(name = name, altName = altName, note = note, weight = weight))
-            },
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(56.dp),
-            shape = RoundedCornerShape(16.dp)
-        ) {
-            Icon(Icons.Rounded.Save, null)
-            Spacer(modifier = Modifier.width(8.dp))
-            Text(stringResource(R.string.save))
-        }
     }
 }
 
