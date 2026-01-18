@@ -93,6 +93,7 @@ import org.strawberryfoundations.reply.core.SettingsDataStore
 import org.strawberryfoundations.reply.core.getUserDataFlow
 import org.strawberryfoundations.reply.core.model.UserPreferences
 import org.strawberryfoundations.reply.room.ExerciseViewModel
+import org.strawberryfoundations.reply.room.entities.getExerciseGroupEmoji
 import org.strawberryfoundations.reply.ui.theme.AppTheme
 import org.strawberryfoundations.reply.ui.theme.darkenColor
 import org.strawberryfoundations.reply.ui.theme.hexToColor
@@ -457,7 +458,8 @@ fun MainView(
                         ExerciseDetail(
                             exercise = exercise,
                             onStartTraining = {},
-                            onBack = {}
+                            onBack = {},
+                            settings = settings,
                         )
                     }
                 }

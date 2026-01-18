@@ -13,7 +13,7 @@ val MaterialSymbols.Outlined.DevicesWearables: ImageVector
         if (_devicesWearables != null) return _devicesWearables!!
 
         _devicesWearables = ImageVector.Builder(
-            name = "devicesWearables",
+            name = "Outlined.DevicesWearables",
             defaultWidth = 24.dp,
             defaultHeight = 24.dp,
             viewportWidth = 960f,

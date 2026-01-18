@@ -1,0 +1,1 @@
+s2c -o Icon.kt -p org.strawberryfoundations.material.symbols.outlined -t Outlined icon.svg

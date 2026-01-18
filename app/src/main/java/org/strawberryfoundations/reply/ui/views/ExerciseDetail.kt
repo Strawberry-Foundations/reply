@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -15,26 +16,37 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.rounded.Label
-import androidx.compose.material.icons.rounded.Info
-import androidx.compose.material.icons.rounded.PlayArrow
+import androidx.compose.material.icons.filled.Adb
+import androidx.compose.material.icons.rounded.BarChart
 import androidx.compose.material.icons.rounded.Edit
+import androidx.compose.material.icons.rounded.History
+import androidx.compose.material.icons.rounded.Info
 import androidx.compose.material.icons.rounded.Layers
+import androidx.compose.material.icons.rounded.PlayArrow
 import androidx.compose.material.icons.rounded.Save
 import androidx.compose.material3.BottomSheetDefaults
 import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
+import androidx.compose.material3.FloatingToolbarDefaults
+import androidx.compose.material3.FloatingToolbarDefaults.ScreenOffset
+import androidx.compose.material3.HorizontalFloatingToolbar
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.InputChip
 import androidx.compose.material3.InputChipDefaults
+import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.MaterialShapes
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.PlainTooltip
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.TooltipAnchorPosition
+import androidx.compose.material3.TooltipBox
+import androidx.compose.material3.TooltipDefaults
+import androidx.compose.material3.rememberTooltipState
 import androidx.compose.material3.toShape
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -43,19 +55,27 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.hapticfeedback.HapticFeedbackType
+import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.zIndex
 import androidx.lifecycle.viewmodel.compose.viewModel
+import org.strawberryfoundations.material.symbols.MaterialSymbols
+import org.strawberryfoundations.material.symbols.outlined.Delete
+import org.strawberryfoundations.material.symbols.outlined.Edit
 import org.strawberryfoundations.reply.R
+import org.strawberryfoundations.reply.core.AppSettings
 import org.strawberryfoundations.reply.room.ExerciseViewModel
 import org.strawberryfoundations.reply.room.entities.Exercise
 import org.strawberryfoundations.reply.room.entities.getExerciseGroupEmoji
 import org.strawberryfoundations.reply.room.entities.getExerciseGroupStringResource
+import org.strawberryfoundations.reply.ui.composable.DeleteExerciseDialog
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterial3ExpressiveApi::class)
 @Composable
@@ -63,9 +83,14 @@ fun ExerciseDetail(
     exercise: Exercise,
     viewModel: ExerciseViewModel = viewModel(),
     onStartTraining: (Exercise) -> Unit,
-    onBack: () -> Unit
+    onBack: () -> Unit,
+    settings: AppSettings,
 ) {
+    val haptic = LocalHapticFeedback.current
+
     var showEditSheet by remember { mutableStateOf(false) }
+    var showDeleteDialog by remember { mutableStateOf(false) }
+    var trainingToDelete by remember { mutableStateOf<Exercise?>(null) }
 
     Box(modifier = Modifier.fillMaxSize()) {
         Column(
@@ -101,14 +126,6 @@ fun ExerciseDetail(
                         text = exercise.name,
                         style = MaterialTheme.typography.labelLarge,
                         fontSize = 24.sp
-                    )
-                }
-
-                IconButton(onClick = { showEditSheet = true }) {
-                    Icon(
-                        imageVector = Icons.Rounded.Edit,
-                        contentDescription = null,
-                        tint = MaterialTheme.colorScheme.primary
                     )
                 }
             }
@@ -230,30 +247,68 @@ fun ExerciseDetail(
             Spacer(modifier = Modifier.height(120.dp))
         }
 
-        Button(
-            onClick = { onStartTraining(exercise) },
+        HorizontalFloatingToolbar(
             modifier = Modifier
                 .align(Alignment.BottomCenter)
-                .fillMaxWidth()
-                .padding(24.dp)
-                .height(64.dp)
-                .shadow(
-                    elevation = 16.dp,
-                    shape = RoundedCornerShape(20.dp),
-                    spotColor = Color(0xFFD32F2F)
-                ),
-            shape = RoundedCornerShape(20.dp),
-            colors = ButtonDefaults.buttonColors(
-                containerColor = Color(0xFFD32F2F)
-            )
+                .offset(y = -ScreenOffset)
+                .zIndex(1f),
+            expanded = true,
+            colors = FloatingToolbarDefaults.vibrantFloatingToolbarColors(),
+            expandedShadowElevation = 6.dp,
+            floatingActionButton = {
+                // Start exercise button
+                TooltipBox(
+                    positionProvider =
+                        TooltipDefaults.rememberTooltipPositionProvider(
+                            positioning = TooltipAnchorPosition.Above
+                        ),
+                    tooltip = { PlainTooltip { Text(text = stringResource(R.string.start_exercise)) } },
+                    state = rememberTooltipState(),
+                ) {
+                    FloatingToolbarDefaults.VibrantFloatingActionButton(
+                        onClick = { }
+                    ) {
+                        Icon(
+                            imageVector = Icons.Rounded.PlayArrow,
+                            contentDescription = stringResource(R.string.start_exercise)
+                        )
+                    }
+                }
+            }
         ) {
-            Icon(Icons.Rounded.PlayArrow, null, modifier = Modifier.size(28.dp))
-            Spacer(modifier = Modifier.width(12.dp))
-            Text(
-                text = stringResource(R.string.start_exercise),
-                style = MaterialTheme.typography.labelLarge,
-                fontWeight = FontWeight.ExtraBold,
-                letterSpacing = 1.sp
+            // Delete
+            ToolbarAction(
+                icon = MaterialSymbols.Outlined.Delete,
+                description = stringResource(R.string.delete_training),
+                onClick = {
+                    trainingToDelete = exercise
+                    showDeleteDialog = true
+                    if (settings.useHapticFeedback) {
+                        haptic.performHapticFeedback(HapticFeedbackType.Reject)
+                    }
+                },
+                tint = MaterialTheme.colorScheme.error
+            )
+
+            // History
+            ToolbarAction(
+                icon = Icons.Rounded.History,
+                description = stringResource(R.string.show_history),
+                onClick = { }
+            )
+
+            // Statistics
+            ToolbarAction(
+                icon = Icons.Rounded.BarChart,
+                description = stringResource(R.string.statistics),
+                onClick = { }
+            )
+
+            // Edit
+            ToolbarAction(
+                icon = MaterialSymbols.Outlined.Edit,
+                description = stringResource(R.string.edit_exercise),
+                onClick = { showEditSheet = true }
             )
         }
     }
@@ -272,6 +327,14 @@ fun ExerciseDetail(
                 }
             )
         }
+    }
+
+    if (showDeleteDialog && trainingToDelete != null) {
+        DeleteExerciseDialog(
+            exercise = trainingToDelete!!,
+            onConfirm = { viewModel.delete(trainingToDelete!!) },
+            onDismiss = { showDeleteDialog = false }
+        )
     }
 }
 
@@ -366,6 +429,31 @@ fun EditExerciseContent(
             Icon(Icons.Rounded.Save, null)
             Spacer(modifier = Modifier.width(8.dp))
             Text(stringResource(R.string.save))
+        }
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+private fun ToolbarAction(
+    icon: ImageVector,
+    description: String,
+    onClick: () -> Unit,
+    tint: Color = LocalContentColor.current
+) {
+    TooltipBox(
+        positionProvider = TooltipDefaults.rememberTooltipPositionProvider(
+            positioning = TooltipAnchorPosition.Above
+        ),
+        tooltip = { PlainTooltip { Text(description) } },
+        state = rememberTooltipState(),
+    ) {
+        IconButton(onClick = onClick) {
+            Icon(
+                imageVector = icon,
+                contentDescription = description,
+                tint = tint
+            )
         }
     }
 }

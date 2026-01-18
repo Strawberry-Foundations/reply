@@ -153,4 +153,5 @@
 
     <!-- Error messages -->
     <string name="error_colon">Fehler: %1$s</string>
+    <string name="show_history">Verlauf anzeigen</string>
 </resources>

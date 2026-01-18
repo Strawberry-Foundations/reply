@@ -157,4 +157,5 @@
 
     <!-- Error messages -->
     <string name="error_colon">Error: %1$s</string>
+    <string name="show_history">Show history</string>
 </resources>
