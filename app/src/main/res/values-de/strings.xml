@@ -1,12 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <!-- Navigation title strings -->
+    <!-- Navigation -->
     <string name="workout">Workout</string>
     <string name="profile">Profil</string>
     <string name="device">Mein Gerät</string>
     <string name="settings">Einstellungen</string>
+    <string name="back">Zurück</string>
 
-    <!-- Basic strings -->
+    <!-- Basic actions -->
     <string name="ok">OK</string>
     <string name="cancel">Abbrechen</string>
     <string name="reset">Zurücksetzen</string>
@@ -14,39 +15,56 @@
     <string name="done">Fertig</string>
     <string name="delete">Löschen</string>
     <string name="edit">Bearbeiten</string>
+    <string name="save">Speichern</string>
+    <string name="send">Senden</string>
+    <string name="refresh">Aktualisieren</string>
+    <string name="synchronize">Synchronisieren</string>
+
+    <!-- Status -->
     <string name="invalid">Ungültig</string>
     <string name="never">Nie</string>
+    <string name="connected">Verbunden</string>
+    <string name="not_connected">Nicht verbunden</string>
+    <string name="info">Info</string>
 
+    <!-- Common properties -->
     <string name="name">Name</string>
     <string name="color">Farbe</string>
     <string name="group">Gruppe</string>
     <string name="weight">Gewicht</string>
-    <string name="select_color">Farbe wählen</string>
     <string name="note">Notiz</string>
-    <string name="no_note">Keine Notiz</string>
-    <string name="edit_note">Notiz bearbeiten</string>
-    <string name="save">Speichern</string>
-    <string name="add_training">Neues Workout</string>
 
+    <!-- Colors -->
+    <string name="select_color">Farbe wählen</string>
     <string name="red">Rot</string>
     <string name="green">Grün</string>
     <string name="blue">Blau</string>
 
-
-    <!-- Groups -->
+    <!-- Exercise groups -->
     <string name="all">Alle</string>
     <string name="upper_body">Oberkörper</string>
     <string name="legs">Beine</string>
     <string name="cardio">Cardio</string>
     <string name="other">Sonstiges</string>
 
-
-
+    <!-- Workout/Training -->
+    <string name="add_training">Neues Workout</string>
     <string name="delete_training">Training löschen</string>
-    <string name="delete_training_confirm">Willst du das Training „%1$s“ wirklich löschen?</string>
+    <string name="delete_training_confirm">Willst du das Training „%1$s" wirklich löschen?</string>
     <string name="decrease_weight_by">Gewicht um %s kg verringern</string>
     <string name="increase_weight_by">Gewicht um %s kg erhöhen</string>
-
+    <string name="your_workouts">Deine Workouts</string>
+    <string name="workouts">Workouts</string>
+    <string name="no_note">Keine Notiz</string>
+    <string name="edit_note">Notiz bearbeiten</string>
+    <string name="start_exercise">ÜBUNG STARTEN</string>
+    <string name="edit_exercise">Übung bearbeiten</string>
+    <string name="alt_name">Alternativer Name</string>
+    <string name="weight_kg">Gewicht (kg)</string>
+    <string name="history">Verlauf</string>
+    <string name="progress_graph_soon">Hier erscheint bald dein Fortschritts-Graph</string>
+    <string name="best_performance">Bestleistung</string>
+    <string name="last_performance">Zuletzt</string>
 
     <!-- Settings -->
     <string name="settings_title">Einstellungen</string>
@@ -58,42 +76,41 @@
     <string name="settings_terms_of_service">Nutzungsbedingungen</string>
     <string name="settings_open_source_licenses">Open-Source-Lizenzen</string>
     <string name="settings_github">GitHub Repository</string>
-
     <string name="dynamic_colors">Material You</string>
     <string name="dynamic_colors_description">Personalisiere deine App mit dynamischen Farben basierend auf dem Hintergrundbild deines Geräts</string>
-
-    <!-- Settings Section: Haptic Feedback -->
     <string name="haptic_feedback_title">Haptisches Feedback</string>
     <string name="haptic_feedback_description">Vibrationen bei Aktionen</string>
-
     <string name="weight_steps_section">Gewichtsschritte</string>
     <string name="edit_weight_steps">Gewichtsschritte bearbeiten</string>
     <string name="new_step">Neuer Schritt</string>
 
+    <!-- About -->
     <string name="about_version">Version %1$s</string>
     <string name="about_all_rights_reserved">Alle Rechte vorbehalten. Ein Projekt von Strawberry Foundations</string>
 
-    <!-- Profile Page -->
-    <string name="welcome_user">Willkommen, %1$s</string>
-    <string name="strawberry_id">Strawberry-ID: %1$s</string>
-    <string name="email_label">E-Mail: %1$s</string>
+    <!-- Profile & Authentication -->
+    <string name="sign_in_with_sid">Mit Strawberry-ID anmelden</string>
+    <string name="sign_in_now">Jetzt anmelden</string>
     <string name="sign_out">Abmelden</string>
-    <string name="sign_in_with_strawberry_id">Melde dich mit deiner Strawberry ID an</string>
-    <string name="sign_in_button">Mit Strawberry ID anmelden</string>
     <string name="waiting_for_login">Warten auf Anmeldung…</string>
-    <string name="cancel_login">Anmeldung abbrechen</string>
-    <string name="login_code_error">Fehler beim Anfordern des Login-Codes: %1$s</string>
-    <string name="login_code_invalid">Login-Code ist ungültig oder abgelaufen</string>
-    <string name="connection_error">Verbindungsfehler: Prüfe deine Internetverbindung</string>
-    <string name="login_timeout">Login-Timeout: Bitte versuche es erneut</string>
+    <string name="login_error">Login Fehler: %1$s</string>
+    <string name="hello_user">Hallo %1$s!</string>
+    <string name="manage_strawberry_id">Strawberry ID verwalten</string>
     <string name="profile_picture">Profilbild</string>
-    <string name="strawberry_id_logo">Strawberry ID</string>
     <string name="account_information">Kontoinformationen</string>
-    <string name="preferences">Einstellungen</string>
-    <string name="app_preferences_subtitle">App-Einstellungen anpassen</string>
+    <string name="account_and_profile">Konto und Profil</string>
+    <string name="manage_account_subtitle">Verwalte dein Strawberry-Konto</string>
+    <string name="strawberry_id">Strawberry-ID</string>
+    <string name="email">E-Mail</string>
+    <string name="more_from_strawberry">Mehr von Strawberry</string>
+    <string name="notifications">Benachrichtigungen</string>
+    <string name="notifications_subtitle">Verwalte deine Benachrichtigungseinstellungen</string>
+    <string name="app_settings">App-Einstellungen</string>
+    <string name="app_settings_subtitle">Themes, Sprache und mehr</string>
+    <string name="manage_storage">Speicher verwalten</string>
+    <string name="manage_storage_subtitle">Zwischenspeicher und Daten</string>
     <string name="privacy">Datenschutz</string>
     <string name="privacy_settings_subtitle">Datenschutzeinstellungen verwalten</string>
-
     <string name="strawberry_cloud">Strawberry Cloud</string>
     <string name="strawberry_cloud_subtitle">Daten geräteübergreifend synchronisieren</string>
 
@@ -101,48 +118,39 @@
     <string name="backup_sync_section">Backup &amp; Sync</string>
     <string name="backup_export">Backup exportieren</string>
     <string name="backup_export_desc">Daten in eine Datei sichern</string>
-    <string name="backup_import">Backup importieren</string>
-    <string name="backup_import_desc">Daten aus einer Backup-Datei wiederherstellen</string>
+    <string name="backup_export_desc_with_trainings">Einstellungen, Benutzerdaten und alle Trainings in eine Datei sichern</string>
     <string name="backup_export_success">Export erfolgreich!</string>
     <string name="backup_export_failed">Export fehlgeschlagen!</string>
+    <string name="backup_import">Backup importieren</string>
+    <string name="backup_import_desc">Daten aus einer Backup-Datei wiederherstellen</string>
+    <string name="backup_import_desc_with_trainings">Einstellungen, Benutzerdaten und Trainings aus einer Backup-Datei wiederherstellen</string>
     <string name="backup_import_success">Import erfolgreich!</string>
     <string name="backup_import_failed">Import fehlgeschlagen!</string>
-    <string name="backup_error">Fehler: %1$s</string>
-
-    <!-- Backup with Training Data -->
-    <string name="backup_export_desc_with_trainings">Einstellungen, Benutzerdaten und alle Trainings in eine Datei sichern</string>
-    <string name="backup_import_desc_with_trainings">Einstellungen, Benutzerdaten und Trainings aus einer Backup-Datei wiederherstellen</string>
     <string name="backup_import_options">Import-Optionen</string>
     <string name="backup_import_options_desc">Wie möchtest du die Trainings-Daten importieren?</string>
     <string name="backup_import_replace_warning">⚠️ Ersetzen wird alle vorhandenen Trainings löschen!</string>
     <string name="backup_replace">Alle ersetzen</string>
     <string name="backup_merge">Zu vorhandenen hinzufügen</string>
     <string name="backup_merge_success">Trainings erfolgreich hinzugefügt!</string>
+    <string name="backup_error">Fehler: %1$s</string>
 
-    <!-- DeviceView specific strings  -->
+    <!-- Device sync -->
     <string name="device_sync_title">Geräteübergreifende Synchronisierung</string>
-    <string name="refresh">Aktualisieren</string>
-    <string name="info">Info</string>
+    <string name="device_sync_description">Durch die Kopplung mit einem Wearable werden deine Workouts und Trainingsdaten automatisch zwischen Smartphone und Smartwatch abgeglichen. \n\nSo hast du deine Routine auch während des Trainings immer im Blick, während deine Daten nahtlos in der App aktualisiert werden.</string>
     <string name="device_status">Gerätestatus</string>
     <string name="last_db_sync">Letzte Synchronisierung:</string>
     <string name="nodes_discovered">Gefundene Nodes:</string>
+    <string name="connected_nodes">Verbundenen Nodes</string>
+    <string name="no_connected_nodes_found">Keine verbundenen Nodes gefunden.</string>
+    <string name="refresh_nodes">Nodes aktualisieren</string>
+    <string name="found_nodes">%1$d Nodes gefunden</string>
+    <string name="failed_listing_nodes">Auflisten der Nodes fehlgeschlagen: %1$s</string>
+    <string name="send_db_snapshot">DB-Snapshot senden</string>
     <string name="db_snapshot_queued">DB-Snapshot zum Senden eingereiht</string>
     <string name="no_trainings_to_send">Keine Trainings zum Senden</string>
     <string name="send_failed">Senden fehlgeschlagen: %1$s</string>
-    <string name="send">Senden</string>
-    <string name="send_db_snapshot">DB-Snapshot senden</string>
-    <string name="found_nodes">%1$d Nodes gefunden</string>
-    <string name="failed_listing_nodes">Auflisten der Nodes fehlgeschlagen: %1$s</string>
-    <string name="error_colon">Fehler: %1$s</string>
-    <string name="refresh_nodes">Nodes aktualisieren</string>
-    <string name="connected_nodes">Verbundenen Nodes</string>
-    <string name="no_connected_nodes_found">Keine verbundenen Nodes gefunden.</string>
-    <string name="your_workouts">Deine Workouts</string>
-    <string name="back">Zurück</string>
-    <string name="connected">Verbunden</string>
-    <string name="not_connected">Nicht verbunden</string>
-    <string name="device_sync_description" >Durch die Kopplung mit einem Wearable werden deine Workouts und Trainingsdaten automatisch zwischen Smartphone und Smartwatch abgeglichen. \n\nSo hast du deine Routine auch während des Trainings immer im Blick, während deine Daten nahtlos in der App aktualisiert werden.</string>
     <string name="statistics">Statistiken</string>
-    <string name="workouts">Workouts</string>
-    <string name="synchronize">Synchronisieren</string>
+
+    <!-- Error messages -->
+    <string name="error_colon">Fehler: %1$s</string>
 </resources>
