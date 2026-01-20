@@ -65,6 +65,7 @@ import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -85,6 +86,7 @@ import org.strawberryfoundations.reply.room.entities.getExerciseGroupEmoji
 import org.strawberryfoundations.reply.room.entities.getExerciseGroupStringResource
 import org.strawberryfoundations.reply.ui.composable.DeleteExerciseDialog
 import org.strawberryfoundations.reply.ui.composable.EditExerciseDialog
+import org.strawberryfoundations.reply.ui.composable.ToolbarAction
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterial3ExpressiveApi::class)
 @Composable
@@ -334,8 +336,8 @@ fun ExerciseDetail(
         ) {
             StartTrainingContent(
                 exercise = exercise,
-                onStartConfirm = {
-                    onStartTraining(exercise)
+                onStartConfirm = { exerciseToStart, weight ->
+                    onStartTraining(exerciseToStart)
                     startTraining = false
                 }
             )
@@ -367,8 +369,9 @@ fun ExerciseDetail(
 @Composable
 fun StartTrainingContent(
     exercise: Exercise,
-    onStartConfirm: (Double) -> Unit
+    onStartConfirm: (Exercise, Double) -> Unit
 ) {
+    val context = LocalContext.current
     var currentWeight by remember { mutableDoubleStateOf(exercise.weight ?: 0.0) }
     var showCountdown by remember { mutableStateOf(false) }
 
@@ -381,9 +384,24 @@ fun StartTrainingContent(
         label = "countdown_transition"
     ) { isCountdown ->
         if (isCountdown) {
-            CountdownView(
-                onCountdownFinish = { onStartConfirm(currentWeight) }
+            org.strawberryfoundations.reply.service.SessionManager.startSession(
+                context = context,
+                exerciseId = exercise.id,
+                weight = currentWeight
             )
+            onStartConfirm(exercise, currentWeight)
+
+            /* CountdownView(
+                onCountdownFinish = {
+                    // Starte den WorkoutService
+                    org.strawberryfoundations.reply.service.SessionManager.startSession(
+                        context = context,
+                        exerciseId = exercise.id,
+                        weight = currentWeight
+                    )
+                    onStartConfirm(exercise, currentWeight)
+                }
+            ) */
         } else {
             Column(
                 modifier = Modifier
@@ -550,31 +568,6 @@ fun CountdownView(
             style = MaterialTheme.typography.titleMedium,
             color = MaterialTheme.colorScheme.onSurfaceVariant
         )
-    }
-}
-
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-private fun ToolbarAction(
-    icon: ImageVector,
-    description: String,
-    onClick: () -> Unit,
-    tint: Color = LocalContentColor.current
-) {
-    TooltipBox(
-        positionProvider = TooltipDefaults.rememberTooltipPositionProvider(
-            positioning = TooltipAnchorPosition.Above
-        ),
-        tooltip = { PlainTooltip { Text(description) } },
-        state = rememberTooltipState(),
-    ) {
-        IconButton(onClick = onClick) {
-            Icon(
-                imageVector = icon,
-                contentDescription = description,
-                tint = tint
-            )
-        }
     }
 }
 

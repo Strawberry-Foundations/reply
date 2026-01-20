@@ -27,6 +27,11 @@
     <string name="not_connected">Nicht verbunden</string>
     <string name="info">Info</string>
 
+    <!-- Active Training Banner -->
+    <string name="training_in_progress">Training läuft</string>
+    <string name="tap_to_continue">Antippen um fortzusetzen</string>
+    <string name="sets_completed_short">%1$d Sätze</string>
+
     <!-- Common properties -->
     <string name="name">Name</string>
     <string name="color">Farbe</string>
@@ -69,6 +74,23 @@
     <string name="start_session">Session beginnen</string>
     <string name="get_ready">Mach dich bereit…</string>
     <string name="go">Los!</string>
+
+    <!-- Active Exercise Screen -->
+    <string name="s_continue">Fortsetzen</string>
+    <string name="pause">Pausieren</string>
+    <string name="training_time">Trainingszeit</string>
+    <string name="current_weight">Aktuelles Gewicht</string>
+    <string name="stop_training">Training stoppen</string>
+    <string name="stop_training_question">Training beenden?</string>
+    <string name="stop_training_confirm">Möchtest du das Training wirklich beenden?</string>
+    <string name="stop">Beenden</string>
+    <string name="rest">Pause</string>
+    <string name="completed_sets">Absolvierte Sätze (%1$d)</string>
+    <string name="no_sets_completed">Noch keine Sätze absolviert</string>
+    <string name="enter_reps">Wiederholungen eingeben</string>
+    <string name="how_many_reps">Wie viele Wiederholungen hast du geschafft?</string>
+    <string name="confirm">Bestätigen</string>
+    <string name="reps_unit">Wdh.</string>
 
     <!-- Settings -->
     <string name="settings_title">Einstellungen</string>

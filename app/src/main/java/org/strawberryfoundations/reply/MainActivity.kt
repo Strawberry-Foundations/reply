@@ -96,6 +96,7 @@ import org.strawberryfoundations.reply.room.ExerciseViewModel
 import org.strawberryfoundations.reply.ui.theme.AppTheme
 import org.strawberryfoundations.reply.ui.theme.darkenColor
 import org.strawberryfoundations.reply.ui.theme.hexToColor
+import org.strawberryfoundations.reply.ui.views.ActiveExercise
 import org.strawberryfoundations.reply.ui.views.DeviceView
 import org.strawberryfoundations.reply.ui.views.ProfileView
 import org.strawberryfoundations.reply.ui.views.SettingsView
@@ -170,6 +171,17 @@ fun MainView(
     var selectedItem by remember { mutableIntStateOf(0) }
     var showProfile by remember { mutableStateOf(false) }
     val rootNavController = rememberNavController()
+    
+    // Handle navigation from notification
+    LaunchedEffect(Unit) {
+        if (context is ComponentActivity) {
+            val sessionId = context.intent?.getLongExtra("navigate_to_session", -1L)
+            if (sessionId != null && sessionId != -1L) {
+                rootNavController.navigate("activeExercise/$sessionId")
+                context.intent?.removeExtra("navigate_to_session")
+            }
+        }
+    }
 
     val items = listOf(
         stringResource(R.string.workout),
@@ -343,6 +355,9 @@ fun MainView(
                                     settings = settings,
                                     onExerciseClick = { exerciseId ->
                                         rootNavController.navigate("exerciseDetail/$exerciseId")
+                                    },
+                                    onActiveSessionClick = { exerciseId ->
+                                        rootNavController.navigate("activeExercise/$exerciseId")
                                     }
                                 )
                                 1 -> DeviceView(
@@ -458,8 +473,8 @@ fun MainView(
                     Column(modifier = Modifier.padding(innerPadding)) {
                         ExerciseDetail(
                             exercise = exercise,
-                            onStartTraining = {
-                                rootNavController.navigate("main")
+                            onStartTraining = { exerciseToStart ->
+                                rootNavController.navigate("activeExercise/${exerciseToStart.id}")
                             },
                             settings = settings,
                         )
@@ -472,7 +487,15 @@ fun MainView(
             route = "activeExercise/{exerciseId}",
             arguments = listOf(navArgument("exerciseId") { type = NavType.LongType })
         ) { backStackEntry ->
+            val exerciseId = backStackEntry.arguments?.getLong("exerciseId") ?: 0L
             
+            ActiveExercise(
+                sessionId = exerciseId,
+                settings = settings,
+                onSessionComplete = {
+                    rootNavController.popBackStack()
+                }
+            )
         }
     }
 }

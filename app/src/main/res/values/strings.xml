@@ -30,6 +30,11 @@
     <string name="not_connected">Not connected</string>
     <string name="info">Info</string>
 
+    <!-- Active Training Banner -->
+    <string name="training_in_progress">Training in progress</string>
+    <string name="tap_to_continue">Tap to continue</string>
+    <string name="sets_completed_short">%1$d sets</string>
+
     <!-- Common properties -->
     <string name="name">Name</string>
     <string name="color">Color</string>
@@ -72,6 +77,23 @@
     <string name="start_session">Start session</string>
     <string name="get_ready">Get ready…</string>
     <string name="go">Go!</string>
+
+    <!-- Active Exercise Screen -->
+    <string name="s_continue">Continue</string>
+    <string name="pause">Pause</string>
+    <string name="training_time">Training time</string>
+    <string name="current_weight">Current weight</string>
+    <string name="stop_training">Stop training</string>
+    <string name="stop_training_question">Stop training?</string>
+    <string name="stop_training_confirm">Do you really want to stop the training?</string>
+    <string name="stop">Stop</string>
+    <string name="rest">Rest</string>
+    <string name="completed_sets">Completed Sets (%1$d)</string>
+    <string name="no_sets_completed">No sets completed yet</string>
+    <string name="enter_reps">Enter repetitions</string>
+    <string name="how_many_reps">How many repetitions did you do?</string>
+    <string name="confirm">Confirm</string>
+    <string name="reps_unit">reps</string>
 
     <!-- Settings -->
     <string name="settings_title">Settings</string>

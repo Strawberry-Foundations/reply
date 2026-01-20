@@ -46,6 +46,7 @@ import androidx.compose.material.icons.filled.EditNote
 import androidx.compose.material.icons.filled.Remove
 import androidx.compose.material.icons.filled.Save
 import androidx.compose.material.icons.rounded.Delete
+import androidx.compose.material.icons.rounded.Timer
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
@@ -88,11 +89,13 @@ import org.strawberryfoundations.material.symbols.MaterialSymbols
 import org.strawberryfoundations.material.symbols.default.Check
 import org.strawberryfoundations.reply.R
 import org.strawberryfoundations.reply.core.AppSettings
+import org.strawberryfoundations.reply.room.ExerciseViewModel
 import org.strawberryfoundations.reply.room.entities.Exercise
 import org.strawberryfoundations.reply.room.entities.ExerciseGroup
+import org.strawberryfoundations.reply.room.entities.SessionStatus
 import org.strawberryfoundations.reply.room.entities.getExerciseGroupEmoji
 import org.strawberryfoundations.reply.room.entities.getExerciseGroupStringResource
-import org.strawberryfoundations.reply.room.ExerciseViewModel
+import org.strawberryfoundations.reply.service.SessionManager
 import org.strawberryfoundations.reply.ui.composable.ColorPickerDialog
 import org.strawberryfoundations.reply.ui.composable.DeleteExerciseDialog
 import org.strawberryfoundations.reply.ui.composable.NoteEditDialog
@@ -114,6 +117,100 @@ fun rememberFormattedStep(step: Double): String {
     }
 }
 
+@Composable
+private fun ActiveTrainingBanner(
+    exercise: Exercise,
+    elapsedSeconds: Long,
+    setsCompleted: Int,
+    onClick: () -> Unit
+) {
+    val hours = elapsedSeconds / 3600
+    val minutes = (elapsedSeconds % 3600) / 60
+    val seconds = elapsedSeconds % 60
+    
+    val timeString = if (hours > 0) {
+        String.format("%d:%02d:%02d", hours, minutes, seconds)
+    } else {
+        String.format("%02d:%02d", minutes, seconds)
+    }
+    
+    Card(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 16.dp, vertical = 8.dp)
+            .clickable(onClick = onClick),
+        colors = CardDefaults.cardColors(
+            containerColor = MaterialTheme.colorScheme.primaryContainer
+        ),
+        elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
+        shape = RoundedCornerShape(24.dp)
+    ) {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(16.dp),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Row(
+                horizontalArrangement = Arrangement.spacedBy(12.dp),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Surface(
+                    shape = CircleShape,
+                    color = MaterialTheme.colorScheme.primary,
+                    modifier = Modifier.size(48.dp)
+                ) {
+                    Box(contentAlignment = Alignment.Center) {
+                        Icon(
+                            imageVector = Icons.Rounded.Timer,
+                            contentDescription = null,
+                            tint = MaterialTheme.colorScheme.onPrimary,
+                            modifier = Modifier.size(28.dp)
+                        )
+                    }
+                }
+                
+                Column {
+                    Text(
+                        text = stringResource(R.string.training_in_progress),
+                        style = MaterialTheme.typography.titleMedium,
+                        fontWeight = FontWeight.Bold,
+                        color = MaterialTheme.colorScheme.onPrimaryContainer
+                    )
+                    Text(
+                        text = exercise.name,
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = MaterialTheme.colorScheme.onPrimaryContainer.copy(alpha = 0.7f)
+                    )
+                    Text(
+                        text = stringResource(R.string.tap_to_continue),
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onPrimaryContainer.copy(alpha = 0.6f)
+                    )
+                }
+            }
+            
+            Column(
+                horizontalAlignment = Alignment.End
+            ) {
+                Text(
+                    text = timeString,
+                    style = customFont.numeralMedium,
+                    fontSize = 20.sp,
+                    fontWeight = FontWeight.Bold,
+                    color = MaterialTheme.colorScheme.primary
+                )
+                Text(
+                    text = stringResource(R.string.sets_completed_short, setsCompleted),
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onPrimaryContainer.copy(alpha = 0.7f)
+                )
+            }
+        }
+    }
+}
+
 @SuppressLint("DefaultLocale", "UnusedMaterial3ScaffoldPaddingParameter", "FrequentlyChangingValue")
 @OptIn(ExperimentalLayoutApi::class, ExperimentalAnimationApi::class, ExperimentalTextApi::class)
 @Composable
@@ -121,6 +218,7 @@ fun TrainingView(
     viewModel: ExerciseViewModel = viewModel(),
     settings: AppSettings,
     onExerciseClick: (Long) -> Unit,
+    onActiveSessionClick: (Long) -> Unit = {},
 ) {
     // Basic variable initialization
     val haptic = LocalHapticFeedback.current
@@ -128,6 +226,13 @@ fun TrainingView(
     val exerciseGroups = remember { listOf(null) + ExerciseGroup.entries }
     var selectedGroup by remember { mutableStateOf<ExerciseGroup?>(null) }
     var expandedItemIndex by remember { mutableIntStateOf(-1) }
+    
+    // Active Session State
+    val activeSession by SessionManager.currentSession.collectAsState()
+    val elapsedSeconds by SessionManager.elapsedSeconds.collectAsState()
+    val currentExercise = remember(activeSession, exercises) {
+        activeSession?.exerciseId?.let { id -> exercises.firstOrNull { it.id == id } }
+    }
 
     val filteredExercises by remember(exercises, selectedGroup) {
         derivedStateOf {
@@ -203,6 +308,22 @@ fun TrainingView(
             modifier = Modifier
                 .fillMaxSize()
         ) {
+            // Active Training Banner
+            AnimatedVisibility(
+                visible = activeSession != null && activeSession?.status == SessionStatus.ACTIVE,
+                enter = expandVertically() + androidx.compose.animation.fadeIn(),
+                exit = shrinkVertically() + androidx.compose.animation.fadeOut()
+            ) {
+                if (activeSession != null && currentExercise != null) {
+                    ActiveTrainingBanner(
+                        exercise = currentExercise,
+                        elapsedSeconds = elapsedSeconds,
+                        setsCompleted = activeSession?.setsCompleted ?: 0,
+                        onClick = { onActiveSessionClick(currentExercise.id) }
+                    )
+                }
+            }
+            
             LazyRow(
                 modifier = Modifier
                     .fillMaxWidth()
