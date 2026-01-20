@@ -458,13 +458,21 @@ fun MainView(
                     Column(modifier = Modifier.padding(innerPadding)) {
                         ExerciseDetail(
                             exercise = exercise,
-                            onStartTraining = {},
-                            onBack = {},
+                            onStartTraining = {
+                                rootNavController.navigate("main")
+                            },
                             settings = settings,
                         )
                     }
                 }
             }
+        }
+
+        composable(
+            route = "activeExercise/{exerciseId}",
+            arguments = listOf(navArgument("exerciseId") { type = NavType.LongType })
+        ) { backStackEntry ->
+            
         }
     }
 }

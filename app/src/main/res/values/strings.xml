@@ -68,6 +68,10 @@
     <string name="progress_graph_soon">Your progress graph will appear here soon</string>
     <string name="best_performance">Best Performance</string>
     <string name="last_performance">Last</string>
+    <string name="start_training_question">Start training?</string>
+    <string name="start_session">Start session</string>
+    <string name="get_ready">Get ready…</string>
+    <string name="go">Go!</string>
 
     <!-- Settings -->
     <string name="settings_title">Settings</string>

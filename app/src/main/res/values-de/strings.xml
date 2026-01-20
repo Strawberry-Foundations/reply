@@ -65,6 +65,10 @@
     <string name="progress_graph_soon">Hier erscheint bald dein Fortschritts-Graph</string>
     <string name="best_performance">Bestleistung</string>
     <string name="last_performance">Zuletzt</string>
+    <string name="start_training_question">Training starten?</string>
+    <string name="start_session">Session beginnen</string>
+    <string name="get_ready">Mach dich bereit…</string>
+    <string name="go">Los!</string>
 
     <!-- Settings -->
     <string name="settings_title">Einstellungen</string>
