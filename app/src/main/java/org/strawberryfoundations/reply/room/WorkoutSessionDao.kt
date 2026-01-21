@@ -45,4 +45,10 @@ interface WorkoutSessionDao {
     
     @Query("DELETE FROM workout_sessions WHERE status = 'COMPLETED' OR status = 'CANCELLED'")
     suspend fun deleteCompletedSessions()
+    
+    @Query("UPDATE workout_sessions SET status = 'CANCELLED', ended_at = :timestamp, updated_at = :timestamp WHERE status = 'ACTIVE' OR status = 'PAUSED'")
+    suspend fun cancelAllActiveSessions(timestamp: Long = System.currentTimeMillis())
+    
+    @Query("SELECT COUNT(*) FROM workout_sessions WHERE status = 'ACTIVE' OR status = 'PAUSED'")
+    suspend fun countActiveSessions(): Int
 }

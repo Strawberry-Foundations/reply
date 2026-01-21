@@ -64,7 +64,7 @@ import kotlinx.coroutines.withContext
 import org.strawberryfoundations.reply.R
 import org.strawberryfoundations.reply.core.AppSettings
 import org.strawberryfoundations.reply.room.AppDatabase
-import org.strawberryfoundations.reply.room.ExerciseViewModel
+import org.strawberryfoundations.reply.room.viewmodels.ExerciseViewModel
 import org.strawberryfoundations.reply.sync.DataSyncSender
 import org.strawberryfoundations.reply.ui.theme.customFont
 import java.text.SimpleDateFormat

@@ -1,3 +1,5 @@
+package org.strawberryfoundations.reply.ui.views
+
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.FastOutSlowInEasing
@@ -7,6 +9,7 @@ import androidx.compose.animation.fadeOut
 import androidx.compose.animation.scaleIn
 import androidx.compose.animation.scaleOut
 import androidx.compose.animation.togetherWith
+import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -38,8 +41,6 @@ import androidx.compose.material3.FloatingToolbarDefaults
 import androidx.compose.material3.FloatingToolbarDefaults.ScreenOffset
 import androidx.compose.material3.HorizontalFloatingToolbar
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
-import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.MaterialShapes
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
@@ -53,6 +54,7 @@ import androidx.compose.material3.rememberTooltipState
 import androidx.compose.material3.toShape
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableDoubleStateOf
 import androidx.compose.runtime.mutableIntStateOf
@@ -62,37 +64,52 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.rotate
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.graphics.Path
+import androidx.compose.ui.graphics.StrokeCap
+import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.drawText
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.rememberTextMeasurer
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.zIndex
 import androidx.lifecycle.viewmodel.compose.viewModel
 import kotlinx.coroutines.delay
+import kotlinx.serialization.json.Json
 import org.strawberryfoundations.material.symbols.MaterialSymbols
 import org.strawberryfoundations.material.symbols.filled.Weight
 import org.strawberryfoundations.material.symbols.outlined.Delete
 import org.strawberryfoundations.material.symbols.outlined.Edit
 import org.strawberryfoundations.reply.R
 import org.strawberryfoundations.reply.core.AppSettings
-import org.strawberryfoundations.reply.room.ExerciseViewModel
 import org.strawberryfoundations.reply.room.entities.Exercise
+import org.strawberryfoundations.reply.room.entities.SessionStatus
+import org.strawberryfoundations.reply.room.entities.WorkoutSession
+import org.strawberryfoundations.reply.room.entities.WorkoutSet
 import org.strawberryfoundations.reply.room.entities.getExerciseGroupEmoji
 import org.strawberryfoundations.reply.room.entities.getExerciseGroupStringResource
+import org.strawberryfoundations.reply.room.viewmodels.ExerciseViewModel
+import org.strawberryfoundations.reply.room.viewmodels.WorkoutSessionViewModel
+import org.strawberryfoundations.reply.service.SessionManager
 import org.strawberryfoundations.reply.ui.composable.DeleteExerciseDialog
 import org.strawberryfoundations.reply.ui.composable.EditExerciseDialog
+import org.strawberryfoundations.reply.ui.composable.StatCard
 import org.strawberryfoundations.reply.ui.composable.ToolbarAction
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterial3ExpressiveApi::class)
 @Composable
 fun ExerciseDetail(
     exercise: Exercise,
-    viewModel: ExerciseViewModel = viewModel(),
+    exerciseViewModel: ExerciseViewModel = viewModel(),
+    sessionViewModel: WorkoutSessionViewModel = viewModel(),
     onStartTraining: (Exercise) -> Unit,
     settings: AppSettings,
 ) {
@@ -101,7 +118,12 @@ fun ExerciseDetail(
     var showEditSheet by remember { mutableStateOf(false) }
     var startTraining by remember { mutableStateOf(false) }
     var showDeleteDialog by remember { mutableStateOf(false) }
+    var showHistorySheet by remember { mutableStateOf(false) }
     var trainingToDelete by remember { mutableStateOf<Exercise?>(null) }
+
+    val workoutSessions = sessionViewModel.allSessions.collectAsState(initial = emptyList())
+    val exerciseSessions = workoutSessions.value.filter { it.exerciseId == exercise.id }
+    val completedSessions = exerciseSessions.filter { it.status == SessionStatus.COMPLETED }
 
     Box(modifier = Modifier.fillMaxSize()) {
         Column(
@@ -209,52 +231,173 @@ fun ExerciseDetail(
             }
 
             Spacer(modifier = Modifier.height(32.dp))
+            
+            if (completedSessions.isNotEmpty()) {
+                val bestWeight = completedSessions.maxOf { it.currentWeight }
+                val lastSession = completedSessions.maxByOrNull { it.startedAt }
+                val avgWeight = completedSessions.map { it.currentWeight }.average()
+                val totalSets = completedSessions.sumOf { it.setsCompleted }
+                val totalSessions = completedSessions.size
+                
+                // Calculate total volume (weight × reps × sets)
+                val totalVolume = completedSessions.sumOf { session ->
+                    val sets = try {
+                        Json.decodeFromString<List<WorkoutSet>>(session.setsHistory)
+                    } catch (e: Exception) {
+                        emptyList()
+                    }
+                    sets.sumOf { workoutSet ->
+                        (workoutSet.weight * workoutSet.reps).toLong()
+                    }
+                }.toDouble()
+                val avgVolume = if (totalSessions > 0) totalVolume / totalSessions else 0.0
+                
+                val recentSessions = completedSessions.sortedByDescending { it.startedAt }.take(5)
+                val trend = if (recentSessions.size >= 2) {
+                    val newest = recentSessions.first().currentWeight
+                    val oldest = recentSessions.last().currentWeight
+                    when {
+                        newest > oldest -> "📈 ${stringResource(R.string.trend_rising)}"
+                        newest < oldest -> "📉 ${stringResource(R.string.trend_falling)}"
+                        else -> "➡️ ${stringResource(R.string.trend_stable)}"
+                    }
+                } else {
+                    "➖ ${stringResource(R.string.trend_insufficient_data)}"
+                }
 
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.spacedBy(16.dp)
-            ) {
-                StatCard(
-                    label = stringResource(R.string.best_performance),
-                    value = "160.0 kg",
-                    icon = "🏆",
-                    modifier = Modifier.weight(1f),
-                    shapeColor = Color(0xFFD77F10)
-                )
-                StatCard(
-                    label = stringResource(R.string.last_performance),
-                    value = "${exercise.weight} kg",
-                    icon = "⏱️",
-                    modifier = Modifier.weight(1f),
-                    shapeColor = Color(0xFF4CAF50)
-                )
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.spacedBy(12.dp)
+                ) {
+                    StatCard(
+                        label = stringResource(R.string.best_performance),
+                        value = "%.1f kg".format(bestWeight),
+                        icon = "🏆",
+                        modifier = Modifier.weight(1f),
+                        shapeColor = Color(0xFFD77F10)
+                    )
+                    StatCard(
+                        label = stringResource(R.string.last_session),
+                        value = "%.1f kg".format(lastSession?.currentWeight ?: exercise.weight),
+                        icon = "⏱️",
+                        modifier = Modifier.weight(1f),
+                        shapeColor = Color(0xFF4CAF50)
+                    )
+                }
+                
+                Spacer(modifier = Modifier.height(12.dp))
+                
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.spacedBy(12.dp)
+                ) {
+                    StatCard(
+                        label = stringResource(R.string.average),
+                        value = "%.1f kg".format(avgWeight),
+                        icon = "📊",
+                        modifier = Modifier.weight(1f),
+                        shapeColor = Color(0xFF2196F3)
+                    )
+                    StatCard(
+                        label = stringResource(R.string.trend),
+                        value = trend.substringAfter(" "),
+                        icon = trend.substringBefore(" "),
+                        modifier = Modifier.weight(1f),
+                        shapeColor = Color(0xFF9C27B0)
+                    )
+                }
+                
+                Spacer(modifier = Modifier.height(12.dp))
+                
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.spacedBy(12.dp)
+                ) {
+                    StatCard(
+                        label = stringResource(R.string.total_sessions),
+                        value = "$totalSessions",
+                        icon = "🎯",
+                        modifier = Modifier.weight(1f),
+                        shapeColor = Color(0xFFFF5722)
+                    )
+                    StatCard(
+                        label = stringResource(R.string.total_sets),
+                        value = "$totalSets",
+                        icon = "💪",
+                        modifier = Modifier.weight(1f),
+                        shapeColor = Color(0xFF00BCD4)
+                    )
+                }
+                
+                Spacer(modifier = Modifier.height(12.dp))
+                
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.spacedBy(12.dp)
+                ) {
+                    StatCard(
+                        label = stringResource(R.string.total_volume),
+                        value = "%.0f kg".format(totalVolume),
+                        icon = "📦",
+                        modifier = Modifier.weight(1f),
+                        shapeColor = Color(0xFFE91E63)
+                    )
+                    StatCard(
+                        label = stringResource(R.string.avg_volume),
+                        value = "%.0f kg".format(avgVolume),
+                        icon = "📊",
+                        modifier = Modifier.weight(1f),
+                        shapeColor = Color(0xFF3F51B5)
+                    )
+                }
+            } else {
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.spacedBy(16.dp)
+                ) {
+                    StatCard(
+                        label = stringResource(R.string.best_performance),
+                        value = "- kg",
+                        icon = "🏆",
+                        modifier = Modifier.weight(1f),
+                        shapeColor = Color(0xFFD77F10)
+                    )
+                    StatCard(
+                        label = stringResource(R.string.last_performance),
+                        value = "${exercise.weight ?: 0.0} kg",
+                        icon = "⏱️",
+                        modifier = Modifier.weight(1f),
+                        shapeColor = Color(0xFF4CAF50)
+                    )
+                }
             }
 
             Spacer(modifier = Modifier.height(32.dp))
 
             Text(
-                text = stringResource(R.string.history),
+                text = stringResource(R.string.weight_progress),
                 style = MaterialTheme.typography.titleMedium,
                 fontWeight = FontWeight.Bold
             )
 
             Spacer(modifier = Modifier.height(12.dp))
 
-            Surface(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(150.dp),
-                color = MaterialTheme.colorScheme.surfaceContainerHigh,
-                shape = RoundedCornerShape(24.dp)
-            ) {
-                Box(contentAlignment = Alignment.Center) {
-                    Text(
-                        text = stringResource(R.string.progress_graph_soon),
-                        style = MaterialTheme.typography.bodySmall,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant
-                    )
-                }
-            }
+            ExerciseProgressGraph(
+                exerciseSessions = exerciseSessions
+            )
+            Spacer(modifier = Modifier.height(32.dp))
+
+            Text(
+                text = stringResource(R.string.volume_progress),
+                style = MaterialTheme.typography.titleMedium,
+                fontWeight = FontWeight.Bold
+            )
+
+            Spacer(modifier = Modifier.height(12.dp))
+
+            ExerciseVolumeGraph(
+                exerciseSessions = exerciseSessions
+            )
 
             Spacer(modifier = Modifier.height(120.dp))
         }
@@ -308,15 +451,15 @@ fun ExerciseDetail(
             ToolbarAction(
                 icon = Icons.Rounded.History,
                 description = stringResource(R.string.show_history),
-                onClick = { }
+                onClick = { showHistorySheet = true }
             )
 
-            // Statistics
+            /* Statistics
             ToolbarAction(
                 icon = Icons.Rounded.BarChart,
                 description = stringResource(R.string.statistics),
                 onClick = { }
-            )
+            ) */
 
             // Edit
             ToolbarAction(
@@ -348,7 +491,7 @@ fun ExerciseDetail(
         EditExerciseDialog(
             exercise = exercise,
             onSave = { updatedExercise ->
-                viewModel.update(updatedExercise)
+                exerciseViewModel.update(updatedExercise)
                 showEditSheet = false
             },
             onDismiss = { showEditSheet = false },
@@ -359,9 +502,23 @@ fun ExerciseDetail(
     if (showDeleteDialog && trainingToDelete != null) {
         DeleteExerciseDialog(
             exercise = trainingToDelete!!,
-            onConfirm = { viewModel.delete(trainingToDelete!!) },
+            onConfirm = { exerciseViewModel.delete(trainingToDelete!!) },
             onDismiss = { showDeleteDialog = false }
         )
+    }
+
+    if (showHistorySheet) {
+        ModalBottomSheet(
+            onDismissRequest = { showHistorySheet = false },
+            containerColor = MaterialTheme.colorScheme.surfaceContainerHigh,
+        ) {
+            ExerciseHistoryContent(
+                exercise = exercise,
+                sessions = exerciseSessions,
+                sessionViewModel = sessionViewModel,
+                onDismiss = { showHistorySheet = false }
+            )
+        }
     }
 }
 
@@ -384,7 +541,7 @@ fun StartTrainingContent(
         label = "countdown_transition"
     ) { isCountdown ->
         if (isCountdown) {
-            org.strawberryfoundations.reply.service.SessionManager.startSession(
+            SessionManager.startSession(
                 context = context,
                 exerciseId = exercise.id,
                 weight = currentWeight
@@ -571,44 +728,403 @@ fun CountdownView(
     }
 }
 
-@OptIn(ExperimentalMaterial3ExpressiveApi::class)
+
+
 @Composable
-fun StatCard(
-    label: String,
-    value: String,
-    icon: String,
-    modifier: Modifier = Modifier,
-    shapeColor: Color
+fun ExerciseProgressGraph(
+    exerciseSessions: List<WorkoutSession>
 ) {
+    val completedSessions = exerciseSessions
+        .filter { it.status == SessionStatus.COMPLETED }
+        .sortedBy { it.startedAt }
+
+    val primaryColor = MaterialTheme.colorScheme.primary
+    val onSurfaceVariant = MaterialTheme.colorScheme.onSurfaceVariant
+    val textMeasurer = rememberTextMeasurer()
+
     Surface(
-        modifier = modifier,
-        color = MaterialTheme.colorScheme.surfaceContainerHighest,
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(280.dp),
+        color = MaterialTheme.colorScheme.surfaceContainerHigh,
         shape = RoundedCornerShape(24.dp)
     ) {
-        Column(
-            modifier = Modifier.padding(16.dp),
-            horizontalAlignment = Alignment.CenterHorizontally,
-        ) {
-            Surface(
-                shape = MaterialShapes.Cookie9Sided.toShape(),
-                color = shapeColor,
-                modifier = Modifier.size(42.dp)
-            ) {
-                Box(contentAlignment = Alignment.Center) {
-                    Text(text = icon, fontSize = 24.sp)
+        if (completedSessions.size < 2) {
+            Box(contentAlignment = Alignment.Center) {
+                Column(
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    verticalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    Text(
+                        text = "📊",
+                        fontSize = 48.sp
+                    )
+                    Text(
+                        text = stringResource(R.string.complete_two_trainings),
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = onSurfaceVariant,
+                        fontWeight = FontWeight.SemiBold
+                    )
+                    Text(
+                        text = stringResource(R.string.to_see_progress),
+                        style = MaterialTheme.typography.bodySmall,
+                        color = onSurfaceVariant
+                    )
                 }
             }
-            Spacer(modifier = Modifier.height(12.dp))
-            Text(
-                text = label,
-                style = MaterialTheme.typography.labelMedium,
-                color = MaterialTheme.colorScheme.onSurfaceVariant
-            )
-            Text(
-                text = value,
-                style = MaterialTheme.typography.titleLarge,
-                fontWeight = FontWeight.ExtraBold
-            )
+        } else {
+            Canvas(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(start = 48.dp, end = 24.dp, top = 32.dp, bottom = 40.dp)
+            ) {
+                val minWeight = completedSessions.minOf { it.currentWeight }.toFloat()
+                val maxWeight = completedSessions.maxOf { it.currentWeight }.toFloat()
+                val weightRange = (maxWeight - minWeight).coerceAtLeast(1f)
+                val paddedMin = (minWeight - weightRange * 0.1f).coerceAtLeast(0f)
+                val paddedMax = maxWeight + weightRange * 0.1f
+                val paddedRange = paddedMax - paddedMin
+
+                val gridLines = 5
+                for (i in 0..gridLines) {
+                    val y = size.height * (i.toFloat() / gridLines)
+                    val weight = paddedMax - (paddedRange * (i.toFloat() / gridLines))
+                    
+                    drawLine(
+                        color = onSurfaceVariant.copy(alpha = 0.15f),
+                        start = Offset(0f, y),
+                        end = Offset(size.width, y),
+                        strokeWidth = 1.dp.toPx()
+                    )
+                    
+                    val weightText = "%.1f".format(weight)
+                    val textLayoutResult = textMeasurer.measure(
+                        text = weightText,
+                        style = TextStyle(
+                            fontSize = 11.sp,
+                            color = onSurfaceVariant
+                        )
+                    )
+                    drawText(
+                        textLayoutResult = textLayoutResult,
+                        topLeft = Offset(
+                            x = -textLayoutResult.size.width - 8.dp.toPx(),
+                            y = y - textLayoutResult.size.height / 2
+                        )
+                    )
+                }
+
+                val points = completedSessions.mapIndexed { index, session ->
+                    val x = size.width * (index.toFloat() / (completedSessions.size - 1))
+                    val normalizedWeight = (session.currentWeight.toFloat() - paddedMin) / paddedRange
+                    val y = size.height * (1 - normalizedWeight)
+                    Offset(x, y)
+                }
+
+                val fillPath = Path().apply {
+                    moveTo(points.first().x, size.height)
+                    points.forEach { lineTo(it.x, it.y) }
+                    lineTo(points.last().x, size.height)
+                    close()
+                }
+
+                drawPath(
+                    path = fillPath,
+                    brush = Brush.verticalGradient(
+                        colors = listOf(
+                            primaryColor.copy(alpha = 0.3f),
+                            primaryColor.copy(alpha = 0.05f)
+                        )
+                    )
+                )
+
+                val path = Path().apply {
+                    moveTo(points.first().x, points.first().y)
+                    for (i in 1 until points.size) {
+                        lineTo(points[i].x, points[i].y)
+                    }
+                }
+
+                drawPath(
+                    path = path,
+                    color = primaryColor,
+                    style = Stroke(width = 3.dp.toPx(), cap = StrokeCap.Round)
+                )
+
+                points.forEachIndexed { index, point ->
+                    val session = completedSessions[index]
+                    
+                    drawCircle(
+                        color = primaryColor,
+                        radius = 6.dp.toPx(),
+                        center = point
+                    )
+                    drawCircle(
+                        color = Color.White,
+                        radius = 3.dp.toPx(),
+                        center = point
+                    )
+
+                    val weightText = "%.1f".format(session.currentWeight)
+                    val valueLayoutResult = textMeasurer.measure(
+                        text = weightText,
+                        style = TextStyle(
+                            fontSize = 10.sp,
+                            color = primaryColor,
+                            fontWeight = FontWeight.Bold
+                        )
+                    )
+                    drawText(
+                        textLayoutResult = valueLayoutResult,
+                        topLeft = Offset(
+                            x = point.x - valueLayoutResult.size.width / 2,
+                            y = point.y - valueLayoutResult.size.height - 12.dp.toPx()
+                        )
+                    )
+                }
+
+                completedSessions.forEachIndexed { index, _ ->
+                    if (index % maxOf(1, completedSessions.size / 6) == 0 || index == completedSessions.size - 1) {
+                        val x = size.width * (index.toFloat() / (completedSessions.size - 1))
+                        val labelText = "#${index + 1}"
+                        val labelLayoutResult = textMeasurer.measure(
+                            text = labelText,
+                            style = TextStyle(
+                                fontSize = 10.sp,
+                                color = onSurfaceVariant
+                            )
+                        )
+                        drawText(
+                            textLayoutResult = labelLayoutResult,
+                            topLeft = Offset(
+                                x = x - labelLayoutResult.size.width / 2,
+                                y = size.height + 8.dp.toPx()
+                            )
+                        )
+                    }
+                }
+
+                val yAxisLabel = "kg"
+                val yLabelResult = textMeasurer.measure(
+                    text = yAxisLabel,
+                    style = TextStyle(
+                        fontSize = 11.sp,
+                        color = onSurfaceVariant,
+                        fontWeight = FontWeight.Bold
+                    )
+                )
+                drawText(
+                    textLayoutResult = yLabelResult,
+                    topLeft = Offset(
+                        x = -yLabelResult.size.width - 8.dp.toPx(),
+                        y = -20.dp.toPx()
+                    )
+                )
+            }
+        }
+    }
+}
+
+@Composable
+fun ExerciseVolumeGraph(
+    exerciseSessions: List<WorkoutSession>
+) {
+    val completedSessions = exerciseSessions
+        .filter { it.status == SessionStatus.COMPLETED }
+        .sortedBy { it.startedAt }
+        .map { session ->
+            val sets = try {
+                Json.decodeFromString<List<WorkoutSet>>(session.setsHistory)
+            } catch (e: Exception) {
+                emptyList()
+            }
+            val volume = sets.sumOf { it.weight * it.reps }
+            session to volume
+        }
+
+    val primaryColor = MaterialTheme.colorScheme.tertiary
+    val onSurfaceVariant = MaterialTheme.colorScheme.onSurfaceVariant
+    val textMeasurer = rememberTextMeasurer()
+
+    Surface(
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(280.dp),
+        color = MaterialTheme.colorScheme.surfaceContainerHigh,
+        shape = RoundedCornerShape(24.dp)
+    ) {
+        if (completedSessions.size < 2) {
+            Box(contentAlignment = Alignment.Center) {
+                Column(
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    verticalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    Text(
+                        text = "📦",
+                        fontSize = 48.sp
+                    )
+                    Text(
+                        text = stringResource(R.string.complete_two_trainings),
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = onSurfaceVariant,
+                        fontWeight = FontWeight.SemiBold
+                    )
+                    Text(
+                        text = stringResource(R.string.to_see_progress),
+                        style = MaterialTheme.typography.bodySmall,
+                        color = onSurfaceVariant
+                    )
+                }
+            }
+        } else {
+            Canvas(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(start = 48.dp, end = 24.dp, top = 32.dp, bottom = 40.dp)
+            ) {
+                val minVolume = completedSessions.minOf { it.second }.toFloat()
+                val maxVolume = completedSessions.maxOf { it.second }.toFloat()
+                val volumeRange = (maxVolume - minVolume).coerceAtLeast(1f)
+                val paddedMin = (minVolume - volumeRange * 0.1f).coerceAtLeast(0f)
+                val paddedMax = maxVolume + volumeRange * 0.1f
+                val paddedRange = paddedMax - paddedMin
+
+                val gridLines = 5
+                for (i in 0..gridLines) {
+                    val y = size.height * (i.toFloat() / gridLines)
+                    val volume = paddedMax - (paddedRange * (i.toFloat() / gridLines))
+                    
+                    drawLine(
+                        color = onSurfaceVariant.copy(alpha = 0.15f),
+                        start = Offset(0f, y),
+                        end = Offset(size.width, y),
+                        strokeWidth = 1.dp.toPx()
+                    )
+                    
+                    val volumeText = "%.0f".format(volume)
+                    val textLayoutResult = textMeasurer.measure(
+                        text = volumeText,
+                        style = TextStyle(
+                            fontSize = 11.sp,
+                            color = onSurfaceVariant
+                        )
+                    )
+                    drawText(
+                        textLayoutResult = textLayoutResult,
+                        topLeft = Offset(
+                            x = -textLayoutResult.size.width - 8.dp.toPx(),
+                            y = y - textLayoutResult.size.height / 2
+                        )
+                    )
+                }
+
+                val points = completedSessions.mapIndexed { index, (_, volume) ->
+                    val x = size.width * (index.toFloat() / (completedSessions.size - 1))
+                    val normalizedVolume = (volume.toFloat() - paddedMin) / paddedRange
+                    val y = size.height * (1 - normalizedVolume)
+                    Offset(x, y)
+                }
+
+                val fillPath = Path().apply {
+                    moveTo(points.first().x, size.height)
+                    points.forEach { lineTo(it.x, it.y) }
+                    lineTo(points.last().x, size.height)
+                    close()
+                }
+
+                drawPath(
+                    path = fillPath,
+                    brush = Brush.verticalGradient(
+                        colors = listOf(
+                            primaryColor.copy(alpha = 0.3f),
+                            primaryColor.copy(alpha = 0.05f)
+                        )
+                    )
+                )
+
+                val path = Path().apply {
+                    moveTo(points.first().x, points.first().y)
+                    for (i in 1 until points.size) {
+                        lineTo(points[i].x, points[i].y)
+                    }
+                }
+
+                drawPath(
+                    path = path,
+                    color = primaryColor,
+                    style = Stroke(width = 3.dp.toPx(), cap = StrokeCap.Round)
+                )
+
+                points.forEachIndexed { index, point ->
+                    val volume = completedSessions[index].second
+                    
+                    drawCircle(
+                        color = primaryColor,
+                        radius = 6.dp.toPx(),
+                        center = point
+                    )
+                    drawCircle(
+                        color = Color.White,
+                        radius = 3.dp.toPx(),
+                        center = point
+                    )
+
+                    val volumeText = "%.0f".format(volume)
+                    val valueLayoutResult = textMeasurer.measure(
+                        text = volumeText,
+                        style = TextStyle(
+                            fontSize = 10.sp,
+                            color = primaryColor,
+                            fontWeight = FontWeight.Bold
+                        )
+                    )
+                    drawText(
+                        textLayoutResult = valueLayoutResult,
+                        topLeft = Offset(
+                            x = point.x - valueLayoutResult.size.width / 2,
+                            y = point.y - valueLayoutResult.size.height - 12.dp.toPx()
+                        )
+                    )
+                }
+
+                completedSessions.forEachIndexed { index, _ ->
+                    if (index % maxOf(1, completedSessions.size / 6) == 0 || index == completedSessions.size - 1) {
+                        val x = size.width * (index.toFloat() / (completedSessions.size - 1))
+                        val labelText = "#${index + 1}"
+                        val labelLayoutResult = textMeasurer.measure(
+                            text = labelText,
+                            style = TextStyle(
+                                fontSize = 10.sp,
+                                color = onSurfaceVariant
+                            )
+                        )
+                        drawText(
+                            textLayoutResult = labelLayoutResult,
+                            topLeft = Offset(
+                                x = x - labelLayoutResult.size.width / 2,
+                                y = size.height + 8.dp.toPx()
+                            )
+                        )
+                    }
+                }
+
+                val yAxisLabel = "kg"
+                val yLabelResult = textMeasurer.measure(
+                    text = yAxisLabel,
+                    style = TextStyle(
+                        fontSize = 11.sp,
+                        color = onSurfaceVariant,
+                        fontWeight = FontWeight.Bold
+                    )
+                )
+                drawText(
+                    textLayoutResult = yLabelResult,
+                    topLeft = Offset(
+                        x = -yLabelResult.size.width - 8.dp.toPx(),
+                        y = -20.dp.toPx()
+                    )
+                )
+            }
         }
     }
 }

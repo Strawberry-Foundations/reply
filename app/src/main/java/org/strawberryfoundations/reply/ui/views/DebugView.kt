@@ -34,17 +34,15 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
-import kotlinx.coroutines.launch
 import org.strawberryfoundations.reply.core.AppSettings
-import org.strawberryfoundations.reply.room.AppDatabase
-import org.strawberryfoundations.reply.room.ExerciseViewModel
 import org.strawberryfoundations.reply.room.entities.SessionStatus
 import org.strawberryfoundations.reply.room.entities.WorkoutSession
+import org.strawberryfoundations.reply.room.viewmodels.ExerciseViewModel
+import org.strawberryfoundations.reply.room.viewmodels.WorkoutSessionViewModel
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
@@ -54,12 +52,11 @@ import java.util.Locale
 fun DebugView(
     settings: AppSettings,
     exerciseVm: ExerciseViewModel = viewModel(),
+    sessionVm: WorkoutSessionViewModel = viewModel(),
 ) {
-    val context = LocalContext.current
-    val database = remember { AppDatabase.getInstance(context) }
     val scope = rememberCoroutineScope()
     
-    val sessions by database.workoutSessionDao().getAllSessions().collectAsState(initial = emptyList())
+    val sessions by sessionVm.allSessions.collectAsState()
     val exercises by exerciseVm.trainings.collectAsState()
     
     var sessionToDelete by remember { mutableStateOf<WorkoutSession?>(null) }
@@ -83,11 +80,40 @@ fun DebugView(
 
             Spacer(modifier = Modifier.height(8.dp))
 
+            val activeSessions = remember(sessions) {
+                sessions.count { it.status == SessionStatus.ACTIVE || it.status == SessionStatus.PAUSED }
+            }
+
             Text(
                 text = "${sessions.size} ${if (sessions.size == 1) "Eintrag" else "Einträge"}",
                 style = MaterialTheme.typography.bodyMedium,
                 color = MaterialTheme.colorScheme.onSurfaceVariant
             )
+            
+            if (activeSessions > 0) {
+                Surface(
+                    color = if (activeSessions > 1) 
+                        MaterialTheme.colorScheme.errorContainer 
+                    else 
+                        MaterialTheme.colorScheme.primaryContainer,
+                    contentColor = if (activeSessions > 1) 
+                        MaterialTheme.colorScheme.onErrorContainer 
+                    else 
+                        MaterialTheme.colorScheme.onPrimaryContainer,
+                    shape = RoundedCornerShape(8.dp),
+                    modifier = Modifier.padding(top = 4.dp)
+                ) {
+                    Text(
+                        text = if (activeSessions > 1) 
+                            "⚠️ $activeSessions aktive Sessions (sollte max. 1 sein!)" 
+                        else 
+                            "✓ $activeSessions aktive Session",
+                        style = MaterialTheme.typography.labelMedium,
+                        fontWeight = FontWeight.Bold,
+                        modifier = Modifier.padding(horizontal = 12.dp, vertical = 6.dp)
+                    )
+                }
+            }
 
             Spacer(modifier = Modifier.height(16.dp))
 
@@ -131,10 +157,8 @@ fun DebugView(
             confirmButton = {
                 TextButton(
                     onClick = {
-                        scope.launch {
-                            database.workoutSessionDao().delete(session)
-                            sessionToDelete = null
-                        }
+                        sessionVm.delete(session)
+                        sessionToDelete = null
                     }
                 ) {
                     Text("Löschen", color = MaterialTheme.colorScheme.error)

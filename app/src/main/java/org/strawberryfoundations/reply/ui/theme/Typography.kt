@@ -69,6 +69,13 @@ val Typography = Typography(
         letterSpacing = 0.sp,
     ),
 
+    bodySmall = TextStyle(
+        fontFamily = googleSansFlex.labelLargeFontFamily,
+        fontSize = 12.sp,
+        lineHeight = 12.sp,
+        letterSpacing = 0.sp,
+    ),
+
     labelLarge = TextStyle(
         fontFamily = googleSansFlex.labelFontFamily,
         fontSize = 14.sp,

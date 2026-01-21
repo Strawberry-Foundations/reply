@@ -1,6 +1,6 @@
 package org.strawberryfoundations.reply
 
-import ExerciseDetail
+import org.strawberryfoundations.reply.ui.views.ExerciseDetail
 import android.annotation.SuppressLint
 import android.os.Bundle
 import androidx.activity.ComponentActivity
@@ -92,7 +92,8 @@ import org.strawberryfoundations.reply.core.AvatarCache
 import org.strawberryfoundations.reply.core.SettingsDataStore
 import org.strawberryfoundations.reply.core.getUserDataFlow
 import org.strawberryfoundations.reply.core.model.UserPreferences
-import org.strawberryfoundations.reply.room.ExerciseViewModel
+import org.strawberryfoundations.reply.room.viewmodels.ExerciseViewModel
+import org.strawberryfoundations.reply.room.viewmodels.WorkoutSessionViewModel
 import org.strawberryfoundations.reply.ui.theme.AppTheme
 import org.strawberryfoundations.reply.ui.theme.darkenColor
 import org.strawberryfoundations.reply.ui.theme.hexToColor
@@ -149,7 +150,8 @@ fun MainViewWithPersistence(appSettings: SettingsDataStore) {
 fun MainView(
     settings: AppSettings,
     onSettingsChange: (AppSettings.() -> AppSettings) -> Unit,
-    viewModel: ExerciseViewModel = viewModel(),
+    exerciseViewModel: ExerciseViewModel = viewModel(),
+    sessionViewModel: WorkoutSessionViewModel = viewModel(),
 ) {
     val context = LocalContext.current
     val imageLoader = remember { AvatarCache.getImageLoader(context) }
@@ -172,14 +174,28 @@ fun MainView(
     var selectedItem by remember { mutableIntStateOf(0) }
     var showProfile by remember { mutableStateOf(false) }
     val rootNavController = rememberNavController()
+    val activeSession by sessionViewModel.activeSession.collectAsState()
     
-    // Handle navigation from notification
+    // Flag um zu verhindern dass mehrfach navigiert wird
+    var hasNavigatedToSession by remember { mutableStateOf(false) }
+    
+    // Check for active session on app start and navigate to it - NUR EINMAL
     LaunchedEffect(Unit) {
         if (context is ComponentActivity) {
-            val sessionId = context.intent?.getLongExtra("navigate_to_session", -1L)
-            if (sessionId != null && sessionId != -1L) {
-                rootNavController.navigate("activeExercise/$sessionId")
+            // Zuerst prüfen ob es eine Intent-Navigation gibt (von Notification)
+            val intentSessionId = context.intent?.getLongExtra("navigate_to_session", -1L)
+            if (intentSessionId != null && intentSessionId != -1L) {
+                rootNavController.navigate("activeExercise/$intentSessionId")
                 context.intent?.removeExtra("navigate_to_session")
+                hasNavigatedToSession = true
+            } else {
+                // Sonst prüfen ob es eine aktive Session gibt
+                val currentSession = sessionViewModel.activeSession.value
+                if (currentSession != null && !hasNavigatedToSession) {
+                    org.strawberryfoundations.reply.service.SessionManager.bindService(context)
+                    rootNavController.navigate("activeExercise/${currentSession.id}")
+                    hasNavigatedToSession = true
+                }
             }
         }
     }
@@ -430,7 +446,7 @@ fun MainView(
             arguments = listOf(navArgument("exerciseId") { type = NavType.LongType })
         ) { backStackEntry ->
             val exerciseId = backStackEntry.arguments?.getLong("exerciseId") ?: 0L
-            val trainings by viewModel.trainings.collectAsState()
+            val trainings by exerciseViewModel.trainings.collectAsState()
             val exercise = trainings.firstOrNull { it.id == exerciseId }
 
             val cardColor = darkenColor(hexToColor(exercise?.color ?: ""), 0.55f)
@@ -498,6 +514,9 @@ fun MainView(
                 sessionId = exerciseId,
                 settings = settings,
                 onSessionComplete = {
+                    rootNavController.popBackStack()
+                },
+                onBack = {
                     rootNavController.popBackStack()
                 }
             )

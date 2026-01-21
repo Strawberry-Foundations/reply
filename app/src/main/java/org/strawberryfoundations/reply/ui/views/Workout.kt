@@ -89,7 +89,7 @@ import org.strawberryfoundations.material.symbols.MaterialSymbols
 import org.strawberryfoundations.material.symbols.default.Check
 import org.strawberryfoundations.reply.R
 import org.strawberryfoundations.reply.core.AppSettings
-import org.strawberryfoundations.reply.room.ExerciseViewModel
+import org.strawberryfoundations.reply.room.viewmodels.ExerciseViewModel
 import org.strawberryfoundations.reply.room.entities.Exercise
 import org.strawberryfoundations.reply.room.entities.ExerciseGroup
 import org.strawberryfoundations.reply.room.entities.SessionStatus

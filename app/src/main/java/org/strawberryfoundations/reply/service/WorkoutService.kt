@@ -95,6 +95,13 @@ class WorkoutService : Service() {
 
                 currentExercise = database.workoutSessionDao().getExerciseById(activeSession.id)
                 
+                // Starte Foreground Service wenn Session existiert
+                startForeground(
+                    NOTIFICATION_ID,
+                    buildNotification(),
+                    ServiceInfo.FOREGROUND_SERVICE_TYPE_DATA_SYNC
+                )
+                
                 if (activeSession.status == SessionStatus.ACTIVE) {
                     startTimer()
                 }
@@ -156,6 +163,9 @@ class WorkoutService : Service() {
     }
     
     private suspend fun startNewSession(exerciseId: Long, weight: Double) {
+        // Zuerst alle anderen aktiven Sessions abbrechen (nur eine Session gleichzeitig erlaubt)
+        database.workoutSessionDao().cancelAllActiveSessions()
+        
         val session = WorkoutSession(
             exerciseId = exerciseId,
             currentWeight = weight,

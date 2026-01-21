@@ -19,6 +19,7 @@ import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Pause
@@ -78,7 +79,7 @@ import org.strawberryfoundations.material.symbols.default.Check
 import org.strawberryfoundations.material.symbols.filled.Weight
 import org.strawberryfoundations.reply.R
 import org.strawberryfoundations.reply.core.AppSettings
-import org.strawberryfoundations.reply.room.ExerciseViewModel
+import org.strawberryfoundations.reply.room.viewmodels.ExerciseViewModel
 import org.strawberryfoundations.reply.room.entities.SessionStatus
 import org.strawberryfoundations.reply.room.entities.WorkoutSet
 import org.strawberryfoundations.reply.room.entities.getExerciseGroupEmoji
@@ -95,7 +96,8 @@ fun ActiveExercise(
     sessionId: Long,
     settings: AppSettings,
     viewModel: ExerciseViewModel = viewModel(),
-    onSessionComplete: () -> Unit
+    onSessionComplete: () -> Unit,
+    onBack: () -> Unit,
 ) {
     val context = LocalContext.current
     val haptic = LocalHapticFeedback.current
@@ -105,19 +107,30 @@ fun ActiveExercise(
     val restTimeRemaining by SessionManager.restTimeRemaining.collectAsState()
     
     val exercises by viewModel.trainings.collectAsState()
-    val currentExercise = remember(session, exercises) {
-        session?.exerciseId?.let { id -> exercises.firstOrNull { it.id == id } }
+
+    val exerciseId = remember { session?.exerciseId }
+    val currentExercise = remember(exerciseId, exercises) {
+        exerciseId?.let { id -> exercises.firstOrNull { it.id == id } }
     }
     
     var showRepsDialog by remember { mutableStateOf(false) }
     var showStopDialog by remember { mutableStateOf(false) }
+    
+    var localWeight by remember { mutableStateOf(session?.currentWeight ?: 0.0) }
+    
+    LaunchedEffect(session?.id) {
+        session?.currentWeight?.let { localWeight = it }
+    }
 
     LaunchedEffect(Unit) {
         SessionManager.bindService(context)
     }
 
+    var hasCompletedSession by remember { mutableStateOf(false) }
     LaunchedEffect(session?.status) {
-        if (session?.status == SessionStatus.COMPLETED || session?.status == SessionStatus.CANCELLED) {
+        val status = session?.status
+        if (!hasCompletedSession && (status == SessionStatus.COMPLETED || status == SessionStatus.CANCELLED)) {
+            hasCompletedSession = true
             delay(500)
             onSessionComplete()
         }
@@ -133,9 +146,10 @@ fun ActiveExercise(
     val isPaused = session?.status == SessionStatus.PAUSED
     val isResting = session?.isResting == true
     
-    val setsHistory = remember(session?.setsHistory) {
+    val setsHistoryJson = session?.setsHistory ?: "[]"
+    val setsHistory = remember(setsHistoryJson) {
         try {
-            Json.decodeFromString<List<WorkoutSet>>(session?.setsHistory ?: "[]")
+            Json.decodeFromString<List<WorkoutSet>>(setsHistoryJson)
         } catch (e: Exception) {
             emptyList()
         }
@@ -144,6 +158,15 @@ fun ActiveExercise(
     Scaffold(
         topBar = {
             CenterAlignedTopAppBar(
+                navigationIcon = {
+                    IconButton(onClick = { onBack() }) {
+                        Icon(
+                            imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                            contentDescription = stringResource(R.string.back),
+                            modifier = Modifier.size(24.dp)
+                        )
+                    }
+                },
                 title = {
                     Row(
                         verticalAlignment = Alignment.CenterVertically,
@@ -204,11 +227,12 @@ fun ActiveExercise(
                 Spacer(modifier = Modifier.height(16.dp))
 
                 WeightCard(
-                    currentWeight = session?.currentWeight ?: 0.0,
+                    currentWeight = localWeight,
                     onWeightChange = { newWeight ->
                         if (settings.useHapticFeedback) {
                             haptic.performHapticFeedback(HapticFeedbackType.KeyboardTap)
                         }
+                        localWeight = newWeight
                         SessionManager.updateWeight(newWeight)
                     },
                     settings = settings

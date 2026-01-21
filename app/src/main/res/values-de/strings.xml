@@ -67,6 +67,14 @@
     <string name="alt_name">Alternativer Name</string>
     <string name="weight_kg">Gewicht (kg)</string>
     <string name="history">Verlauf</string>
+    <string name="show_history">Verlauf anzeigen</string>
+    <string name="no_history_yet">Noch keine Trainingseinheiten</string>
+    <string name="delete_session">Session löschen</string>
+    <string name="delete_session_confirm">Möchtest du diese Trainingseinheit wirklich löschen?</string>
+    <string name="status_completed">Abgeschlossen</string>
+    <string name="status_cancelled">Abgebrochen</string>
+    <string name="status_paused">Pausiert</string>
+    <string name="status_active">Aktiv</string>
     <string name="progress_graph_soon">Hier erscheint bald dein Fortschritts-Graph</string>
     <string name="best_performance">Bestleistung</string>
     <string name="last_performance">Zuletzt</string>
@@ -74,6 +82,24 @@
     <string name="start_session">Session beginnen</string>
     <string name="get_ready">Mach dich bereit…</string>
     <string name="go">Los!</string>
+
+    <!-- Exercise Statistics -->
+    <string name="last_session">Letzte Session</string>
+    <string name="average">Durchschnitt</string>
+    <string name="trend">Trend</string>
+    <string name="trend_rising">Steigend</string>
+    <string name="trend_falling">Sinkend</string>
+    <string name="trend_stable">Stabil</string>
+    <string name="trend_insufficient_data">Zu wenig Daten</string>
+    <string name="total_sessions">Trainingseinheiten</string>
+    <string name="total_sets">Gesamt Sätze</string>
+    <string name="total_volume">Gesamt bewegt</string>
+    <string name="avg_volume">Ø pro Session</string>
+    <string name="weight_progress">Gewichtsverlauf</string>
+    <string name="volume_progress">Volumenverlauf</string>
+    <string name="complete_two_trainings">Absolviere mindestens 2 Trainings</string>
+    <string name="to_see_progress">um deinen Fortschritt zu sehen</string>
+    <string name="set">Satz</string>
 
     <!-- Active Exercise Screen -->
     <string name="s_continue">Fortsetzen</string>
@@ -181,5 +207,5 @@
 
     <!-- Error messages -->
     <string name="error_colon">Fehler: %1$s</string>
-    <string name="show_history">Verlauf anzeigen</string>
+
 </resources>
