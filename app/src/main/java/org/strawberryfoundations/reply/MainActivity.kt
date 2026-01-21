@@ -97,6 +97,7 @@ import org.strawberryfoundations.reply.ui.theme.AppTheme
 import org.strawberryfoundations.reply.ui.theme.darkenColor
 import org.strawberryfoundations.reply.ui.theme.hexToColor
 import org.strawberryfoundations.reply.ui.views.ActiveExercise
+import org.strawberryfoundations.reply.ui.views.DebugView
 import org.strawberryfoundations.reply.ui.views.DeviceView
 import org.strawberryfoundations.reply.ui.views.ProfileView
 import org.strawberryfoundations.reply.ui.views.SettingsView
@@ -365,7 +366,10 @@ fun MainView(
                                 )
                                 2 -> SettingsView(
                                     settings = settings,
-                                    onSettingsChange = onSettingsChange
+                                    onSettingsChange = onSettingsChange,
+                                    onDebugClick = {
+                                        rootNavController.navigate("debug")
+                                    }
                                 )
                             }
                         }
@@ -483,6 +487,7 @@ fun MainView(
             }
         }
 
+        // Navigation Route: activeExercise/{exerciseId}
         composable(
             route = "activeExercise/{exerciseId}",
             arguments = listOf(navArgument("exerciseId") { type = NavType.LongType })
@@ -496,6 +501,20 @@ fun MainView(
                     rootNavController.popBackStack()
                 }
             )
+        }
+
+        // Navigation Route: debug
+        composable(
+            route = "debug",
+        ) {
+            Scaffold(
+                modifier = Modifier.fillMaxSize(),
+            ) {
+                DebugView(
+                    settings = settings,
+                    exerciseVm = viewModel()
+                )
+            }
         }
     }
 }
