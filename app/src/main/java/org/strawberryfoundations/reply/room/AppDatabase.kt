@@ -8,6 +8,8 @@ import androidx.room.Room
 import androidx.room.RoomDatabase
 import androidx.room.migration.Migration
 import androidx.sqlite.db.SupportSQLiteDatabase
+import org.strawberryfoundations.reply.room.dao.ExerciseDao
+import org.strawberryfoundations.reply.room.dao.WorkoutSessionDao
 
 
 @Database(entities = [Exercise::class, WorkoutSession::class], version = 6)
