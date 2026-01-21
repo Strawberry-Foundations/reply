@@ -173,7 +173,7 @@ fun MainView(
 
     var selectedItem by remember { mutableIntStateOf(0) }
     var showProfile by remember { mutableStateOf(false) }
-    val rootNavController = rememberNavController()
+    val navController = rememberNavController()
     val activeSession by sessionViewModel.activeSession.collectAsState()
     
     // Flag um zu verhindern dass mehrfach navigiert wird
@@ -185,7 +185,7 @@ fun MainView(
             // Zuerst prüfen ob es eine Intent-Navigation gibt (von Notification)
             val intentSessionId = context.intent?.getLongExtra("navigate_to_session", -1L)
             if (intentSessionId != null && intentSessionId != -1L) {
-                rootNavController.navigate("activeExercise/$intentSessionId")
+                navController.navigate("activeExercise/$intentSessionId")
                 context.intent?.removeExtra("navigate_to_session")
                 hasNavigatedToSession = true
             } else {
@@ -193,7 +193,7 @@ fun MainView(
                 val currentSession = sessionViewModel.activeSession.value
                 if (currentSession != null && !hasNavigatedToSession) {
                     org.strawberryfoundations.reply.service.SessionManager.bindService(context)
-                    rootNavController.navigate("activeExercise/${currentSession.id}")
+                    navController.navigate("activeExercise/${currentSession.id}")
                     hasNavigatedToSession = true
                 }
             }
@@ -225,7 +225,7 @@ fun MainView(
 
     // Navigation host
     NavHost(
-        navController = rootNavController,
+        navController = navController,
         startDestination = "main",
         modifier = Modifier
             .fillMaxSize()
@@ -371,10 +371,10 @@ fun MainView(
                                 0 -> TrainingView(
                                     settings = settings,
                                     onExerciseClick = { exerciseId ->
-                                        rootNavController.navigate("exerciseDetail/$exerciseId")
+                                        navController.navigate("exerciseDetail/$exerciseId")
                                     },
                                     onActiveSessionClick = { exerciseId ->
-                                        rootNavController.navigate("activeExercise/$exerciseId")
+                                        navController.navigate("activeExercise/$exerciseId")
                                     }
                                 )
                                 1 -> DeviceView(
@@ -384,7 +384,7 @@ fun MainView(
                                     settings = settings,
                                     onSettingsChange = onSettingsChange,
                                     onDebugClick = {
-                                        rootNavController.navigate("debug")
+                                        navController.navigate("debug")
                                     }
                                 )
                             }
@@ -467,7 +467,7 @@ fun MainView(
                     topBar = {
                         CenterAlignedTopAppBar(
                             navigationIcon = {
-                                IconButton(onClick = { rootNavController.popBackStack() }) {
+                                IconButton(onClick = { navController.popBackStack() }) {
                                     Icon(
                                         imageVector = Icons.AutoMirrored.Filled.ArrowBack,
                                         contentDescription = stringResource(R.string.back),
@@ -494,7 +494,7 @@ fun MainView(
                         ExerciseDetail(
                             exercise = exercise,
                             onStartTraining = { exerciseToStart ->
-                                rootNavController.navigate("activeExercise/${exerciseToStart.id}")
+                                navController.navigate("activeExercise/${exerciseToStart.id}")
                             },
                             settings = settings,
                         )
@@ -514,10 +514,10 @@ fun MainView(
                 sessionId = exerciseId,
                 settings = settings,
                 onSessionComplete = {
-                    rootNavController.popBackStack()
+                    navController.popBackStack()
                 },
                 onBack = {
-                    rootNavController.popBackStack()
+                    navController.popBackStack()
                 }
             )
         }

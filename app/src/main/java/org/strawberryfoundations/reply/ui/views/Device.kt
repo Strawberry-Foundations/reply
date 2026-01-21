@@ -319,10 +319,13 @@ fun DeviceView(
                                     scope.launch {
                                         isSending.value = true
                                         try {
-                                            val dao = AppDatabase.getInstance(context).trainingDao()
-                                            val trainings = withContext(Dispatchers.IO) { dao.getAll().first() }
-                                            if (trainings.isNotEmpty()) {
-                                                DataSyncSender.sendDbSnapshot(context, trainings)
+                                            val db = AppDatabase.getInstance(context)
+
+                                            val trainings = withContext(Dispatchers.IO) { db.trainingDao().getAll().first() }
+                                            val sessions = withContext(Dispatchers.IO) { db.workoutSessionDao().getAll().first() }
+
+                                            if (trainings.isNotEmpty() || sessions.isNotEmpty()) {
+                                                DataSyncSender.sendDbSnapshot(context, trainings, sessions)
                                                 val fmt = SimpleDateFormat("dd.MM.yy HH:mm", Locale.getDefault())
                                                 lastSync.value = fmt.format(Date())
                                                 scope.launch { snackbarHostState.showSnackbar(context.getString(R.string.db_snapshot_queued)) }

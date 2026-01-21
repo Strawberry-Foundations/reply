@@ -10,7 +10,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.serialization.json.Json
-import org.strawberryfoundations.reply.room.entities.Exercise
+import org.strawberryfoundations.reply.core.model.DbSnapshot
 import org.strawberryfoundations.reply.room.AppDatabase
 
 
@@ -31,12 +31,19 @@ class DataSyncReceiver : WearableListenerService() {
                                 try {
                                     result.inputStream.bufferedReader(Charsets.UTF_8).use { reader ->
                                         val json = reader.readText()
-                                        val list: List<Exercise> = Json.decodeFromString(json)
-                                        val dao = AppDatabase.getInstance(applicationContext).trainingDao()
-                                        for (t in list) {
-                                            dao.insert(t)
+                                        val snapshot: DbSnapshot = Json.decodeFromString(json)
+                                        val db = AppDatabase.getInstance(applicationContext)
+                                        val exerciseDao = db.trainingDao()
+                                        val sessionDao = db.workoutSessionDao()
+                                        
+                                        for (exercise in snapshot.exercises) {
+                                            exerciseDao.insert(exercise)
                                         }
-                                        Log.i("DataSyncReceiver", "Applied ${list.size} trainings from sync")
+                                        for (session in snapshot.workoutSessions) {
+                                            sessionDao.insert(session)
+                                        }
+                                        
+                                        Log.i("DataSyncReceiver", "Applied ${snapshot.exercises.size} exercises and ${snapshot.workoutSessions.size} sessions from sync")
                                     }
                                 } catch (e: Exception) {
                                     Log.e("DataSyncReceiver", "Failed to apply snapshot", e)

@@ -8,16 +8,17 @@ import com.google.android.gms.wearable.Wearable
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import kotlinx.serialization.builtins.ListSerializer
 import kotlinx.serialization.json.Json
+import org.strawberryfoundations.reply.core.model.DbSnapshot
 import org.strawberryfoundations.reply.room.entities.Exercise
-
+import org.strawberryfoundations.reply.room.entities.WorkoutSession
 
 object DataSyncSender {
-    fun sendDbSnapshot(context: Context, trainings: List<Exercise>) {
+    fun sendDbSnapshot(context: Context, trainings: List<Exercise>, sessions: List<WorkoutSession>) {
         CoroutineScope(Dispatchers.IO).launch {
             try {
-                val json = Json.encodeToString(ListSerializer(Exercise.serializer()), trainings)
+                val snapshot = DbSnapshot(exercises = trainings, workoutSessions = sessions)
+                val json = Json.encodeToString(DbSnapshot.serializer(), snapshot)
                 val bytes = json.toByteArray(Charsets.UTF_8)
                 val asset = Asset.createFromBytes(bytes)
 

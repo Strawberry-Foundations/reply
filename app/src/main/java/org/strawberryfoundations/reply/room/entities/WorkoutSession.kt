@@ -22,6 +22,7 @@ data class WorkoutSet(
     val timestamp: Long = System.currentTimeMillis()
 )
 
+@Serializable
 @Entity(
     tableName = "workout_sessions",
     foreignKeys = [
@@ -38,6 +39,7 @@ data class WorkoutSet(
         Index(value = ["started_at"])
     ]
 )
+
 data class WorkoutSession(
     @PrimaryKey(autoGenerate = true) val id: Long = 0L,
     
