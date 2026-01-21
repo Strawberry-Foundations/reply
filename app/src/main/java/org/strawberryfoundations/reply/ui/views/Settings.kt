@@ -48,6 +48,8 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.VerticalDivider
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableLongStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
@@ -348,7 +350,8 @@ fun SettingsItem(
 @Composable
 fun SettingsView(
     settings: AppSettings,
-    onSettingsChange: (AppSettings.() -> AppSettings) -> Unit
+    onSettingsChange: (AppSettings.() -> AppSettings) -> Unit,
+    onDebugClick: () -> Unit
 ) {
     val context = LocalContext.current
     val uriHandler = LocalUriHandler.current
@@ -524,10 +527,31 @@ fun SettingsView(
                         .padding(horizontal = 20.dp, vertical = 8.dp),
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
+                    var clickCount by remember { mutableIntStateOf(0) }
+                    var lastClickTime by remember { mutableLongStateOf(0L) }
+
                     Image(
                         painter = painterResource(R.drawable.splash),
                         contentDescription = null,
-                        modifier = Modifier.size(58.dp)
+                        modifier = Modifier
+                            .size(58.dp)
+                            .clickable(
+                                indication = null,
+                                interactionSource = remember { androidx.compose.foundation.interaction.MutableInteractionSource() }
+                            ) {
+                                val currentTime = System.currentTimeMillis()
+                                if (currentTime - lastClickTime < 500) {
+                                    clickCount++
+                                } else {
+                                    clickCount = 1
+                                }
+                                lastClickTime = currentTime
+
+                                if (clickCount >= 5) {
+                                    clickCount = 0
+                                    onDebugClick()
+                                }
+                            },
                     )
                     Spacer(modifier = Modifier.height(4.dp))
                     Text(
