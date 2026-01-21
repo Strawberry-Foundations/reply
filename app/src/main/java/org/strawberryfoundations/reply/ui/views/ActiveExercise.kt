@@ -56,6 +56,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableDoubleStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -104,7 +105,7 @@ fun ActiveExercise(
     
     val session by SessionManager.currentSession.collectAsState()
     val elapsedSeconds by SessionManager.elapsedSeconds.collectAsState()
-    val restTimeRemaining by SessionManager.restTimeRemaining.collectAsState()
+    // val restTimeRemaining by SessionManager.restTimeRemaining.collectAsState()
     
     val exercises by viewModel.trainings.collectAsState()
 
@@ -116,7 +117,7 @@ fun ActiveExercise(
     var showRepsDialog by remember { mutableStateOf(false) }
     var showStopDialog by remember { mutableStateOf(false) }
     
-    var localWeight by remember { mutableStateOf(session?.currentWeight ?: 0.0) }
+    var localWeight by remember { mutableDoubleStateOf(session?.currentWeight ?: 0.0) }
     
     LaunchedEffect(session?.id) {
         session?.currentWeight?.let { localWeight = it }
@@ -144,7 +145,7 @@ fun ActiveExercise(
     }
     
     val isPaused = session?.status == SessionStatus.PAUSED
-    val isResting = session?.isResting == true
+    // val isResting = session?.isResting == true
     
     val setsHistoryJson = session?.setsHistory ?: "[]"
     val setsHistory = remember(setsHistoryJson) {
