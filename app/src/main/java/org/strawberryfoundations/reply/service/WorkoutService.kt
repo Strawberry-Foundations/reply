@@ -5,29 +5,36 @@ import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.app.PendingIntent
 import android.app.Service
-import android.content.Context
 import android.content.Intent
+import android.content.pm.ServiceInfo
 import android.os.Binder
-import android.os.Build
 import android.os.IBinder
 import android.os.PowerManager
 import androidx.core.app.NotificationCompat
-import kotlinx.coroutines.*
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.cancel
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.firstOrNull
-import kotlinx.serialization.encodeToString
+import kotlinx.coroutines.isActive
+import kotlinx.coroutines.launch
 import kotlinx.serialization.json.Json
 import org.strawberryfoundations.reply.MainActivity
 import org.strawberryfoundations.reply.R
 import org.strawberryfoundations.reply.room.AppDatabase
+import org.strawberryfoundations.reply.room.entities.Exercise
+import org.strawberryfoundations.reply.room.entities.ExerciseGroup
 import org.strawberryfoundations.reply.room.entities.SessionStatus
 import org.strawberryfoundations.reply.room.entities.WorkoutSession
 import org.strawberryfoundations.reply.room.entities.WorkoutSet
+import org.strawberryfoundations.reply.room.entities.getExerciseGroupEmoji
 
 class WorkoutService : Service() {
-    
     private val binder = WorkoutBinder()
     private val serviceScope = CoroutineScope(Dispatchers.Default + SupervisorJob())
     
@@ -37,12 +44,14 @@ class WorkoutService : Service() {
     
     private val _currentSession = MutableStateFlow<WorkoutSession?>(null)
     val currentSession: StateFlow<WorkoutSession?> = _currentSession.asStateFlow()
-    
+
     private val _elapsedSeconds = MutableStateFlow(0L)
     val elapsedSeconds: StateFlow<Long> = _elapsedSeconds.asStateFlow()
     
     private val _restTimeRemaining = MutableStateFlow(0)
     val restTimeRemaining: StateFlow<Int> = _restTimeRemaining.asStateFlow()
+    
+    private var currentExercise: Exercise? = null
     
     private lateinit var database: AppDatabase
     private lateinit var notificationManager: NotificationManager
@@ -74,16 +83,18 @@ class WorkoutService : Service() {
     override fun onCreate() {
         super.onCreate()
         database = AppDatabase.getInstance(applicationContext)
-        notificationManager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+        notificationManager = getSystemService(NOTIFICATION_SERVICE) as NotificationManager
         createNotificationChannel()
         acquireWakeLock()
-        
-        // Lade aktive Session falls vorhanden
+
         serviceScope.launch {
             val activeSession = database.workoutSessionDao().getActiveSession().firstOrNull()
             if (activeSession != null) {
                 _currentSession.value = activeSession
                 _elapsedSeconds.value = activeSession.elapsedSeconds
+
+                currentExercise = database.workoutSessionDao().getExerciseById(activeSession.id)
+                
                 if (activeSession.status == SessionStatus.ACTIVE) {
                     startTimer()
                 }
@@ -133,17 +144,15 @@ class WorkoutService : Service() {
     }
     
     private fun createNotificationChannel() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            val channel = NotificationChannel(
-                CHANNEL_ID,
-                "Workout Session",
-                NotificationManager.IMPORTANCE_LOW
-            ).apply {
-                description = "Shows active workout session"
-                setShowBadge(false)
-            }
-            notificationManager.createNotificationChannel(channel)
+        val channel = NotificationChannel(
+            CHANNEL_ID,
+            "Workout Session",
+            NotificationManager.IMPORTANCE_LOW
+        ).apply {
+            description = "Shows active workout session"
+            setShowBadge(false)
         }
+        notificationManager.createNotificationChannel(channel)
     }
     
     private suspend fun startNewSession(exerciseId: Long, weight: Double) {
@@ -156,20 +165,19 @@ class WorkoutService : Service() {
         
         val sessionId = database.workoutSessionDao().insert(session)
         val insertedSession = database.workoutSessionDao().getSessionByIdOnce(sessionId)
-        
+
         if (insertedSession != null) {
             _currentSession.value = insertedSession
             _elapsedSeconds.value = 0L
+
+            currentExercise = database.workoutSessionDao().getExerciseById(sessionId)
+            
             startTimer()
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-                startForeground(
-                    NOTIFICATION_ID,
-                    buildNotification(),
-                    android.content.pm.ServiceInfo.FOREGROUND_SERVICE_TYPE_DATA_SYNC
-                )
-            } else {
-                startForeground(NOTIFICATION_ID, buildNotification())
-            }
+            startForeground(
+                NOTIFICATION_ID,
+                buildNotification(),
+                ServiceInfo.FOREGROUND_SERVICE_TYPE_DATA_SYNC
+            )
         }
     }
     
@@ -292,8 +300,7 @@ class WorkoutService : Service() {
             while (isActive && _currentSession.value?.status == SessionStatus.ACTIVE) {
                 delay(1000)
                 _elapsedSeconds.value += 1
-                
-                // Speichere alle 10 Sekunden
+
                 if (_elapsedSeconds.value % 10 == 0L) {
                     _currentSession.value?.let { session ->
                         val updated = session.copy(
@@ -318,7 +325,6 @@ class WorkoutService : Service() {
                 updateNotification()
                 
                 if (_restTimeRemaining.value == 0) {
-                    // Pause beendet
                     _currentSession.value?.let { session ->
                         val updated = session.copy(
                             isResting = false,
@@ -334,9 +340,9 @@ class WorkoutService : Service() {
     }
     
     private fun acquireWakeLock() {
-        wakeLock = (getSystemService(Context.POWER_SERVICE) as PowerManager).run {
+        wakeLock = (getSystemService(POWER_SERVICE) as PowerManager).run {
             newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, "WorkoutService::WakeLock").apply {
-                acquire(10 * 60 * 1000L) // 10 Minuten max, wird erneuert
+                acquire(10 * 60 * 1000L)
             }
         }
     }
@@ -348,14 +354,14 @@ class WorkoutService : Service() {
             }
         }
     }
-    
+
     private fun buildNotification(): Notification {
         val session = _currentSession.value
         val elapsed = _elapsedSeconds.value
         val hours = elapsed / 3600
         val minutes = (elapsed % 3600) / 60
         val seconds = elapsed % 60
-        
+
         val timeString = if (hours > 0) {
             String.format("%d:%02d:%02d", hours, minutes, seconds)
         } else {
@@ -363,11 +369,12 @@ class WorkoutService : Service() {
         }
         
         val restInfo = if (session?.isResting == true && _restTimeRemaining.value > 0) {
-            " • Pause: ${_restTimeRemaining.value}s"
+            " • ${getString(R.string.rest)}: ${_restTimeRemaining.value}s"
         } else ""
+
+        val contentTitle = "${getExerciseGroupEmoji(currentExercise?.group ?: ExerciseGroup.OTHER)} ${currentExercise?.name}"
         
-        val contentTitle = "Workout läuft"
-        val contentText = "Zeit: $timeString • Sätze: ${session?.setsCompleted ?: 0}$restInfo"
+        val contentText = "${getString(R.string.time)}: $timeString • ${getString(R.string.sets)}: ${session?.setsCompleted ?: 0}$restInfo"
         
         val intent = Intent(this, MainActivity::class.java).apply {
             flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP

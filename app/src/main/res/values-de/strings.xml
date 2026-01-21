@@ -78,6 +78,8 @@
     <!-- Active Exercise Screen -->
     <string name="s_continue">Fortsetzen</string>
     <string name="pause">Pausieren</string>
+    <string name="time">Zeit</string>
+    <string name="sets">Sätze</string>
     <string name="training_time">Trainingszeit</string>
     <string name="current_weight">Aktuelles Gewicht</string>
     <string name="stop_training">Training stoppen</string>

@@ -8,22 +8,17 @@ import android.os.IBinder
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import org.strawberryfoundations.reply.room.entities.WorkoutSession
 
-/**
- * SessionManager - Single Source of Truth für die aktive Workout-Session
- * 
- * Dieser Manager verbindet sich mit dem WorkoutService und bietet einen
- * zentralen Zugriffspunkt für den Session-State in der gesamten App.
- */
+
 object SessionManager {
-    
     private var workoutService: WorkoutService? = null
     private var isBound = false
     
     private val _isServiceConnected = MutableStateFlow(false)
     val isServiceConnected: StateFlow<Boolean> = _isServiceConnected.asStateFlow()
     
-    val currentSession: StateFlow<org.strawberryfoundations.reply.room.entities.WorkoutSession?>
+    val currentSession: StateFlow<WorkoutSession?>
         get() = workoutService?.currentSession ?: MutableStateFlow(null)
     
     val elapsedSeconds: StateFlow<Long>

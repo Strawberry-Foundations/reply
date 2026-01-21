@@ -55,7 +55,7 @@ data class WorkoutSession(
     @ColumnInfo(name = "rest_timer_seconds") val restTimerSeconds: Int = 0,
     @ColumnInfo(name = "is_resting") val isResting: Boolean = false,
 
-    @ColumnInfo(name = "sets_history") val setsHistory: String = "[]", // JSON Array of WorkoutSet
+    @ColumnInfo(name = "sets_history") val setsHistory: String = "[]",
 
     @ColumnInfo(name = "notes") val notes: String = "",
     @ColumnInfo(name = "updated_at") val updatedAt: Long = System.currentTimeMillis()

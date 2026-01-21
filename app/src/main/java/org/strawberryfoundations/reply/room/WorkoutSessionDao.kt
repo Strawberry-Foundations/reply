@@ -2,6 +2,7 @@ package org.strawberryfoundations.reply.room
 
 import androidx.room.*
 import kotlinx.coroutines.flow.Flow
+import org.strawberryfoundations.reply.room.entities.Exercise
 import org.strawberryfoundations.reply.room.entities.SessionStatus
 import org.strawberryfoundations.reply.room.entities.WorkoutSession
 
@@ -15,6 +16,14 @@ interface WorkoutSessionDao {
     
     @Query("SELECT * FROM workout_sessions WHERE id = :sessionId")
     suspend fun getSessionByIdOnce(sessionId: Long): WorkoutSession?
+    
+    @Query("""
+        SELECT T.*
+        FROM workout_sessions
+        INNER JOIN trainings AS T ON workout_sessions.exercise_id = T.id
+        WHERE workout_sessions.id = :sessionId
+    """)
+    suspend fun getExerciseById(sessionId: Long): Exercise?
     
     @Query("SELECT * FROM workout_sessions WHERE exercise_id = :exerciseId ORDER BY started_at DESC")
     fun getSessionsByExercise(exerciseId: Long): Flow<List<WorkoutSession>>
