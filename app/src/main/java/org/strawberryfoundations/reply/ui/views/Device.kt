@@ -72,6 +72,7 @@ import org.strawberryfoundations.reply.ui.theme.customFont
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
+import kotlin.compareTo
 
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterial3ExpressiveApi::class)
@@ -90,7 +91,19 @@ fun DeviceView(
     val isSending = remember { mutableStateOf(false) }
     val isLoadingNodes = remember { mutableStateOf(false) }
     val nodesState = remember { mutableStateOf<List<Node>>(emptyList()) }
-    val lastSync = remember { mutableStateOf<String?>(null) }
+
+    val lastUpdated = settings.lastSync
+    val lastSyncText = if (lastUpdated <= 0L) {
+        stringResource(R.string.never)
+    } else {
+        try {
+            SimpleDateFormat("dd.MM.yy HH:mm", Locale.getDefault())
+                .format(Date(lastUpdated))
+        } catch (_: Exception) {
+            stringResource(R.string.never)
+        }
+    }
+
     val pullState = rememberPullToRefreshState()
 
     LaunchedEffect( Unit ) {
@@ -278,7 +291,7 @@ fun DeviceView(
                                     fontSize = 15.sp,
                                 )
                                 Text(
-                                    text = lastSync.value ?: stringResource(id = R.string.never),
+                                    text = lastSyncText,
                                     style = MaterialTheme.typography.bodyMedium,
                                     fontSize = 15.sp,
                                 )
@@ -328,8 +341,6 @@ fun DeviceView(
 
                                             if (trainings.isNotEmpty() || sessions.isNotEmpty()) {
                                                 DataSyncSender.sendDbSnapshot(context, trainings, sessions)
-                                                val fmt = SimpleDateFormat("dd.MM.yy HH:mm", Locale.getDefault())
-                                                lastSync.value = fmt.format(Date())
                                                 scope.launch { snackbarHostState.showSnackbar(context.getString(R.string.db_snapshot_queued)) }
                                             } else {
                                                 scope.launch { snackbarHostState.showSnackbar(context.getString(R.string.no_trainings_to_send)) }

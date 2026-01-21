@@ -11,6 +11,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.serialization.json.Json
 import org.strawberryfoundations.reply.core.model.DbSnapshot
+import org.strawberryfoundations.reply.core.SettingsDataStore
 import org.strawberryfoundations.reply.room.AppDatabase
 
 
@@ -83,6 +84,14 @@ class DataSyncReceiver : WearableListenerService() {
                                         
                                         val source = if (path == "/db-sync-from-wearable") "Wearable" else "Phone"
                                         Log.i("DataSyncReceiver", "Successfully applied $exerciseCount exercises and $sessionCount sessions from $source")
+                                        
+                                        // Update last sync time
+                                        try {
+                                            val settings = SettingsDataStore(applicationContext)
+                                            settings.updateSettings { it.copy(lastSync = System.currentTimeMillis()) }
+                                        } catch (e: Exception) {
+                                            Log.w("DataSyncReceiver", "Failed to update lastSync", e)
+                                        }
                                     }
                                 } catch (e: Exception) {
                                     Log.e("DataSyncReceiver", "Failed to apply snapshot", e)

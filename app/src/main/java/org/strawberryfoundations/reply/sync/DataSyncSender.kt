@@ -10,6 +10,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.serialization.json.Json
 import org.strawberryfoundations.reply.core.model.DbSnapshot
+import org.strawberryfoundations.reply.core.SettingsDataStore
 import org.strawberryfoundations.reply.room.entities.Exercise
 import org.strawberryfoundations.reply.room.entities.WorkoutSession
 
@@ -30,6 +31,15 @@ object DataSyncSender {
                 Wearable.getDataClient(context).putDataItem(request)
                     .addOnSuccessListener { dataItem ->
                         Log.i("DataSyncSender", "Successfully sent DB snapshot: $dataItem")
+                        // Update last sync time
+                        CoroutineScope(Dispatchers.IO).launch {
+                            try {
+                                val settings = SettingsDataStore(context)
+                                settings.updateSettings { it.copy(lastSync = System.currentTimeMillis()) }
+                            } catch (e: Exception) {
+                                Log.w("DataSyncSender", "Failed to update lastSync", e)
+                            }
+                        }
                     }
                     .addOnFailureListener { e ->
                         Log.e("DataSyncSender", "Failed to send DB snapshot", e)
