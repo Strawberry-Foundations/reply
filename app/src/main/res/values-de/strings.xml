@@ -193,6 +193,9 @@
     <string name="device_sync_description">Durch die Kopplung mit einem Wearable werden deine Workouts und Trainingsdaten automatisch zwischen Smartphone und Smartwatch abgeglichen. \n\nSo hast du deine Routine auch während des Trainings immer im Blick, während deine Daten nahtlos in der App aktualisiert werden.</string>
     <string name="device_status">Gerätestatus</string>
     <string name="last_db_sync">Letzte Synchronisierung:</string>
+    <string name="receive_from_wearable">Von Wearable empfangen</string>
+    <string name="sync_request_sent">Sync-Anfrage an Wearable gesendet</string>
+    <string name="sync_request_failed">Sync-Anfrage fehlgeschlagen: %1$s</string>
     <string name="nodes_discovered">Gefundene Nodes:</string>
     <string name="connected_nodes">Verbundenen Nodes</string>
     <string name="no_connected_nodes_found">Keine verbundenen Nodes gefunden.</string>

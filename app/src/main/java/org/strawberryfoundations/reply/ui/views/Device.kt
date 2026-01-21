@@ -20,6 +20,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.BarChart
 import androidx.compose.material.icons.rounded.DeviceHub
+import androidx.compose.material.icons.rounded.Download
 import androidx.compose.material.icons.rounded.Info
 import androidx.compose.material.icons.rounded.NearMe
 import androidx.compose.material.icons.rounded.NearMeDisabled
@@ -66,6 +67,7 @@ import org.strawberryfoundations.reply.core.AppSettings
 import org.strawberryfoundations.reply.room.AppDatabase
 import org.strawberryfoundations.reply.room.viewmodels.ExerciseViewModel
 import org.strawberryfoundations.reply.sync.DataSyncSender
+import org.strawberryfoundations.reply.sync.DataSyncRequestor
 import org.strawberryfoundations.reply.ui.theme.customFont
 import java.text.SimpleDateFormat
 import java.util.Date
@@ -379,6 +381,36 @@ fun DeviceView(
                                 Icon(
                                     imageVector = Icons.Rounded.Refresh,
                                     contentDescription = stringResource(id = R.string.device_sync_title),
+                                    modifier = Modifier.padding(end = 2.dp)
+                                )
+                            }
+                            
+                            Button(
+                                onClick = {
+                                    scope.launch {
+                                        try {
+                                            DataSyncRequestor.requestSyncFromWearable(
+                                                context = context,
+                                                onSuccess = {
+                                                    scope.launch { 
+                                                        snackbarHostState.showSnackbar(context.getString(R.string.sync_request_sent)) 
+                                                    }
+                                                },
+                                                onFailure = { e ->
+                                                    scope.launch { 
+                                                        snackbarHostState.showSnackbar(context.getString(R.string.sync_request_failed, e.message ?: ""))
+                                                    }
+                                                }
+                                            )
+                                        } catch (e: Exception) {
+                                            Log.w("DeviceView", "Error requesting sync", e)
+                                            scope.launch { snackbarHostState.showSnackbar(context.getString(R.string.error_colon, e.message ?: "")) }
+                                        }
+                                    }
+                                }) {
+                                Icon(
+                                    imageVector = Icons.Rounded.Download,
+                                    contentDescription = stringResource(id = R.string.receive_from_wearable),
                                     modifier = Modifier.padding(end = 2.dp)
                                 )
                             }
