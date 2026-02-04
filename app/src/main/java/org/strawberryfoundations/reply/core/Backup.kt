@@ -13,6 +13,7 @@ import java.io.OutputStream
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
+import kotlin.collections.forEach
 
 
 @Serializable
@@ -85,18 +86,25 @@ class BackupManager(private val context: Context) {
             val settingsDataStore = SettingsDataStore(context)
             settingsDataStore.updateSettings { backup.appSettings }
             
-            val currentTrainings = trainingDao.getAll().first()
-            currentTrainings.forEach { trainingDao.delete(it) }
-
+            // Delete in correct order (first sessions, then exercises due to FK constraints)
             val currentSessions = workoutSessionDao.getAll().first()
             currentSessions.forEach { workoutSessionDao.delete(it) }
             
+            val currentTrainings = trainingDao.getAll().first()
+            currentTrainings.forEach { trainingDao.delete(it) }
+
+            // Insert exercises and map old IDs to new IDs
+            val exerciseIdMap = mutableMapOf<Long, Long>()
             backup.trainingData.forEach { training ->
-                trainingDao.insert(training.copy(id = 0))
+                val oldId = training.id
+                val newId = trainingDao.insert(training.copy(id = 0))
+                exerciseIdMap[oldId] = newId
             }
 
+            // Insert sessions with updated exercise IDs
             backup.workoutSessionData.forEach { session ->
-                workoutSessionDao.insert(session.copy(id = 0))
+                val newExerciseId = exerciseIdMap[session.exerciseId] ?: session.exerciseId
+                workoutSessionDao.insert(session.copy(id = 0, exerciseId = newExerciseId))
             }
             
             true
@@ -116,12 +124,18 @@ class BackupManager(private val context: Context) {
             val settingsDataStore = SettingsDataStore(context)
             settingsDataStore.updateSettings { backup.appSettings }
             
+            // Insert exercises and map old IDs to new IDs
+            val exerciseIdMap = mutableMapOf<Long, Long>()
             backup.trainingData.forEach { training ->
-                trainingDao.insert(training.copy(id = 0))
+                val oldId = training.id
+                val newId = trainingDao.insert(training.copy(id = 0))
+                exerciseIdMap[oldId] = newId
             }
 
+            // Insert sessions with updated exercise IDs
             backup.workoutSessionData.forEach { session ->
-                workoutSessionDao.insert(session.copy(id = 0))
+                val newExerciseId = exerciseIdMap[session.exerciseId] ?: session.exerciseId
+                workoutSessionDao.insert(session.copy(id = 0, exerciseId = newExerciseId))
             }
             
             true
