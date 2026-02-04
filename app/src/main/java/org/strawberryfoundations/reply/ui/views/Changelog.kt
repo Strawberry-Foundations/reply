@@ -48,7 +48,6 @@ fun ChangelogView() {
             }
         }
     }
-
 }
 
 @Composable

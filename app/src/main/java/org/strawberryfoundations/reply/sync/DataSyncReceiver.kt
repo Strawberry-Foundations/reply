@@ -24,7 +24,7 @@ class DataSyncReceiver : WearableListenerService() {
             if (event.type == DataEvent.TYPE_CHANGED) {
                 val path = event.dataItem.uri.path
                 Log.i("DataSyncReceiver", "Data changed event for path: $path")
-                // Empfange Daten vom Handy oder von der Wearable
+
                 if (path == "/db-sync" || path == "/db-sync-from-wearable") {
                     Log.i("DataSyncReceiver", "Processing sync data from path: $path")
                     val item = DataMapItem.fromDataItem(event.dataItem)
@@ -48,15 +48,13 @@ class DataSyncReceiver : WearableListenerService() {
                                         val db = AppDatabase.getInstance(applicationContext)
                                         val exerciseDao = db.trainingDao()
                                         val sessionDao = db.workoutSessionDao()
-                                        
-                                        // Verwende insert mit onConflict = REPLACE statt update
+
                                         var exerciseCount = 0
                                         for (exercise in snapshot.exercises) {
                                             try {
                                                 exerciseDao.insert(exercise)
                                                 exerciseCount++
-                                            } catch (e: Exception) {
-                                                // Falls insert fehlschlägt, versuche update
+                                            } catch (_: Exception) {
                                                 try {
                                                     exerciseDao.update(exercise)
                                                     exerciseCount++
@@ -71,8 +69,7 @@ class DataSyncReceiver : WearableListenerService() {
                                             try {
                                                 sessionDao.insert(session)
                                                 sessionCount++
-                                            } catch (e: Exception) {
-                                                // Falls insert fehlschlägt, versuche update
+                                            } catch (_: Exception) {
                                                 try {
                                                     sessionDao.update(session)
                                                     sessionCount++

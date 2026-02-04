@@ -42,7 +42,7 @@ interface WorkoutSessionDao {
     @Query("SELECT * FROM workout_sessions ORDER BY started_at DESC")
     fun getAllSessions(): Flow<List<WorkoutSession>>
     
-    @Insert(onConflict = OnConflictStrategy.Companion.REPLACE)
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insert(session: WorkoutSession): Long
     
     @Update

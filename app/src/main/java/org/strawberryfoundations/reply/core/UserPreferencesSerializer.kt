@@ -12,12 +12,12 @@ object UserPreferencesSerializer : Serializer<UserPreferences> {
     override suspend fun readFrom(input: InputStream): UserPreferences {
         return try {
             val json = input.readBytes().decodeToString()
-            Json.Default.decodeFromString<UserPreferences>(json)
+            Json.decodeFromString<UserPreferences>(json)
         } catch (e: Exception) {
             throw CorruptionException("Cannot read UserPreferences.", e)
         }
     }
     override suspend fun writeTo(t: UserPreferences, output: OutputStream) {
-        output.write(Json.Default.encodeToString(t).encodeToByteArray())
+        output.write(Json.encodeToString(t).encodeToByteArray())
     }
 }

@@ -176,22 +176,17 @@ fun MainView(
     var selectedItem by remember { mutableIntStateOf(0) }
     var showProfile by remember { mutableStateOf(false) }
     val navController = rememberNavController()
-    val activeSession by sessionViewModel.activeSession.collectAsState()
-    
-    // Flag um zu verhindern dass mehrfach navigiert wird
+
     var hasNavigatedToSession by remember { mutableStateOf(false) }
-    
-    // Check for active session on app start and navigate to it - NUR EINMAL
+
     LaunchedEffect(Unit) {
         if (context is ComponentActivity) {
-            // Zuerst prüfen ob es eine Intent-Navigation gibt (von Notification)
             val intentSessionId = context.intent?.getLongExtra("navigate_to_session", -1L)
             if (intentSessionId != null && intentSessionId != -1L) {
                 navController.navigate("activeExercise/$intentSessionId")
                 context.intent?.removeExtra("navigate_to_session")
                 hasNavigatedToSession = true
             } else {
-                // Sonst prüfen ob es eine aktive Session gibt
                 val currentSession = sessionViewModel.activeSession.value
                 if (currentSession != null && !hasNavigatedToSession) {
                     org.strawberryfoundations.reply.service.SessionManager.bindService(context)
@@ -538,7 +533,6 @@ fun MainView(
                 modifier = Modifier.fillMaxSize(),
             ) {
                 DebugView(
-                    settings = settings,
                     exerciseVm = viewModel()
                 )
             }

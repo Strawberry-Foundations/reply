@@ -12,27 +12,27 @@ import org.strawberryfoundations.reply.room.entities.SessionStatus
 import org.strawberryfoundations.reply.room.entities.WorkoutSession
 
 class WorkoutSessionViewModel(application: Application) : AndroidViewModel(application) {
-    private val dao = AppDatabase.Companion.getInstance(application).workoutSessionDao()
+    private val dao = AppDatabase.getInstance(application).workoutSessionDao()
 
     val allSessions: StateFlow<List<WorkoutSession>> = dao.getAllSessions()
-        .stateIn(viewModelScope, SharingStarted.Companion.WhileSubscribed(5000), emptyList())
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
 
     val activeSession: StateFlow<WorkoutSession?> = dao.getActiveSession()
-        .stateIn(viewModelScope, SharingStarted.Companion.WhileSubscribed(5000), null)
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), null)
 
     fun getSessionById(sessionId: Long): StateFlow<WorkoutSession?> {
         return dao.getSessionById(sessionId)
-            .stateIn(viewModelScope, SharingStarted.Companion.WhileSubscribed(5000), null)
+            .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), null)
     }
 
     fun getSessionsByExercise(exerciseId: Long): StateFlow<List<WorkoutSession>> {
         return dao.getSessionsByExercise(exerciseId)
-            .stateIn(viewModelScope, SharingStarted.Companion.WhileSubscribed(5000), emptyList())
+            .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
     }
 
     fun getSessionsByStatus(status: SessionStatus): StateFlow<List<WorkoutSession>> {
         return dao.getSessionsByStatus(status)
-            .stateIn(viewModelScope, SharingStarted.Companion.WhileSubscribed(5000), emptyList())
+            .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
     }
 
     suspend fun getSessionByIdOnce(sessionId: Long): WorkoutSession? {

@@ -14,7 +14,7 @@ interface ExerciseDao {
     @Query("SELECT * FROM trainings")
     fun getAll(): Flow<List<Exercise>>
 
-    @Insert(onConflict = OnConflictStrategy.Companion.REPLACE)
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insert(training: Exercise)
 
     @Update

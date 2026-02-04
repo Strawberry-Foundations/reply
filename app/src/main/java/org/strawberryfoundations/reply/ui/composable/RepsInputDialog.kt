@@ -142,7 +142,6 @@ fun RepsInputDialog(
 
                 Spacer(modifier = Modifier.height(16.dp))
 
-                // Schnellwahl Buttons
                 Row(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.spacedBy(8.dp, Alignment.CenterHorizontally)

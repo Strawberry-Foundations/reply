@@ -32,12 +32,10 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
 import org.strawberryfoundations.reply.R
-import org.strawberryfoundations.reply.room.entities.WorkoutSession
 
 
 @Composable
 fun DeleteSessionDialog(
-    session: WorkoutSession,
     onConfirm: () -> Unit,
     onDismiss: () -> Unit
 ) {

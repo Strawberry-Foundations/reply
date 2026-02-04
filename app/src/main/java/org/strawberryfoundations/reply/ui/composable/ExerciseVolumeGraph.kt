@@ -44,7 +44,7 @@ fun ExerciseVolumeGraph(
         .map { session ->
             val sets = try {
                 Json.decodeFromString<List<WorkoutSet>>(session.setsHistory)
-            } catch (e: Exception) {
+            } catch (_: Exception) {
                 emptyList()
             }
             val volume = sets.sumOf { it.weight * it.reps }

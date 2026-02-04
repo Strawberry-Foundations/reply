@@ -38,7 +38,6 @@ fun ExerciseHistoryContent(
     exercise: Exercise,
     sessions: List<WorkoutSession>,
     sessionViewModel: WorkoutSessionViewModel,
-    onDismiss: () -> Unit
 ) {
     val sortedSessions = sessions.sortedByDescending { it.startedAt }
     var sessionToDelete by remember { mutableStateOf<WorkoutSession?>(null) }
@@ -116,7 +115,6 @@ fun ExerciseHistoryContent(
     
     if (sessionToDelete != null) {
         DeleteSessionDialog(
-            session = sessionToDelete!!,
             onConfirm = {
                 sessionViewModel.delete(sessionToDelete!!)
                 sessionToDelete = null
@@ -137,7 +135,7 @@ fun SessionHistoryCard(
     val sets = remember(session.setsHistory) {
         try {
             Json.decodeFromString<List<WorkoutSet>>(session.setsHistory)
-        } catch (e: Exception) {
+        } catch (_: Exception) {
             emptyList()
         }
     }

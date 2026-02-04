@@ -237,7 +237,7 @@ fun ExerciseDetail(
                 val totalVolume = completedSessions.sumOf { session ->
                     val sets = try {
                         Json.decodeFromString<List<WorkoutSet>>(session.setsHistory)
-                    } catch (e: Exception) {
+                    } catch (_: Exception) {
                         emptyList()
                     }
                     sets.sumOf { workoutSet ->
@@ -519,7 +519,7 @@ fun ExerciseDetail(
         ) {
             StartTrainingContent(
                 exercise = exercise,
-                onStartConfirm = { exerciseToStart, weight ->
+                onStartConfirm = { exerciseToStart, _ ->
                     onStartTraining(exerciseToStart)
                     startTraining = false
                 }
@@ -559,7 +559,6 @@ fun ExerciseDetail(
                 exercise = exercise,
                 sessions = exerciseSessions,
                 sessionViewModel = sessionViewModel,
-                onDismiss = { showHistorySheet = false }
             )
         }
     }
@@ -593,7 +592,6 @@ fun StartTrainingContent(
 
             /* CountdownView(
                 onCountdownFinish = {
-                    // Starte den WorkoutService
                     org.strawberryfoundations.reply.service.SessionManager.startSession(
                         context = context,
                         exerciseId = exercise.id,

@@ -30,7 +30,6 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -38,7 +37,6 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
-import org.strawberryfoundations.reply.core.AppSettings
 import org.strawberryfoundations.reply.room.entities.SessionStatus
 import org.strawberryfoundations.reply.room.entities.WorkoutSession
 import org.strawberryfoundations.reply.room.viewmodels.ExerciseViewModel
@@ -50,12 +48,9 @@ import java.util.Locale
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun DebugView(
-    settings: AppSettings,
     exerciseVm: ExerciseViewModel = viewModel(),
     sessionVm: WorkoutSessionViewModel = viewModel(),
 ) {
-    val scope = rememberCoroutineScope()
-    
     val sessions by sessionVm.allSessions.collectAsState()
     val exercises by exerciseVm.trainings.collectAsState()
     
@@ -270,9 +265,9 @@ private fun WorkoutSessionCard(
                 val minutes = (session.elapsedSeconds % 3600) / 60
                 val seconds = session.elapsedSeconds % 60
                 val timeStr = if (hours > 0) {
-                    String.format("%d:%02d:%02d", hours, minutes, seconds)
+                    String.format(Locale.getDefault(), "%d:%02d:%02d", hours, minutes, seconds)
                 } else {
-                    String.format("%02d:%02d", minutes, seconds)
+                    String.format(Locale.getDefault(), "%02d:%02d", minutes, seconds)
                 }
                 InfoRow("Timer:", timeStr)
                 

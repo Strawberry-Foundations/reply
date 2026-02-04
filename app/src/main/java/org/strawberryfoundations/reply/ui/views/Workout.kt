@@ -127,11 +127,11 @@ private fun ActiveTrainingBanner(
     val hours = elapsedSeconds / 3600
     val minutes = (elapsedSeconds % 3600) / 60
     val seconds = elapsedSeconds % 60
-    
+
     val timeString = if (hours > 0) {
-        String.format("%d:%02d:%02d", hours, minutes, seconds)
+        String.format(Locale.getDefault(), "%d:%02d:%02d", hours, minutes, seconds)
     } else {
-        String.format("%02d:%02d", minutes, seconds)
+        String.format(Locale.getDefault(), "%02d:%02d", minutes, seconds)
     }
     
     Card(

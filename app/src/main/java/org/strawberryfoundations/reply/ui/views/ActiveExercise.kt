@@ -151,7 +151,7 @@ fun ActiveExercise(
     val setsHistory = remember(setsHistoryJson) {
         try {
             Json.decodeFromString<List<WorkoutSet>>(setsHistoryJson)
-        } catch (e: Exception) {
+        } catch (_: Exception) {
             emptyList()
         }
     }
@@ -212,17 +212,7 @@ fun ActiveExercise(
                 // Timer Display
                 TimerCard(
                     elapsedSeconds = elapsedSeconds,
-                    isPaused = isPaused,
-                    onPauseResume = {
-                        if (settings.useHapticFeedback) {
-                            haptic.performHapticFeedback(HapticFeedbackType.Confirm)
-                        }
-                        if (isPaused) {
-                            SessionManager.resumeSession(context)
-                        } else {
-                            SessionManager.pauseSession(context)
-                        }
-                    }
+                    isPaused = isPaused
                 )
 
                 Spacer(modifier = Modifier.height(16.dp))
@@ -345,17 +335,16 @@ fun ActiveExercise(
 @Composable
 private fun TimerCard(
     elapsedSeconds: Long,
-    isPaused: Boolean,
-    onPauseResume: () -> Unit
+    isPaused: Boolean
 ) {
     val hours = elapsedSeconds / 3600
     val minutes = (elapsedSeconds % 3600) / 60
     val seconds = elapsedSeconds % 60
     
     val timeString = if (hours > 0) {
-        String.format("%d:%02d:%02d", hours, minutes, seconds)
+        String.format(Locale.getDefault(), "%d:%02d:%02d", hours, minutes, seconds)
     } else {
-        String.format("%02d:%02d", minutes, seconds)
+        String.format(Locale.getDefault(), "%02d:%02d", minutes, seconds)
     }
     
     Card(

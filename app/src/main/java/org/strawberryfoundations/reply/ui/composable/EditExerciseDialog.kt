@@ -28,8 +28,6 @@ import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.InputChip
-import androidx.compose.material3.InputChipDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Surface
@@ -44,7 +42,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -62,7 +59,6 @@ import org.strawberryfoundations.reply.room.entities.getExerciseGroupStringResou
 import org.strawberryfoundations.reply.ui.theme.colorToHex
 import org.strawberryfoundations.reply.ui.theme.hexToColor
 import org.strawberryfoundations.reply.ui.views.rememberFormattedStep
-import java.util.Locale
 
 
 @OptIn(ExperimentalMaterial3Api::class)

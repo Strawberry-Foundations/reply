@@ -33,6 +33,7 @@ import org.strawberryfoundations.reply.room.entities.SessionStatus
 import org.strawberryfoundations.reply.room.entities.WorkoutSession
 import org.strawberryfoundations.reply.room.entities.WorkoutSet
 import org.strawberryfoundations.reply.room.entities.getExerciseGroupEmoji
+import java.util.Locale
 
 class WorkoutService : Service() {
     private val binder = WorkoutBinder()
@@ -73,7 +74,7 @@ class WorkoutService : Service() {
         const val EXTRA_REPS = "extra_reps"
         const val EXTRA_REST_SECONDS = "extra_rest_seconds"
         
-        private const val DEFAULT_REST_TIME = 90 // Sekunden
+        private const val DEFAULT_REST_TIME = 90
     }
     
     inner class WorkoutBinder : Binder() {
@@ -95,7 +96,6 @@ class WorkoutService : Service() {
 
                 currentExercise = database.workoutSessionDao().getExerciseById(activeSession.id)
                 
-                // Starte Foreground Service wenn Session existiert
                 startForeground(
                     NOTIFICATION_ID,
                     buildNotification(),
@@ -163,7 +163,6 @@ class WorkoutService : Service() {
     }
     
     private suspend fun startNewSession(exerciseId: Long, weight: Double) {
-        // Zuerst alle anderen aktiven Sessions abbrechen (nur eine Session gleichzeitig erlaubt)
         database.workoutSessionDao().cancelAllActiveSessions()
         
         val session = WorkoutSession(
@@ -228,7 +227,7 @@ class WorkoutService : Service() {
         serviceScope.launch {
             val setsHistory = try {
                 Json.decodeFromString<List<WorkoutSet>>(session.setsHistory).toMutableList()
-            } catch (e: Exception) {
+            } catch (_: Exception) {
                 mutableListOf()
             }
             
@@ -373,9 +372,9 @@ class WorkoutService : Service() {
         val seconds = elapsed % 60
 
         val timeString = if (hours > 0) {
-            String.format("%d:%02d:%02d", hours, minutes, seconds)
+            String.format(Locale.getDefault(), "%d:%02d:%02d", hours, minutes, seconds)
         } else {
-            String.format("%02d:%02d", minutes, seconds)
+            String.format(Locale.getDefault(), "%02d:%02d", minutes, seconds)
         }
         
         val restInfo = if (session?.isResting == true && _restTimeRemaining.value > 0) {

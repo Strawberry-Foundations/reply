@@ -11,10 +11,10 @@ import org.strawberryfoundations.reply.room.AppDatabase
 import org.strawberryfoundations.reply.room.entities.Exercise
 
 class ExerciseViewModel(application: Application): AndroidViewModel(application) {
-    private val dao = AppDatabase.Companion.getInstance(application).trainingDao()
+    private val dao = AppDatabase.getInstance(application).trainingDao()
 
     val trainings: StateFlow<List<Exercise>> = dao.getAll()
-        .stateIn(viewModelScope, SharingStarted.Companion.WhileSubscribed(5000), emptyList())
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
 
     fun insert(training: Exercise) {
         viewModelScope.launch { dao.insert(training) }

@@ -6,18 +6,11 @@ import coil.disk.DiskCache
 import coil.memory.MemoryCache
 import java.io.File
 
-/**
- * Avatar Cache Manager für effizientes Caching von Profilbildern
- * Nutzt Coil's Memory- und Disk-Cache mit optimierten Einstellungen
- */
 object AvatarCache {
     private const val DISK_CACHE_SIZE = 50L * 1024 * 1024 // 50 MB
-    private const val MEMORY_CACHE_SIZE = 0.25 // 25% des verfügbaren Speichers
+    private const val MEMORY_CACHE_SIZE = 0.25
     private const val CACHE_DIRECTORY = "avatar_cache"
 
-    /**
-     * Erstellt einen konfigurierten ImageLoader mit optimierten Cache-Einstellungen
-     */
     fun getImageLoader(context: Context): ImageLoader {
         val cacheDirectory = File(context.cacheDir, CACHE_DIRECTORY)
 
@@ -34,13 +27,10 @@ object AvatarCache {
                     .build()
             }
             .crossfade(true)
-            .respectCacheHeaders(false) // Ignoriert Server Cache-Headers für längeres lokales Caching
+            .respectCacheHeaders(false)
             .build()
     }
 
-    /**
-     * Löscht den gesamten Avatar-Cache
-     */
     fun clearCache(context: Context) {
         val cacheDirectory = File(context.cacheDir, CACHE_DIRECTORY)
         if (cacheDirectory.exists()) {
@@ -48,9 +38,6 @@ object AvatarCache {
         }
     }
 
-    /**
-     * Gibt die Größe des Caches in Bytes zurück
-     */
     fun getCacheSize(context: Context): Long {
         val cacheDirectory = File(context.cacheDir, CACHE_DIRECTORY)
         return if (cacheDirectory.exists()) {
@@ -63,9 +50,6 @@ object AvatarCache {
         }
     }
 
-    /**
-     * Formatiert die Cache-Größe für die Anzeige
-     */
     fun formatCacheSize(bytes: Long): String {
         return when {
             bytes < 1024 -> "$bytes B"
