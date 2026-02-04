@@ -453,7 +453,12 @@ fun TrainingView(
                                 .padding(vertical = 6.dp)
                                 .graphicsLayer { scaleX = cardScale; scaleY = cardScale }
                                 .combinedClickable(
-                                    onClick = { onExerciseClick(exercise.id) },
+                                    onClick = {
+                                        if (settings.useHapticFeedback) {
+                                            haptic.performHapticFeedback(HapticFeedbackType.Confirm)
+                                        }
+                                        onExerciseClick(exercise.id)
+                                              },
                                     onLongClick = {
                                         expandedItemIndex = if (isExpanded) -1 else index
                                         if (settings.useHapticFeedback) {

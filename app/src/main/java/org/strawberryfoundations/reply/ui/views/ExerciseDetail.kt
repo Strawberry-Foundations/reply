@@ -460,6 +460,9 @@ fun ExerciseDetail(
                 ) {
                     FloatingToolbarDefaults.VibrantFloatingActionButton(
                         onClick = {
+                            if (settings.useHapticFeedback) {
+                                haptic.performHapticFeedback(HapticFeedbackType.Reject)
+                            }
                             startTraining = true
                         },
                         containerColor = cardColor,
