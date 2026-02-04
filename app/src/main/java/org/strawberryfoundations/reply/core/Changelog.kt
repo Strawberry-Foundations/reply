@@ -13,6 +13,8 @@ object Changelog {
             date = "Feb 4, 2026",
             changes = listOf(
                 "Improved haptic feedback",
+                "Fixed Backup import throwing import error",
+                "Fixed wrong font in DebugView"
             )
         ),
         ChangelogEntry(
