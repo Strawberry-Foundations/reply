@@ -7,6 +7,7 @@ import kotlinx.serialization.json.Json
 import org.strawberryfoundations.reply.room.entities.Exercise
 import org.strawberryfoundations.reply.core.model.UserPreferences
 import org.strawberryfoundations.reply.room.AppDatabase
+import org.strawberryfoundations.reply.room.entities.WorkoutSession
 import java.io.InputStream
 import java.io.OutputStream
 import java.text.SimpleDateFormat
@@ -21,8 +22,10 @@ data class AppBackup(
     val userPreferences: UserPreferences,
     val appSettings: AppSettings,
     val trainingData: List<Exercise> = emptyList(),
+    val workoutSessionData: List<WorkoutSession> = emptyList()
 )
 
+// BackupManager
 class BackupManager(private val context: Context) {
     private val json = Json { 
         prettyPrint = true
@@ -40,21 +43,26 @@ class BackupManager(private val context: Context) {
     
     private val database = AppDatabase.getInstance(context)
     private val trainingDao = database.trainingDao()
-    
+    private val workoutSessionDao = database.workoutSessionDao()
+
+    // Create a new backup
     suspend fun createBackup(): AppBackup {
         val userPrefs = getUserDataFlow(context).first()
         val settingsDataStore = SettingsDataStore(context)
         val appSettings = settingsDataStore.settingsFlow.first()
         val trainings = trainingDao.getAll().first()
+        val workoutSessions = database.workoutSessionDao().getAll().first()
         
         return AppBackup(
             timestamp = SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault()).format(Date()),
             userPreferences = userPrefs,
             appSettings = appSettings,
-            trainingData = trainings
+            trainingData = trainings,
+            workoutSessionData = workoutSessions
         )
     }
-    
+
+    // export backup to json
     suspend fun exportBackup(outputStream: OutputStream): Boolean {
         return try {
             val backup = createBackup()
@@ -79,9 +87,16 @@ class BackupManager(private val context: Context) {
             
             val currentTrainings = trainingDao.getAll().first()
             currentTrainings.forEach { trainingDao.delete(it) }
+
+            val currentSessions = workoutSessionDao.getAll().first()
+            currentSessions.forEach { workoutSessionDao.delete(it) }
             
             backup.trainingData.forEach { training ->
                 trainingDao.insert(training.copy(id = 0))
+            }
+
+            backup.workoutSessionData.forEach { session ->
+                workoutSessionDao.insert(session.copy(id = 0))
             }
             
             true
@@ -103,6 +118,10 @@ class BackupManager(private val context: Context) {
             
             backup.trainingData.forEach { training ->
                 trainingDao.insert(training.copy(id = 0))
+            }
+
+            backup.workoutSessionData.forEach { session ->
+                workoutSessionDao.insert(session.copy(id = 0))
             }
             
             true
