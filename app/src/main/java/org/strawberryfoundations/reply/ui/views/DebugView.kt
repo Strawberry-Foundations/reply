@@ -69,7 +69,7 @@ fun DebugView(
         ) {
             Text(
                 text = "Workout Sessions Debug",
-                style = MaterialTheme.typography.headlineMedium,
+                style = MaterialTheme.typography.displayLarge,
                 fontWeight = FontWeight.Bold
             )
 
