@@ -12,11 +12,15 @@ object Changelog {
             version = "2.0.0",
             date = "February 2026",
             changes = listOf(
+                "New branding",
                 "New exercise view with detailed info",
                 "Added active exercise tracking to track your progress",
                 "Improved syncing with wearable",
                 "Redesigned user interface for better usability",
-                "New branding",
+                "Fixed using outdated fonts in some dialogs",
+                "Added haptic feedback",
+                "Major code base refactoring",
+                "For consistency and maintaining the app, both mobile and wearable app are using almost the same codebase",
                 "Bug fixes and performance improvements",
             )
         ),
