@@ -7,12 +7,14 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -26,12 +28,14 @@ import androidx.compose.material.icons.rounded.NearMe
 import androidx.compose.material.icons.rounded.NearMeDisabled
 import androidx.compose.material.icons.rounded.Refresh
 import androidx.compose.material.icons.rounded.Sync
+import androidx.compose.material.icons.rounded.Upload
 import androidx.compose.material.icons.rounded.Watch
 import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonGroup
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
+import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
@@ -66,13 +70,12 @@ import org.strawberryfoundations.reply.R
 import org.strawberryfoundations.reply.core.AppSettings
 import org.strawberryfoundations.reply.room.AppDatabase
 import org.strawberryfoundations.reply.room.viewmodels.ExerciseViewModel
-import org.strawberryfoundations.reply.sync.DataSyncSender
 import org.strawberryfoundations.reply.sync.DataSyncRequestor
+import org.strawberryfoundations.reply.sync.DataSyncSender
 import org.strawberryfoundations.reply.ui.theme.customFont
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
-import kotlin.compareTo
 
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterial3ExpressiveApi::class)
@@ -171,11 +174,8 @@ fun DeviceView(
             LazyColumn(
                 modifier = Modifier
                     .fillMaxSize()
-                    .padding(start = 12.dp, end = 12.dp, top = 8.dp)
+                    .padding(start = 16.dp, bottom = 6.dp, top = 16.dp, end = 16.dp)
             ) {
-
-                item { Spacer(modifier = Modifier.height(4.dp)) }
-
                 // Statistics
                 item {
                     Row(
@@ -196,11 +196,12 @@ fun DeviceView(
                     }
                 }
 
-                item { Spacer(modifier = Modifier.height(8.dp)) }
+                item { Spacer(modifier = Modifier.height(6.dp)) }
 
                 item {
                     Card(
-                        modifier = Modifier.fillMaxWidth(),
+                        modifier = Modifier.fillMaxWidth()
+                            .padding(vertical = 16.dp),
                         shape = RoundedCornerShape(24.dp),
                     ) {
                         Column(modifier = Modifier.padding(12.dp)) {
@@ -246,10 +247,11 @@ fun DeviceView(
                     }
                 }
 
-                item { Spacer(modifier = Modifier.height(4.dp)) }
+                item { Spacer(modifier = Modifier.height(6.dp)) }
 
                 item {
                     Text(
+                        modifier = Modifier.padding(vertical = 16.dp),
                         text = stringResource(id = R.string.device_sync_description),
                         style = MaterialTheme.typography.bodyMedium,
                         lineHeight = 16.sp,
@@ -269,11 +271,16 @@ fun DeviceView(
                                 verticalAlignment = Alignment.CenterVertically,
                                 modifier = Modifier.fillMaxWidth()
                             ) {
-                                Icon(imageVector = Icons.Rounded.Info, contentDescription = stringResource(id = R.string.info))
+                                Icon(
+                                    imageVector = Icons.Rounded.Info,
+                                    contentDescription = stringResource(id = R.string.info),
+                                    tint = MaterialTheme.colorScheme.primary,
+                                )
                                 Spacer(modifier = Modifier.width(8.dp))
                                 Text(
                                     text = stringResource(id = R.string.device_status),
                                     style = MaterialTheme.typography.displayMedium,
+                                    color = MaterialTheme.colorScheme.primary,
                                     fontSize = 17.sp,
                                     modifier = Modifier.padding(start = 4.dp)
                                 )
@@ -322,20 +329,64 @@ fun DeviceView(
 
                 // Actions
                 item {
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.Center,
-                        verticalAlignment = Alignment.CenterVertically
+                    Column(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(4.dp),
+                        verticalArrangement = Arrangement.spacedBy(12.dp)
                     ) {
-                        ButtonGroup(
+                        // Search nearby devices
+                        Button(
+                            onClick = {
+                                scope.launch {
+                                    isLoadingNodes.value = true
+                                    try {
+                                        val nodeClient = Wearable.getNodeClient(context)
+                                        nodeClient.connectedNodes
+                                            .addOnSuccessListener { nodes ->
+                                                nodesState.value = nodes
+                                                isLoadingNodes.value = false
+                                                scope.launch { snackbarHostState.showSnackbar(context.getString(R.string.found_nodes, nodes.size)) }
+                                            }
+                                            .addOnFailureListener { e ->
+                                                isLoadingNodes.value = false
+                                                scope.launch { snackbarHostState.showSnackbar(context.getString(R.string.failed_listing_nodes, e.message ?: "")) }
+                                            }
+                                    } catch (e: Exception) {
+                                        isLoadingNodes.value = false
+                                        scope.launch { snackbarHostState.showSnackbar(context.getString(R.string.error_colon, e.message ?: "")) }
+                                    }
+                                }
+                            },
+                            modifier = Modifier.fillMaxWidth(),
+                            colors = ButtonDefaults.buttonColors(
+                                containerColor = MaterialTheme.colorScheme.secondaryContainer,
+                                contentColor = MaterialTheme.colorScheme.onSecondaryContainer
+                            ),
+                            shape = RoundedCornerShape(24.dp)
                         ) {
-                            Button(
+                            Icon(
+                                imageVector = Icons.Rounded.Refresh,
+                                contentDescription = null,
+                                modifier = Modifier.size(18.dp)
+                            )
+                            Spacer(modifier = Modifier.width(12.dp))
+                            Text(
+                                text = stringResource(R.string.refresh_devices),
+                                style = MaterialTheme.typography.labelLarge
+                            )
+                        }
+
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.spacedBy(12.dp)
+                        ) {
+                            FilledTonalButton(
                                 onClick = {
                                     scope.launch {
                                         isSending.value = true
                                         try {
                                             val db = AppDatabase.getInstance(context)
-
                                             val trainings = withContext(Dispatchers.IO) { db.trainingDao().getAll().first() }
                                             val sessions = withContext(Dispatchers.IO) { db.workoutSessionDao().getAll().first() }
 
@@ -346,87 +397,58 @@ fun DeviceView(
                                                 scope.launch { snackbarHostState.showSnackbar(context.getString(R.string.no_trainings_to_send)) }
                                             }
                                         } catch (e: Exception) {
-                                            Log.w("DeviceView", "Error sending DB snapshot", e)
                                             scope.launch { snackbarHostState.showSnackbar(context.getString(R.string.send_failed, e.message ?: "")) }
                                         } finally {
                                             isSending.value = false
                                         }
                                     }
-                                }) {
-                                Icon(
-                                    imageVector = Icons.Rounded.Sync,
-                                    contentDescription = stringResource(id = R.string.send),
-                                    modifier = Modifier.padding(end = 2.dp)
-                                )
-                                Spacer(modifier = Modifier.width(8.dp))
-                                Text(
-                                    text = stringResource(id = R.string.synchronize),
-                                    style = MaterialTheme.typography.labelLarge,
-                                )
+                                },
+                                modifier = Modifier.weight(1f),
+                                shape = RoundedCornerShape(20.dp),
+                                contentPadding = PaddingValues(vertical = 16.dp)
+                            ) {
+                                Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                                    Icon(Icons.Rounded.Upload, contentDescription = null)
+                                    Spacer(modifier = Modifier.height(4.dp))
+                                    Text(
+                                        text = stringResource(R.string.to_watch),
+                                        style = MaterialTheme.typography.labelSmall
+                                    )
+                                }
                             }
 
-                            Button(
-                                onClick = {
-                                    scope.launch {
-                                        isLoadingNodes.value = true
-                                        try {
-                                            val nodeClient = Wearable.getNodeClient(context)
-                                            nodeClient.connectedNodes
-                                                .addOnSuccessListener { nodes ->
-                                                    nodesState.value = nodes
-                                                    isLoadingNodes.value = false
-                                                    scope.launch { snackbarHostState.showSnackbar(context.getString(R.string.found_nodes, nodes.size)) }
-                                                }
-                                                .addOnFailureListener { e ->
-                                                    isLoadingNodes.value = false
-                                                    Log.w("DeviceView", "Failed listing nodes", e)
-                                                    scope.launch { snackbarHostState.showSnackbar(context.getString(R.string.failed_listing_nodes, e.message ?: "")) }
-                                                }
-                                        } catch (e: Exception) {
-                                            isLoadingNodes.value = false
-                                            Log.w("DeviceView", "Error while checking nodes", e)
-                                            scope.launch { snackbarHostState.showSnackbar(context.getString(R.string.error_colon, e.message ?: "")) }
-                                        }
-                                    }
-                                }) {
-                                Icon(
-                                    imageVector = Icons.Rounded.Refresh,
-                                    contentDescription = stringResource(id = R.string.device_sync_title),
-                                    modifier = Modifier.padding(end = 2.dp)
-                                )
-                            }
-                            
-                            Button(
+                            FilledTonalButton(
                                 onClick = {
                                     scope.launch {
                                         try {
                                             DataSyncRequestor.requestSyncFromWearable(
                                                 context = context,
                                                 onSuccess = {
-                                                    scope.launch { 
-                                                        snackbarHostState.showSnackbar(context.getString(R.string.sync_request_sent)) 
-                                                    }
+                                                    scope.launch { snackbarHostState.showSnackbar(context.getString(R.string.sync_request_sent)) }
                                                 },
                                                 onFailure = { e ->
-                                                    scope.launch { 
-                                                        snackbarHostState.showSnackbar(context.getString(R.string.sync_request_failed, e.message ?: ""))
-                                                    }
+                                                    scope.launch { snackbarHostState.showSnackbar(context.getString(R.string.sync_request_failed, e.message ?: "")) }
                                                 }
                                             )
                                         } catch (e: Exception) {
-                                            Log.w("DeviceView", "Error requesting sync", e)
                                             scope.launch { snackbarHostState.showSnackbar(context.getString(R.string.error_colon, e.message ?: "")) }
                                         }
                                     }
-                                }) {
-                                Icon(
-                                    imageVector = Icons.Rounded.Download,
-                                    contentDescription = stringResource(id = R.string.receive_from_wearable),
-                                    modifier = Modifier.padding(end = 2.dp)
-                                )
+                                },
+                                modifier = Modifier.weight(1f),
+                                shape = RoundedCornerShape(20.dp),
+                                contentPadding = PaddingValues(vertical = 16.dp)
+                            ) {
+                                Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                                    Icon(Icons.Rounded.Download, contentDescription = null)
+                                    Spacer(modifier = Modifier.height(4.dp))
+                                    Text(
+                                        text = stringResource(R.string.from_watch),
+                                        style = MaterialTheme.typography.labelSmall
+                                    )
+                                }
                             }
                         }
-
                     }
                 }
 

@@ -211,6 +211,9 @@
     <string name="no_trainings_to_send">No trainings to send</string>
     <string name="send_failed">Send failed: %1$s</string>
     <string name="statistics">Statistics</string>
+    <string name="refresh_devices">Search connected devices</string>
+    <string name="to_watch">Sync to watch</string>
+    <string name="from_watch">Sync from watch</string>
 
     <!-- Error messages -->
     <string name="error_colon">Error: %1$s</string>

@@ -70,6 +70,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.drawscope.Stroke
+import androidx.compose.ui.graphics.luminance
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalHapticFeedback
@@ -105,6 +106,8 @@ import org.strawberryfoundations.reply.ui.composable.ExerciseProgressGraph
 import org.strawberryfoundations.reply.ui.composable.ExerciseVolumeGraph
 import org.strawberryfoundations.reply.ui.composable.StatCard
 import org.strawberryfoundations.reply.ui.composable.ToolbarAction
+import org.strawberryfoundations.reply.ui.theme.darkenColor
+import org.strawberryfoundations.reply.ui.theme.hexToColor
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterial3ExpressiveApi::class)
 @Composable
@@ -353,6 +356,33 @@ fun ExerciseDetail(
                         shapeColor = Color(0xFF3F51B5)
                     )
                 }
+
+                Spacer(modifier = Modifier.height(32.dp))
+
+                Text(
+                    text = stringResource(R.string.weight_progress),
+                    style = MaterialTheme.typography.titleMedium,
+                    fontWeight = FontWeight.Bold
+                )
+
+                Spacer(modifier = Modifier.height(12.dp))
+
+                ExerciseProgressGraph(
+                    exerciseSessions = exerciseSessions
+                )
+                Spacer(modifier = Modifier.height(32.dp))
+
+                Text(
+                    text = stringResource(R.string.volume_progress),
+                    style = MaterialTheme.typography.titleMedium,
+                    fontWeight = FontWeight.Bold
+                )
+
+                Spacer(modifier = Modifier.height(12.dp))
+
+                ExerciseVolumeGraph(
+                    exerciseSessions = exerciseSessions
+                )
             } else {
                 Row(
                     modifier = Modifier.fillMaxWidth(),
@@ -373,36 +403,53 @@ fun ExerciseDetail(
                         shapeColor = Color(0xFF4CAF50)
                     )
                 }
+
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.spacedBy(16.dp)
+                ) {
+                    Surface(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(200.dp)
+                            .padding(top = 32.dp),
+                        color = MaterialTheme.colorScheme.surfaceContainerHighest,
+                        shape = RoundedCornerShape(24.dp)
+                    ) {
+                        if (completedSessions.size < 2) {
+                            Box(contentAlignment = Alignment.Center) {
+                                Column(
+                                    horizontalAlignment = Alignment.CenterHorizontally,
+                                    verticalArrangement = Arrangement.spacedBy(8.dp)
+                                ) {
+                                    Text(
+                                        text = "📊",
+                                        fontSize = 48.sp
+                                    )
+                                    Text(
+                                        text = stringResource(R.string.complete_two_trainings),
+                                        style = MaterialTheme.typography.bodyMedium,
+                                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                                        fontWeight = FontWeight.SemiBold
+                                    )
+                                    Text(
+                                        text = stringResource(R.string.to_see_progress),
+                                        style = MaterialTheme.typography.bodySmall,
+                                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                                    )
+                                }
+                            }
+                        }
+                    }
+                }
             }
 
-            Spacer(modifier = Modifier.height(32.dp))
-
-            Text(
-                text = stringResource(R.string.weight_progress),
-                style = MaterialTheme.typography.titleMedium,
-                fontWeight = FontWeight.Bold
-            )
-
-            Spacer(modifier = Modifier.height(12.dp))
-
-            ExerciseProgressGraph(
-                exerciseSessions = exerciseSessions
-            )
-            Spacer(modifier = Modifier.height(32.dp))
-
-            Text(
-                text = stringResource(R.string.volume_progress),
-                style = MaterialTheme.typography.titleMedium,
-                fontWeight = FontWeight.Bold
-            )
-
-            Spacer(modifier = Modifier.height(12.dp))
-
-            ExerciseVolumeGraph(
-                exerciseSessions = exerciseSessions
-            )
-
             Spacer(modifier = Modifier.height(120.dp))
+        }
+
+        val cardColor = hexToColor(exercise.color)
+        val textColor = remember(cardColor) {
+            if (cardColor.luminance() > 0.55f) Color.Black else Color.White
         }
 
         HorizontalFloatingToolbar(
@@ -426,7 +473,9 @@ fun ExerciseDetail(
                     FloatingToolbarDefaults.VibrantFloatingActionButton(
                         onClick = {
                             startTraining = true
-                        }
+                        },
+                        containerColor = cardColor,
+                        contentColor = textColor
                     ) {
                         Icon(
                             imageVector = Icons.Rounded.PlayArrow,

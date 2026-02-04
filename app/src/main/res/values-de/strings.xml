@@ -203,12 +203,14 @@
     <string name="found_nodes">%1$d Nodes gefunden</string>
     <string name="failed_listing_nodes">Auflisten der Nodes fehlgeschlagen: %1$s</string>
     <string name="send_db_snapshot">DB-Snapshot senden</string>
-    <string name="db_snapshot_queued">DB-Snapshot zum Senden eingereiht</string>
+    <string name="db_snapshot_queued">Daten werden mit deiner Wearable synchronisiert…</string>
     <string name="no_trainings_to_send">Keine Trainings zum Senden</string>
     <string name="send_failed">Senden fehlgeschlagen: %1$s</string>
     <string name="statistics">Statistiken</string>
+    <string name="refresh_devices">Verbundene Geräte suchen</string>
+    <string name="to_watch">Zur Watch syncen</string>
+    <string name="from_watch">Von Watch syncen</string>
 
     <!-- Error messages -->
     <string name="error_colon">Fehler: %1$s</string>
-
 </resources>
