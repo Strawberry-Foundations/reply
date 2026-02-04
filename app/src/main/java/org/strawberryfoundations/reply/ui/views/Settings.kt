@@ -29,6 +29,7 @@ import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.Palette
 import androidx.compose.material.icons.filled.Sync
 import androidx.compose.material.icons.filled.Upload
+import androidx.compose.material.icons.rounded.Newspaper
 import androidx.compose.material.icons.rounded.TouchApp
 import androidx.compose.material.icons.rounded.Vibration
 import androidx.compose.material3.AlertDialog
@@ -351,7 +352,8 @@ fun SettingsItem(
 fun SettingsView(
     settings: AppSettings,
     onSettingsChange: (AppSettings.() -> AppSettings) -> Unit,
-    onDebugClick: () -> Unit
+    onDebugClick: () -> Unit,
+    onChangelogClick: () -> Unit,
 ) {
     val context = LocalContext.current
     val uriHandler = LocalUriHandler.current
@@ -620,6 +622,12 @@ fun SettingsView(
                 modifier = Modifier.padding(horizontal = 16.dp),
             ) }
 
+            item {
+                SettingsItem(Icons.Rounded.Newspaper,
+                    title = stringResource(R.string.whats_new),
+                    onClick = onChangelogClick
+                )
+            }
             item {
                 SettingsItem(
                     icon = Icons.Filled.Gavel,

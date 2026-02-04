@@ -34,6 +34,7 @@ import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material.icons.outlined.Settings
 import androidx.compose.material.icons.rounded.Close
+import androidx.compose.material.icons.rounded.Newspaper
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.ContainedLoadingIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -98,6 +99,7 @@ import org.strawberryfoundations.reply.ui.theme.AppTheme
 import org.strawberryfoundations.reply.ui.theme.darkenColor
 import org.strawberryfoundations.reply.ui.theme.hexToColor
 import org.strawberryfoundations.reply.ui.views.ActiveExercise
+import org.strawberryfoundations.reply.ui.views.ChangelogView
 import org.strawberryfoundations.reply.ui.views.DebugView
 import org.strawberryfoundations.reply.ui.views.DeviceView
 import org.strawberryfoundations.reply.ui.views.ProfileView
@@ -385,6 +387,9 @@ fun MainView(
                                     onSettingsChange = onSettingsChange,
                                     onDebugClick = {
                                         navController.navigate("debug")
+                                    },
+                                    onChangelogClick = {
+                                        navController.navigate("changelog")
                                     }
                                 )
                             }
@@ -536,6 +541,53 @@ fun MainView(
                     settings = settings,
                     exerciseVm = viewModel()
                 )
+            }
+        }
+
+        // Navigation Route: changelog
+        composable(
+            route = "changelog",
+        ) {
+            Scaffold(
+                modifier = Modifier.fillMaxSize(),
+                topBar = {
+                    CenterAlignedTopAppBar(
+                        navigationIcon = {
+                            IconButton(onClick = { navController.popBackStack() }) {
+                                Icon(
+                                    imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                                    contentDescription = stringResource(R.string.back),
+                                    modifier = Modifier.size(24.dp)
+                                )
+                            }
+                        },
+                        title = {
+                            Row(
+                                verticalAlignment = Alignment.CenterVertically,
+                                modifier = Modifier.padding(vertical = 16.dp)
+                            ) {
+                                Icon(
+                                    imageVector = Icons.Rounded.Newspaper,
+                                    contentDescription = stringResource(R.string.whats_new),
+                                    modifier = Modifier
+                                        .padding(end = 12.dp)
+                                        .size(28.dp),
+                                    tint = MaterialTheme.colorScheme.primary
+                                )
+                                Text(
+                                    text = stringResource(R.string.whats_new),
+                                    style = MaterialTheme.typography.displayLarge,
+                                    fontSize = 28.sp,
+                                    color = MaterialTheme.colorScheme.primary
+                                )
+                            }
+                        },
+                    )
+                }
+            ) { innerPadding ->
+                Column(modifier = Modifier.padding(innerPadding)) {
+                    ChangelogView()
+                }
             }
         }
     }

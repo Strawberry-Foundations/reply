@@ -211,6 +211,9 @@
     <string name="to_watch">Zur Watch syncen</string>
     <string name="from_watch">Von Watch syncen</string>
 
+    <!-- Changelog -->
+    <string name="whats_new">Was ist neu</string>
+
     <!-- Error messages -->
     <string name="error_colon">Fehler: %1$s</string>
 </resources>

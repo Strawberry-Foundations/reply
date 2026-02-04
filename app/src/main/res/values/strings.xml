@@ -215,6 +215,9 @@
     <string name="to_watch">Sync to watch</string>
     <string name="from_watch">Sync from watch</string>
 
+    <!-- Changelog -->
+    <string name="whats_new">What\'s new</string>
+
     <!-- Error messages -->
     <string name="error_colon">Error: %1$s</string>
 </resources>

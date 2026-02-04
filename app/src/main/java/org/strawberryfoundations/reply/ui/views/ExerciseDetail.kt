@@ -9,7 +9,6 @@ import androidx.compose.animation.fadeOut
 import androidx.compose.animation.scaleIn
 import androidx.compose.animation.scaleOut
 import androidx.compose.animation.togetherWith
-import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -27,7 +26,6 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.rounded.Label
-import androidx.compose.material.icons.rounded.BarChart
 import androidx.compose.material.icons.rounded.History
 import androidx.compose.material.icons.rounded.Info
 import androidx.compose.material.icons.rounded.Layers
@@ -64,21 +62,13 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.rotate
-import androidx.compose.ui.geometry.Offset
-import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.Path
-import androidx.compose.ui.graphics.StrokeCap
-import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.graphics.luminance
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.text.drawText
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.rememberTextMeasurer
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.zIndex
@@ -93,7 +83,6 @@ import org.strawberryfoundations.reply.R
 import org.strawberryfoundations.reply.core.AppSettings
 import org.strawberryfoundations.reply.room.entities.Exercise
 import org.strawberryfoundations.reply.room.entities.SessionStatus
-import org.strawberryfoundations.reply.room.entities.WorkoutSession
 import org.strawberryfoundations.reply.room.entities.WorkoutSet
 import org.strawberryfoundations.reply.room.entities.getExerciseGroupEmoji
 import org.strawberryfoundations.reply.room.entities.getExerciseGroupStringResource
@@ -106,7 +95,6 @@ import org.strawberryfoundations.reply.ui.composable.ExerciseProgressGraph
 import org.strawberryfoundations.reply.ui.composable.ExerciseVolumeGraph
 import org.strawberryfoundations.reply.ui.composable.StatCard
 import org.strawberryfoundations.reply.ui.composable.ToolbarAction
-import org.strawberryfoundations.reply.ui.theme.darkenColor
 import org.strawberryfoundations.reply.ui.theme.hexToColor
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterial3ExpressiveApi::class)
