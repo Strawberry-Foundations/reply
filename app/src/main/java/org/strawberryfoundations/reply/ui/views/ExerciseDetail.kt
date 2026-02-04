@@ -114,6 +114,7 @@ fun ExerciseDetail(
     sessionViewModel: WorkoutSessionViewModel = viewModel(),
     onStartTraining: (Exercise) -> Unit,
     settings: AppSettings,
+    onExerciseDelete: () -> Unit,
 ) {
     val haptic = LocalHapticFeedback.current
 
@@ -504,7 +505,10 @@ fun ExerciseDetail(
     if (showDeleteDialog && trainingToDelete != null) {
         DeleteExerciseDialog(
             exercise = trainingToDelete!!,
-            onConfirm = { exerciseViewModel.delete(trainingToDelete!!) },
+            onConfirm = {
+                exerciseViewModel.delete(trainingToDelete!!)
+                onExerciseDelete()
+                        },
             onDismiss = { showDeleteDialog = false }
         )
     }

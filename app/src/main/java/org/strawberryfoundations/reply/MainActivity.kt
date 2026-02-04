@@ -497,6 +497,9 @@ fun MainView(
                                 navController.navigate("activeExercise/${exerciseToStart.id}")
                             },
                             settings = settings,
+                            onExerciseDelete = {
+                                navController.navigate("main")
+                            }
                         )
                     }
                 }
