@@ -101,10 +101,16 @@ class BackupManager(private val context: Context) {
                 exerciseIdMap[oldId] = newId
             }
 
-            // Insert sessions with updated exercise IDs
+            // Insert sessions with updated exercise IDs (skip sessions without valid exercise reference)
             backup.workoutSessionData.forEach { session ->
-                val newExerciseId = exerciseIdMap[session.exerciseId] ?: session.exerciseId
-                workoutSessionDao.insert(session.copy(id = 0, exerciseId = newExerciseId))
+                val newExerciseId = exerciseIdMap[session.exerciseId]
+                if (newExerciseId != null) {
+                    try {
+                        workoutSessionDao.insert(session.copy(id = 0, exerciseId = newExerciseId))
+                    } catch (e: Exception) {
+                        e.printStackTrace()
+                    }
+                }
             }
             
             true
@@ -132,10 +138,16 @@ class BackupManager(private val context: Context) {
                 exerciseIdMap[oldId] = newId
             }
 
-            // Insert sessions with updated exercise IDs
+            // Insert sessions with updated exercise IDs (skip sessions without valid exercise reference)
             backup.workoutSessionData.forEach { session ->
-                val newExerciseId = exerciseIdMap[session.exerciseId] ?: session.exerciseId
-                workoutSessionDao.insert(session.copy(id = 0, exerciseId = newExerciseId))
+                val newExerciseId = exerciseIdMap[session.exerciseId]
+                if (newExerciseId != null) {
+                    try {
+                        workoutSessionDao.insert(session.copy(id = 0, exerciseId = newExerciseId))
+                    } catch (e: Exception) {
+                        e.printStackTrace()
+                    }
+                }
             }
             
             true
