@@ -220,4 +220,5 @@
 
     <!-- Error messages -->
     <string name="error_colon">Error: %1$s</string>
+    <string name="sessions">Sessions</string>
 </resources>

@@ -48,6 +48,7 @@ import androidx.compose.material3.pulltorefresh.rememberPullToRefreshState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
@@ -70,6 +71,7 @@ import org.strawberryfoundations.reply.R
 import org.strawberryfoundations.reply.core.AppSettings
 import org.strawberryfoundations.reply.room.AppDatabase
 import org.strawberryfoundations.reply.room.viewmodels.ExerciseViewModel
+import org.strawberryfoundations.reply.room.viewmodels.WorkoutSessionViewModel
 import org.strawberryfoundations.reply.sync.DataSyncRequestor
 import org.strawberryfoundations.reply.sync.DataSyncSender
 import org.strawberryfoundations.reply.ui.theme.customFont
@@ -84,12 +86,14 @@ import java.util.Locale
 fun DeviceView(
     settings: AppSettings,
     viewModel: ExerciseViewModel = viewModel(),
+    sessionViewModel: WorkoutSessionViewModel = viewModel(),
 ) {
     val context = LocalContext.current
     val scope = rememberCoroutineScope()
     val snackbarHostState = remember { SnackbarHostState() }
 
     val workoutCount = viewModel.trainings.collectAsState().value.size
+    val sessionCount = sessionViewModel.allSessions.collectAsState().value.size
 
     val isSending = remember { mutableStateOf(false) }
     val isLoadingNodes = remember { mutableStateOf(false) }
@@ -215,6 +219,19 @@ fun DeviceView(
                                 )
                                 Text(
                                     text = workoutCount.toString(),
+                                    style = MaterialTheme.typography.bodyMedium,
+                                )
+                            }
+                            Row(
+                                modifier = Modifier.fillMaxWidth(),
+                                horizontalArrangement = Arrangement.SpaceBetween
+                            ) {
+                                Text(
+                                    text = stringResource(R.string.sessions),
+                                    style = MaterialTheme.typography.labelLarge,
+                                )
+                                Text(
+                                    text = sessionCount.toString(),
                                     style = MaterialTheme.typography.bodyMedium,
                                 )
                             }

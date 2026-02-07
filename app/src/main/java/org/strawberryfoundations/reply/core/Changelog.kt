@@ -10,11 +10,12 @@ object Changelog {
     val entries = listOf(
         ChangelogEntry(
             version = "2.0.1",
-            date = "Feb 4, 2026",
+            date = "Feb 7, 2026",
             changes = listOf(
                 "Improved haptic feedback",
                 "Fixed Backup import throwing import error",
-                "Fixed wrong font in DebugView"
+                "Fixed wrong font in DebugView",
+                "Added session count to device sync page",
             )
         ),
         ChangelogEntry(

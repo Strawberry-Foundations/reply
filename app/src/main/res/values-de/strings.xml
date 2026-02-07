@@ -216,4 +216,5 @@
 
     <!-- Error messages -->
     <string name="error_colon">Fehler: %1$s</string>
+    <string name="sessions">Sessions</string>
 </resources>
