@@ -285,12 +285,13 @@ fun SettingsSectionTitle(title: String, icon: ImageVector) {
             imageVector = icon,
             contentDescription = title,
             tint = MaterialTheme.colorScheme.primary,
+            modifier = Modifier.size(19.dp)
         )
 
         Text(
             text = title,
             style = MaterialTheme.typography.displayMedium,
-            fontSize = 16.sp,
+            fontSize = 17.sp,
             color = MaterialTheme.colorScheme.primary,
         )
     }
@@ -360,7 +361,6 @@ fun SettingsView(
 
     val appVersion = remember { getAppVersion(context) }
 
-    val termsOfServiceUrl = "https://your-app.com/terms"
     val githubUrl = "https://github.com/Strawberry-Foundations/reply"
 
     var showDialog by remember { mutableStateOf(false) }
@@ -510,7 +510,9 @@ fun SettingsView(
                         imageVector = Icons.Filled.Info,
                         contentDescription = stringResource(R.string.settings_section_about),
                         tint = MaterialTheme.colorScheme.primary,
-                        modifier = Modifier.padding(end = 4.dp)
+                        modifier = Modifier
+                            .padding(end = 4.dp)
+                            .size(18.dp)
                     )
 
                     Text(
@@ -625,19 +627,6 @@ fun SettingsView(
                 SettingsItem(Icons.Rounded.Newspaper,
                     title = stringResource(R.string.whats_new),
                     onClick = onChangelogClick
-                )
-            }
-            item {
-                SettingsItem(
-                    icon = Icons.Filled.Gavel,
-                    title = stringResource(R.string.settings_terms_of_service),
-                    onClick = {
-                        try {
-                            uriHandler.openUri(termsOfServiceUrl)
-                        } catch (_: Exception) {
-                            println("Could not open URL: $termsOfServiceUrl")
-                        }
-                    }
                 )
             }
             item {
