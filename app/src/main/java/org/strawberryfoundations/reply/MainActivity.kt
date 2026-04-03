@@ -280,18 +280,35 @@ fun MainView(
                                     modifier = Modifier.fillMaxWidth(),
                                     horizontalArrangement = Arrangement.Center
                                 ) {
-                                    Text(
-                                        text = "Reply",
-                                        style = MaterialTheme.typography.labelLarge,
-                                        fontSize = 24.sp
-                                    )
-                                    Text(
-                                        text = "+",
-                                        style = MaterialTheme.typography.labelLarge,
-                                        fontSize = 24.sp,
-                                        color = MaterialTheme.colorScheme.primary
-
-                                    )
+                                    AnimatedContent(
+                                        targetState = selectedItem,
+                                    ) { index ->
+                                        if (selectedItem == 0) {
+                                            Row(
+                                                modifier = Modifier.fillMaxWidth(),
+                                                horizontalArrangement = Arrangement.Center
+                                            ) {
+                                                Text(
+                                                    text = "Reply",
+                                                    style = MaterialTheme.typography.labelLarge,
+                                                    fontSize = 24.sp
+                                                )
+                                                Text(
+                                                    text = "+",
+                                                    style = MaterialTheme.typography.labelLarge,
+                                                    fontSize = 24.sp,
+                                                    color = MaterialTheme.colorScheme.primary
+                                                )
+                                            }
+                                        }
+                                        else {
+                                            Text(
+                                                text = items[index],
+                                                style = MaterialTheme.typography.labelLarge,
+                                                fontSize = 24.sp
+                                            )
+                                        }
+                                    }
                                 }
                             },
                             actions = {
