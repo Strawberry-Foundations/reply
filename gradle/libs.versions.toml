@@ -1,29 +1,29 @@
 [versions]
 # Plugins
-agp = "9.0.0"
-kotlin = "2.3.10"
+agp = "9.1.0"
+kotlin = "2.3.20"
 ksp = "2.3.2"
 
 # Compose
-composeBom = "2026.01.01"
-activityCompose = "1.12.3"
+composeBom = "2026.03.01"
+activityCompose = "1.13.0"
 materialIconsExtended = "1.7.8"
-material3 = "1.5.0-alpha13"
-foundation = "1.10.2"
-uiTooling = "1.10.2"
+material3 = "1.5.0-alpha16"
+foundation = "1.10.6"
+uiTooling = "1.10.6"
 
 # AndroidX
 lifecycleRuntimeKtx = "2.10.0"
 lifecycleViewmodelCompose = "2.10.0"
 navigationCompose = "2.9.7"
-browser = "1.9.0"
+browser = "1.10.0"
 
 # Datastore & Room
-datastorePreferences = "1.2.0"
+datastorePreferences = "1.2.1"
 room = "2.8.4"
 
 # Networking
-ktorClient = "3.4.0"
+ktorClient = "3.4.2"
 
 # Image Loading
 coilCompose = "2.7.0"
