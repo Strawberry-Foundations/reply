@@ -15,6 +15,8 @@ object Changelog {
                 "Updated AGP to v9.1.0",
                 "Dependency updates",
                 "New app logo",
+                "Current title from NavigationBar will now display in the CenterAlignedTopAppBar",
+                "Adjusted icon size in the settings view"
             )
         ),
         ChangelogEntry(
