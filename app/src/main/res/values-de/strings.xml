@@ -119,6 +119,7 @@
     <string name="how_many_reps">Wie viele Wiederholungen hast du geschafft?</string>
     <string name="confirm">Bestätigen</string>
     <string name="reps_unit">Wdh.</string>
+    <string name="finish_set">Satz abschließen</string>
 
     <!-- Settings -->
     <string name="settings_title">Einstellungen</string>

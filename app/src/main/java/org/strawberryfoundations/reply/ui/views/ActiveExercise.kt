@@ -90,6 +90,7 @@ import org.strawberryfoundations.reply.ui.composable.StopActiveExerciseDialog
 import org.strawberryfoundations.reply.ui.composable.ToolbarAction
 import org.strawberryfoundations.reply.ui.theme.customFont
 import java.util.Locale
+import androidx.compose.ui.platform.LocalLocale
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterial3ExpressiveApi::class)
 @Composable
@@ -258,7 +259,7 @@ fun ActiveExercise(
                             TooltipDefaults.rememberTooltipPositionProvider(
                                 positioning = TooltipAnchorPosition.Above
                             ),
-                        tooltip = { PlainTooltip { Text(text = stringResource(R.string.start_exercise)) } },
+                        tooltip = { PlainTooltip { Text(text = stringResource(R.string.finish_set)) } },
                         state = rememberTooltipState(),
                     ) {
                         FloatingToolbarDefaults.VibrantFloatingActionButton(
@@ -268,7 +269,7 @@ fun ActiveExercise(
                         ) {
                             Icon(
                                 imageVector = MaterialSymbols.Default.Check,
-                                contentDescription = stringResource(R.string.start_exercise)
+                                contentDescription = stringResource(R.string.finish_set)
                             )
                         }
                     }
@@ -342,9 +343,9 @@ private fun TimerCard(
     val seconds = elapsedSeconds % 60
     
     val timeString = if (hours > 0) {
-        String.format(Locale.getDefault(), "%d:%02d:%02d", hours, minutes, seconds)
+        String.format(LocalLocale.current.platformLocale, "%d:%02d:%02d", hours, minutes, seconds)
     } else {
-        String.format(Locale.getDefault(), "%02d:%02d", minutes, seconds)
+        String.format(LocalLocale.current.platformLocale, "%02d:%02d", minutes, seconds)
     }
     
     Card(
