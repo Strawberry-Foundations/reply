@@ -312,7 +312,7 @@ fun MainView(
                                 }
                             },
                             actions = {
-                                IconButton(onClick = { showProfile = true }) {
+                                /* IconButton(onClick = { showProfile = true }) {
                                     AsyncImage(
                                         model = ImageRequest.Builder(context)
                                             .data(data = userData?.profilePictureUrl)
@@ -329,7 +329,7 @@ fun MainView(
                                         placeholder = painterResource(R.drawable.ic_launcher),
                                         error = painterResource(R.drawable.ic_launcher)
                                     )
-                                }
+                                } */
                             },
                             colors = TopAppBarDefaults.topAppBarColors(
                                 containerColor = navBarColor,
