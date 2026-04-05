@@ -16,7 +16,8 @@ object Changelog {
                 "Dependency updates",
                 "New app logo",
                 "Current title from NavigationBar will now display in the CenterAlignedTopAppBar",
-                "Adjusted icon size in the settings view"
+                "Adjusted icon size in the settings view",
+                "Fix wrong translation in active exercise view",
             )
         ),
         ChangelogEntry(
