@@ -7,6 +7,10 @@ plugins {
     kotlin("plugin.serialization") version "1.9.10"
 }
 
+ksp {
+    arg("room.schemaLocation", "$projectDir/schemas")
+}
+
 configure<ApplicationExtension> {
     namespace = "org.strawberryfoundations.reply"
     compileSdk = 36
@@ -31,10 +35,12 @@ configure<ApplicationExtension> {
             )
         }
     }
+
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_17
         targetCompatibility = JavaVersion.VERSION_17
     }
+
     buildFeatures {
         compose = true
     }
