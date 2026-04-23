@@ -34,9 +34,12 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.compose.ui.res.stringResource
+import org.strawberryfoundations.reply.R
 import org.strawberryfoundations.reply.room.entities.SessionStatus
 import org.strawberryfoundations.reply.room.entities.WorkoutSession
 import org.strawberryfoundations.reply.room.viewmodels.ExerciseViewModel
@@ -44,6 +47,7 @@ import org.strawberryfoundations.reply.room.viewmodels.WorkoutSessionViewModel
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
+import androidx.compose.ui.platform.LocalLocale
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -68,7 +72,7 @@ fun DebugView(
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Text(
-                text = "Workout Sessions Debug",
+                text = stringResource(R.string.debug_sessions_title),
                 style = MaterialTheme.typography.displayLarge,
                 fontWeight = FontWeight.Bold
             )
@@ -80,7 +84,14 @@ fun DebugView(
             }
 
             Text(
-                text = "${sessions.size} ${if (sessions.size == 1) "Eintrag" else "Einträge"}",
+                text = stringResource(
+                    if (sessions.size == 1) {
+                        R.string.debug_entry_count_single
+                    } else {
+                        R.string.debug_entry_count_plural
+                    },
+                    sessions.size
+                ),
                 style = MaterialTheme.typography.bodyMedium,
                 color = MaterialTheme.colorScheme.onSurfaceVariant
             )
@@ -99,10 +110,10 @@ fun DebugView(
                     modifier = Modifier.padding(top = 4.dp)
                 ) {
                     Text(
-                        text = if (activeSessions > 1) 
-                            "⚠️ $activeSessions aktive Sessions (sollte max. 1 sein!)" 
-                        else 
-                            "✓ $activeSessions aktive Session",
+                        text = if (activeSessions > 1)
+                            stringResource(R.string.debug_active_sessions_warning, activeSessions)
+                        else
+                            stringResource(R.string.debug_active_session_ok, activeSessions),
                         style = MaterialTheme.typography.labelMedium,
                         fontWeight = FontWeight.Bold,
                         modifier = Modifier.padding(horizontal = 12.dp, vertical = 6.dp)
@@ -118,7 +129,7 @@ fun DebugView(
                     contentAlignment = Alignment.Center
                 ) {
                     Text(
-                        text = "Keine Workout Sessions vorhanden",
+                        text = stringResource(R.string.debug_no_sessions),
                         style = MaterialTheme.typography.bodyLarge,
                         color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
@@ -135,7 +146,7 @@ fun DebugView(
                         WorkoutSessionCard(
                             session = session,
                             exerciseName = exercise?.name
-                                ?: "Unbekannt (ID: ${session.exerciseId})",
+                                ?: stringResource(R.string.debug_unknown_exercise, session.exerciseId),
                             onDelete = { sessionToDelete = session }
                         )
                     }
@@ -147,8 +158,8 @@ fun DebugView(
     sessionToDelete?.let { session ->
         AlertDialog(
             onDismissRequest = { sessionToDelete = null },
-            title = { Text("Session löschen?") },
-            text = { Text("Möchtest du diese Workout Session wirklich löschen?") },
+            title = { Text(stringResource(R.string.debug_delete_session_title)) },
+            text = { Text(stringResource(R.string.debug_delete_session_message)) },
             confirmButton = {
                 TextButton(
                     onClick = {
@@ -156,12 +167,12 @@ fun DebugView(
                         sessionToDelete = null
                     }
                 ) {
-                    Text("Löschen", color = MaterialTheme.colorScheme.error)
+                    Text(stringResource(R.string.delete), color = MaterialTheme.colorScheme.error)
                 }
             },
             dismissButton = {
                 TextButton(onClick = { sessionToDelete = null }) {
-                    Text("Abbrechen")
+                    Text(stringResource(R.string.cancel))
                 }
             }
         )
@@ -174,7 +185,9 @@ private fun WorkoutSessionCard(
     exerciseName: String,
     onDelete: () -> Unit
 ) {
-    val dateFormat = remember { SimpleDateFormat("dd.MM.yyyy HH:mm", Locale.getDefault()) }
+    val dateFormat = remember {
+        SimpleDateFormat("dd.MM.yyyy HH:mm", Locale.getDefault())
+    }
     
     val statusColor = when (session.status) {
         SessionStatus.ACTIVE -> MaterialTheme.colorScheme.primary
@@ -184,10 +197,10 @@ private fun WorkoutSessionCard(
     }
     
     val statusText = when (session.status) {
-        SessionStatus.ACTIVE -> "Aktiv"
-        SessionStatus.PAUSED -> "Pausiert"
-        SessionStatus.COMPLETED -> "Abgeschlossen"
-        SessionStatus.CANCELLED -> "Abgebrochen"
+        SessionStatus.ACTIVE -> stringResource(R.string.status_active)
+        SessionStatus.PAUSED -> stringResource(R.string.status_paused)
+        SessionStatus.COMPLETED -> stringResource(R.string.status_completed)
+        SessionStatus.CANCELLED -> stringResource(R.string.status_cancelled)
     }
     
     Card(
@@ -233,7 +246,7 @@ private fun WorkoutSessionCard(
                 IconButton(onClick = onDelete) {
                     Icon(
                         imageVector = Icons.Rounded.Delete,
-                        contentDescription = "Löschen",
+                        contentDescription = stringResource(R.string.delete),
                         tint = MaterialTheme.colorScheme.error
                     )
                 }
@@ -245,43 +258,46 @@ private fun WorkoutSessionCard(
             Column(
                 verticalArrangement = Arrangement.spacedBy(6.dp)
             ) {
-                InfoRow("ID:", session.id.toString())
-                InfoRow("Gestartet:", dateFormat.format(Date(session.startedAt)))
+                InfoRow(stringResource(R.string.debug_label_id), session.id.toString())
+                InfoRow(
+                    stringResource(R.string.debug_label_started),
+                    dateFormat.format(Date(session.startedAt))
+                )
                 
                 session.endedAt?.let { endedAt ->
-                    InfoRow("Beendet:", dateFormat.format(Date(endedAt)))
+                    InfoRow(stringResource(R.string.debug_label_ended), dateFormat.format(Date(endedAt)))
                     val durationMinutes = (endedAt - session.startedAt) / 1000 / 60
-                    InfoRow("Dauer:", "$durationMinutes min")
+                    InfoRow(stringResource(R.string.debug_label_duration), stringResource(R.string.debug_duration_minutes, durationMinutes))
                 }
                 
-                InfoRow("Gewicht:", "${session.currentWeight} kg")
-                InfoRow("Sätze absolviert:", "${session.setsCompleted}")
+                InfoRow(stringResource(R.string.debug_label_weight), stringResource(R.string.debug_weight_value, session.currentWeight))
+                InfoRow(stringResource(R.string.debug_label_sets_completed), session.setsCompleted.toString())
                 
                 session.totalSets?.let {
-                    InfoRow("Gesamt Sätze:", it.toString())
+                    InfoRow(stringResource(R.string.debug_label_total_sets), it.toString())
                 }
                 
                 val hours = session.elapsedSeconds / 3600
                 val minutes = (session.elapsedSeconds % 3600) / 60
                 val seconds = session.elapsedSeconds % 60
                 val timeStr = if (hours > 0) {
-                    String.format(Locale.getDefault(), "%d:%02d:%02d", hours, minutes, seconds)
+                    String.format(LocalLocale.current.platformLocale, "%d:%02d:%02d", hours, minutes, seconds)
                 } else {
-                    String.format(Locale.getDefault(), "%02d:%02d", minutes, seconds)
+                    String.format(LocalLocale.current.platformLocale, "%02d:%02d", minutes, seconds)
                 }
-                InfoRow("Timer:", timeStr)
+                InfoRow(stringResource(R.string.debug_label_timer), timeStr)
                 
                 if (session.isResting) {
-                    InfoRow("Rest-Timer:", "${session.restTimerSeconds}s")
+                    InfoRow(stringResource(R.string.debug_label_rest_timer), stringResource(R.string.debug_seconds_short, session.restTimerSeconds))
                 }
                 
                 if (session.notes.isNotBlank()) {
                     Spacer(modifier = Modifier.height(4.dp))
                     Text(
-                        text = "Notiz: ${session.notes}",
+                        text = stringResource(R.string.debug_note_value, session.notes),
                         style = MaterialTheme.typography.bodySmall,
                         color = MaterialTheme.colorScheme.onSurfaceVariant,
-                        fontStyle = androidx.compose.ui.text.font.FontStyle.Italic
+                        fontStyle = FontStyle.Italic
                     )
                 }
             }

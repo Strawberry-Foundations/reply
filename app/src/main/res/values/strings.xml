@@ -222,4 +222,28 @@
     <!-- Error messages -->
     <string name="error_colon">Error: %1$s</string>
     <string name="sessions">Sessions</string>
+
+    <!-- Debug view -->
+    <string name="debug_sessions_title">Workout Sessions Debug</string>
+    <string name="debug_entry_count_single">%1$d entry</string>
+    <string name="debug_entry_count_plural">%1$d entries</string>
+    <string name="debug_active_sessions_warning">⚠️ %1$d active sessions (should be max. 1!)</string>
+    <string name="debug_active_session_ok">✓ %1$d active session</string>
+    <string name="debug_no_sessions">No workout sessions available</string>
+    <string name="debug_unknown_exercise">Unknown (ID: %1$d)</string>
+    <string name="debug_delete_session_title">Delete session?</string>
+    <string name="debug_delete_session_message">Do you really want to delete this workout session?</string>
+    <string name="debug_label_id">ID:</string>
+    <string name="debug_label_started">Started:</string>
+    <string name="debug_label_ended">Ended:</string>
+    <string name="debug_label_duration">Duration:</string>
+    <string name="debug_duration_minutes">%1$d min</string>
+    <string name="debug_label_weight">Weight:</string>
+    <string name="debug_weight_value">%1$s kg</string>
+    <string name="debug_label_sets_completed">Sets completed:</string>
+    <string name="debug_label_total_sets">Total sets:</string>
+    <string name="debug_label_timer">Timer:</string>
+    <string name="debug_label_rest_timer">Rest timer:</string>
+    <string name="debug_seconds_short">%1$ds</string>
+    <string name="debug_note_value">Note: %1$s</string>
 </resources>
