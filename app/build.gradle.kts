@@ -19,8 +19,8 @@ configure<ApplicationExtension> {
         applicationId = "org.strawberryfoundations.reply"
         minSdk = 33
         targetSdk = 36
-        versionCode = 1_211_001
-        versionName = "2.1.1"
+        versionCode = 1_212_001
+        versionName = "2.1.2"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }

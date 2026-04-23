@@ -9,6 +9,16 @@ data class ChangelogEntry(
 object Changelog {
     val entries = listOf(
         ChangelogEntry(
+            version = "2.1.2",
+            date = "Apr 23, 2026",
+            changes = listOf(
+                "Updated AGP to v9.2.0",
+                "Dependency updates",
+                "Added translations for debug view",
+                "Readded icon in TopAppBar"
+            )
+        ),
+        ChangelogEntry(
             version = "2.1.1",
             date = "Apr 7, 2026",
             changes = listOf(
