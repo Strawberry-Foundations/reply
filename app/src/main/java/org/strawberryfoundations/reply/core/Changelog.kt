@@ -12,55 +12,55 @@ object Changelog {
             version = "2.1.2",
             date = "Apr 23, 2026",
             changes = listOf(
-                "Updated AGP to v9.2.0",
-                "Dependency updates",
-                "Added translations for debug view",
-                "Readded icon in TopAppBar"
+                "[NEW] Added translations for debug view",
+                "[NEW] Readded icon in TopAppBar",
+                "[PRJ] Updated AGP to v9.2.0",
+                "[PRJ] Dependency updates",
             )
         ),
         ChangelogEntry(
             version = "2.1.1",
             date = "Apr 7, 2026",
             changes = listOf(
-                "Gradle build config update to match Google's AGP 9.x version",
+                "[PRJ] Gradle build config update to match Google's AGP 9.x version",
             )
         ),
         ChangelogEntry(
             version = "2.1.0",
             date = "Apr 3, 2026",
             changes = listOf(
-                "Updated AGP to v9.1.0",
-                "Dependency updates",
-                "New app logo",
-                "Current title from NavigationBar will now display in the CenterAlignedTopAppBar",
-                "Adjusted icon size in the settings view",
-                "Fix wrong translation in active exercise view",
+                "[NEW] New app logo",
+                "[NEW] Current title from NavigationBar will now display in the CenterAlignedTopAppBar",
+                "[UI] Adjusted icon size in the settings view",
+                "[BUG] Fix wrong translation in active exercise view",
+                "[PRJ] Updated AGP to v9.1.0",
+                "[PRJ] Dependency updates",
             )
         ),
         ChangelogEntry(
             version = "2.0.1",
             date = "Feb 7, 2026",
             changes = listOf(
-                "Improved haptic feedback",
-                "Fixed Backup import throwing import error",
-                "Fixed wrong font in DebugView",
-                "Added session count to device sync page",
+                "[NEW] Added session count to device sync page",
+                "[UX] Improved haptic feedback",
+                "[BUG] Fixed Backup import throwing import error",
+                "[BUG] Fixed wrong font in DebugView",
             )
         ),
         ChangelogEntry(
             version = "2.0.0",
             date = "Feb 4, 2026",
             changes = listOf(
-                "New branding",
-                "New exercise view with detailed info",
-                "Added active exercise tracking to track your progress",
-                "Improved syncing with wearable",
-                "Redesigned user interface for better usability",
-                "Fixed using outdated fonts in some dialogs",
-                "Added haptic feedback",
-                "Major code base refactoring",
-                "For consistency and maintaining the app, both mobile and wearable app are using almost the same codebase",
-                "Bug fixes and performance improvements",
+                "[NEW] New exercise view with detailed info",
+                "[NEW] Added active exercise tracking to track your progress",
+                "[UX] Improved syncing with wearable",
+                "[UI] Redesigned user interface for better usability",
+                "[UX] Added haptic feedback",
+                "[FIX] Fixed using outdated fonts in some dialogs",
+                "[PRJ] New branding",
+                "[PRJ] Major code base refactoring",
+                "[PRJ] For consistency and maintaining the app, both mobile and wearable app are using almost the same codebase",
+                "[BUG] Bug fixes and performance improvements",
             )
         ),
     )
