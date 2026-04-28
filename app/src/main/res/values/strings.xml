@@ -246,4 +246,5 @@
     <string name="debug_label_rest_timer">Rest timer:</string>
     <string name="debug_seconds_short">%1$ds</string>
     <string name="debug_note_value">Note: %1$s</string>
+    <string name="new_workout">New workout</string>
 </resources>

@@ -54,6 +54,7 @@
 
     <!-- Workout/Training -->
     <string name="add_training">Neues Workout</string>
+    <string name="new_workout">Neues Workout</string>
     <string name="delete_training">Training löschen</string>
     <string name="delete_training_confirm">Willst du das Training „%1$s" wirklich löschen?</string>
     <string name="decrease_weight_by">Gewicht um %s kg verringern</string>

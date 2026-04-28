@@ -104,6 +104,7 @@ import org.strawberryfoundations.reply.ui.theme.customFont
 import org.strawberryfoundations.reply.ui.theme.darkenColor
 import org.strawberryfoundations.reply.ui.theme.hexToColor
 import java.util.Locale
+import androidx.compose.ui.platform.LocalLocale
 
 
 @Composable
@@ -128,10 +129,12 @@ private fun ActiveTrainingBanner(
     val minutes = (elapsedSeconds % 3600) / 60
     val seconds = elapsedSeconds % 60
 
+    val locale = LocalLocale.current.platformLocale
+
     val timeString = if (hours > 0) {
-        String.format(Locale.getDefault(), "%d:%02d:%02d", hours, minutes, seconds)
+        String.format(locale, "%d:%02d:%02d", hours, minutes, seconds)
     } else {
-        String.format(Locale.getDefault(), "%02d:%02d", minutes, seconds)
+        String.format(locale, "%02d:%02d", minutes, seconds)
     }
     
     Card(
@@ -273,7 +276,7 @@ fun TrainingView(
         containerColor = Color.Transparent,
         floatingActionButton = {
             AnimatedVisibility(visible = expandedItemIndex == -1) {
-                val strNewTrainingName = stringResource(R.string.add_training)
+                val strNewTrainingName = stringResource(R.string.new_workout)
 
                 // Add Training Button
                 ExtendedFloatingActionButton(
